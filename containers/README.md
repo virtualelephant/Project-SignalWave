@@ -8,7 +8,7 @@ not exist on any public repo.
 Add Harbor to Docker's daemon configuration (/etc/docker/daemon.json on Linux):
 ```
 {
-  "insecure-registries": ["harbor.virtualelephant.com"]
+  "insecure-registries": ["harbor.domain.name.com"]
 }
 ```
 Restart Docker after making this change:

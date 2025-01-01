@@ -7,9 +7,9 @@ This project is ideal for developers, architects, and DevOps engineers looking t
 # Features
 ## Microservices Architecture:
 
-1. A Publisher Service for generating and publishing messages to RabbitMQ.
-2. A Reader Service consumes and processes messages dynamically.
-3. A Frontend Service displays logs in real-time via an enhanced NGINX-hosted HTML page.
+- A Publisher Service for generating and publishing messages to RabbitMQ.
+- A Reader Service consumes and processes messages dynamically.
+- A Frontend Service displays logs in real-time via an enhanced NGINX-hosted HTML page.
 
 ## Observability:
 
@@ -29,8 +29,8 @@ This project is ideal for developers, architects, and DevOps engineers looking t
 # Use Cases
 ## Learning and Training:
 
-1. Understand Kubernetes, RabbitMQ, and observability tools.
-2. Learn how to build scalable, cloud-native microservices.
+- Understand Kubernetes, RabbitMQ, and observability tools.
+- Learn how to build scalable, cloud-native microservices.
 
 ## Demo Environment:
 

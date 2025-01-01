@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  prometheus.yml: "\nglobal:\n  scrape_interval: 15s\n  evaluation_interval: 15s\n\
+    \nscrape_configs:\n  - job_name: 'elasticsearch'\n    metrics_path: '/_prometheus/metrics'\n\
+    \    static_configs:\n      - targets:\n          - 'elasticsearch.kube-logging.svc.cluster.local:9200'\n"
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring

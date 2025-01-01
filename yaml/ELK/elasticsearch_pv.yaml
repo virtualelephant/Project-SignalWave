@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: elasticsearch0
+  namespace: kube-logging
+spec:
+  capacity:
+    storage: 100Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /opt/persistent/elasticsearch0
+    server: 10.1.10.15
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: elasticsearch1
+  namespace: kube-logging
+spec:
+  capacity:
+    storage: 100Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /opt/persistent/elasticsearch1
+    server: 10.1.10.15
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: elasticsearch2
+  namespace: kube-logging
+spec:
+  capacity:
+    storage: 100Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /opt/persistent/elasticsearch2
+    server: 10.1.10.15
