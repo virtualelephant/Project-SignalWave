@@ -41,8 +41,8 @@ spec:
             memory: 512Mi
         volumeMounts:
         - name: config-volume
-          mountPath: /fluentd/etc/fluentd-config.json
-          subPath: fluentd-config.json
+          mountPath: /fluentd/etc/fluentd.conf
+          subPath: fluentd.conf
         - name: varlog
           mountPath: /var/log
         - name: varlibdockercontainers
