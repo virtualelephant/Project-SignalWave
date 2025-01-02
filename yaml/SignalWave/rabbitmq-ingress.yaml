@@ -8,7 +8,7 @@ metadata:
     ingress.class: "haproxy"
 spec:
   rules:
-  - host: rabbitmq.cilium.virtualelephant.com
+  - host: rabbitmq.home.virtualelephant.com
     http:
       paths:
       - path: /

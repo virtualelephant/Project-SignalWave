@@ -15,8 +15,8 @@ spec:
     - hard
     - nfsvers=4.1
   nfs:
-    path: /opt/persistent/elasticsearch0
-    server: 10.1.10.15
+    path: /opt/nfs/elasticsearch0
+    server: 10.3.43.100
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -35,8 +35,8 @@ spec:
     - hard
     - nfsvers=4.1
   nfs:
-    path: /opt/persistent/elasticsearch1
-    server: 10.1.10.15
+    path: /opt/nfs/elasticsearch1
+    server: 10.3.43.100
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -55,5 +55,5 @@ spec:
     - hard
     - nfsvers=4.1
   nfs:
-    path: /opt/persistent/elasticsearch2
-    server: 10.1.10.15
+    path: /opt/nfs/elasticsearch2
+    server: 10.3.43.100

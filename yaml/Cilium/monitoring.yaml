@@ -14056,6 +14056,11 @@ data:
     rule_files:
       - "/etc/prometheus-rules/*.rules"
     scrape_configs:
+      - job_name: 'elasticsearch'
+        metrics_path: '/_prometheus/metrics'
+        static_configs:
+          - targets:
+              - 'elasticsearch.kube-logging.svc.cluster.local:9200'
       # https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml#L79
       - job_name: 'kubernetes-endpoints'
         kubernetes_sd_configs:
