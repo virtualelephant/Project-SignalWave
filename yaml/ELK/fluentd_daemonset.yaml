@@ -14,7 +14,6 @@ spec:
       labels:
         app: fluentd
     spec:
-      serviceAccount: fluentd
       serviceAccountName: fluentd
       tolerations:
       - key: node-role.kubernetes.io/master
@@ -25,9 +24,9 @@ spec:
         env:
           - name: FLUENTD_CONF
             value: "fluentd-config.json"
-          - name:  FLUENT_ELASTICSEARCH_HOST
+          - name: FLUENT_ELASTICSEARCH_HOST
             value: "elasticsearch.kube-logging.svc.cluster.local"
-          - name:  FLUENT_ELASTICSEARCH_PORT
+          - name: FLUENT_ELASTICSEARCH_PORT
             value: "9200"
           - name: FLUENT_ELASTICSEARCH_SCHEME
             value: "http"
@@ -41,6 +40,9 @@ spec:
             cpu: 250m
             memory: 512Mi
         volumeMounts:
+        - name: config-volume
+          mountPath: /fluentd/etc/fluentd-config.json
+          subPath: fluentd-config.json
         - name: varlog
           mountPath: /var/log
         - name: varlibdockercontainers
@@ -51,6 +53,9 @@ spec:
           readOnly: true
       terminationGracePeriodSeconds: 60
       volumes:
+      - name: config-volume
+        configMap:
+          name: fluentd-config
       - name: varlog
         hostPath:
           path: /var/log
