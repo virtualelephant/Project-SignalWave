@@ -17,4 +17,4 @@ spec:
           service:
             name: hubble-ui
             port:
-              number: 30640
+              number: 80
