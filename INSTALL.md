@@ -64,7 +64,7 @@ echo "password: $password"
 Using the username and password above, log into the RabbitMQ UI. From there create a new user with administrator privileges
 that the SignalWave application will leverage.
 
-## Installing ElasticSearch
+## Installing ELK Stack (elasticsearch, kibana, and fluentd)
 Create the namespace for the ELK stack:
 ```
 kubectl create namespace kube-logging
@@ -75,4 +75,18 @@ Edit the `elasticsearch_pv.yaml` file to include the correct PV path for the loc
 kubectl create -f elasticsearch_pv.yaml
 kubectl create -f elasticsearch_svc.yaml
 kubectl create -f elasticsearch_statefulset.yaml
+```
+
+Edit the `kibana_pv.yaml` file to include the correct PV path for the local NFS server running in the environment.
+
+```
+kubectl create -f kibana_pv.yaml
+kubectl create -f kibana_svc.yaml
+kubectl create -f kibana_deployment.yaml
+```
+
+Deploy the fluentd application:
+```
+kubectl create -f fluentd_rbac.yaml
+kubectl create -f fluentd_daemonset.yaml
 ```
