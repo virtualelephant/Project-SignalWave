@@ -88,5 +88,6 @@ kubectl create -f kibana_deployment.yaml
 Deploy the fluentd application:
 ```
 kubectl create -f fluentd_rbac.yaml
+kubectl create -f fluentd_configmap.yaml
 kubectl create -f fluentd_daemonset.yaml
 ```
