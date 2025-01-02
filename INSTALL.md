@@ -1,7 +1,7 @@
 # Installation Guide
-## Current Version: v1.0
-## Last Modified: 01.January.2025
-## Maintainer: chris@virtualelephant.com
+- Current Version: v1.0
+- Last Modified: 02.January.2025
+- Maintainer: chris@virtualelephant.com
 
 ## Installing NFS Client Provisioner
 https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
