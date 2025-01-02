@@ -14236,6 +14236,74 @@ spec:
     app: prometheus
   type: ClusterIP
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana-pv
+  labels:
+    app: grafana
+  namespace: cilium-monitoring
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  nfs:
+    path: /opt/nfs/cilium-grafana
+    server: 10.3.43.100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  labels:
+    app: grafana
+  namespace: cilium-monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: prometheus-pv
+  labels:
+    app: prometheus
+  namespace: cilium-monitoring
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  nfs:
+    path: /opt/nfs/cilium-prometheus
+    server: 10.3.43.100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+  labels:
+    app: prometheus
+  namespace: cilium-monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 10Gi
+---
 # Source: prometheus/templates/grafana.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -14286,6 +14354,8 @@ spec:
             - mountPath: /configmap/dashboards/hubble-l7-http-metrics-by-workload
               name: hubble-l7-http-metrics-by-workload
               readOnly: true
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       volumes:
@@ -14316,6 +14386,9 @@ spec:
             defaultMode: 420
             name: grafana-hubble-l7-http-metrics-by-workload
           name: hubble-l7-http-metrics-by-workload
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
 ---
 # Source: prometheus/templates/prometheus.yaml
 apiVersion: apps/v1
@@ -14354,7 +14427,7 @@ spec:
           name: config-volume
           readOnly: true
         - mountPath: /prometheus/
-          name: storage
+          name: prometheus-storage
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       serviceAccount: prometheus-k8s
@@ -14364,3 +14437,6 @@ spec:
         name: config-volume
       - emptyDir: {}
         name: storage
+      - name: prometheus-storage
+        persistentVolumeClaim:
+          claimName: prometheus-pvc
