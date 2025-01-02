@@ -63,3 +63,16 @@ echo "password: $password"
 ### Access RabbitMQ UI
 Using the username and password above, log into the RabbitMQ UI. From there create a new user with administrator privileges
 that the SignalWave application will leverage.
+
+## Installing ElasticSearch
+Create the namespace for the ELK stack:
+```
+kubectl create namespace kube-logging
+```
+Edit the `elasticsearch_pv.yaml` file to include the correct PV path for the local NFS server running in the environment.
+
+```
+kubectl create -f elasticsearch_pv.yaml
+kubectl create -f elasticsearch_svc.yaml
+kubectl create -f elasticsearch_statefulset.yaml
+```
