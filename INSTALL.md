@@ -32,3 +32,21 @@ Modify the `yaml/Cilium/monitoring.yaml` file, editing lines 14289 & 14290 to re
 kubectl apply -f yaml/Cilium/monitoring.yaml -n cilium-monitoring
 kubectl apply -f yaml/Cilium/monitoring-ingress.yaml -n cilium-monitoring
 ```
+
+## Create SignalWave Namespace
+```
+kubectl create namespace signalwave
+```
+
+## Installing RabbitMQ Operator
+https://www.rabbitmq.com/kubernetes/operator/quickstart-operator.html
+
+```
+kubectl apply -f "https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml"
+```
+
+Build the local RabbitMQ application in the Kubernetes environment:
+```
+kubectl apply -f yaml/SignalWave/rabbitmq-prod.yaml -n signalwave
+kubectl apply -f yaml/SignalWave/rabbitmq-ingress.yaml -n signalwave
+```
