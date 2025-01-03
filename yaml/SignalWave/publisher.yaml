@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: publisher
-  namespace: sample-app
+  namespace: signalwave
 spec:
   selector:
     matchLabels:
@@ -22,7 +22,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: publisher
-  namespace: sample-app
+  namespace: signalwave
 spec:
   selector:
     app: publisher
