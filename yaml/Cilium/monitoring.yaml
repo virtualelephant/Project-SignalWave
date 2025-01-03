@@ -14091,7 +14091,7 @@ data:
         - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port]
           action: replace
           target_label: __address__
-          regex: (.+)
+          regex: (.+):9114
         - source_labels: [__meta_kubernetes_pod_name]
           target_label: instance
       # https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml#L79
