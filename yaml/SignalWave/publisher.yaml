@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: publisher
+  namespace: sample-app
+spec:
+  selector:
+    matchLabels:
+      app: publisher
+  template:
+    metadata:
+      labels:
+        app: publisher
+    spec:
+      containers:
+      - name: publisher
+        image: harbor.home.virtualelephant.com/kubernetes/publisher:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: publisher
+  namespace: sample-app
+spec:
+  selector:
+    app: publisher
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

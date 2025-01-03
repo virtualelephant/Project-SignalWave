@@ -23,11 +23,11 @@ handler.setFormatter(JsonFormatter())
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq.sample-app.svc.cluster.local')
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq.signalwave.svc.cluster.local')
 RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'deploy')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'VMware123!')
-QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'log-messages')
+QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'signalwave')
 MESSAGE_RATE = flow(os.getenv('MESSAGE_RATE', 1.0)) # Messages per second
 
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
