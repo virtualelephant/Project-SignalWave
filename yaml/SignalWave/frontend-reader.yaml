@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reader-deployment
+  namespace: signalwave
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reader
+  template:
+    metadata:
+      labels:
+        app: reader
+    spec:
+      volumes:
+      - name: html
+        persistentVolumeClaim:
+          claimName: nginx-html-pvc
+      containers:
+      - name: reader
+        image: harbor.home.virtualelephant.com/ve-lab/reader:latest
+        volumeMounts:
+        - name: html
+          mountPath: "/usr/share/nginx/html"

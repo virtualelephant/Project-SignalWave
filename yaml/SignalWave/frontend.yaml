@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: signalwave
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: html
+        persistentVolumeClaim:
+          claimName: nginx-html-pvc
+      containers:
+      - name: nginx
+        image: harbor.home.virtualelephant.com/ve-labs/nginx-signalwave:latest
+        volumeMounts:
+        - name: html
+          mountPath: "/usr/share/nginx/html"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: signalwave
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
