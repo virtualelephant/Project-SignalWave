@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: nginx-deployment
   namespace: signalwave
-    app: nginx
 spec:
   replicas: 1
   selector:
