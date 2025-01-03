@@ -28,7 +28,7 @@ RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'deploy')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'VMware123!')
 QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'signalwave')
-MESSAGE_RATE = flow(os.getenv('MESSAGE_RATE', 1.0)) # Messages per second
+MESSAGE_RATE = float(os.getenv('MESSAGE_RATE', 1.0)) # Messages per second
 
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
 
@@ -36,10 +36,7 @@ credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
 messages_published = Counter('publisher_messages_total', 'Total messages published')
 publish_duration = Summary('publisher_publish_duration_seconds', 'Time spent publishing messages')
 
-# Start Prometheus metrics server
-PROMETHEUS_PORT = int(os.getenv('PROMETHEUS_PORT', 8000))  # Default to port 8000
-start_http_server(PROMETHEUS_PORT)
-logger.info(f"Prometheus metrics server started on port {PROMETHEUS_PORT}")
+logger.info("Exposing Prometheus metrics to be scraped by an external server")
 
 try:
     # Establish connection to RabbitMQ
