@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: publisher
-        image: harbor.home.virtualelephant.com/kubernetes/publisher:latest
+        image: harbor.home.virtualelephant.com/ve-lab/publisher:latest
         ports:
         - containerPort: 8080
 ---

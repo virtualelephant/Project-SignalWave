@@ -1,0 +1,18 @@
+---
+- hosts: kube-cluster
+  become: yes
+  gather_facts: false
+
+  vars_files:
+    - envanswer.yml
+
+  tasks:
+  - name: Set hostname on node
+    hostname:
+      name: "{{ inventory_hostname }}"
+
+  - name: Install pre-requisite packages
+    apt:
+      name: ['apt-transport-https', 'gnupg', 'ca-certificates', 'curl', 'software-properties-common', 'inetutils-traceroute']
+      force_apt_get: yes
+      state: present

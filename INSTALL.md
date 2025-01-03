@@ -25,6 +25,10 @@ kubectl apply -f storageclass.yaml
 helm repo add haproxytech https://haproxytech.github.io/helm-charts
 helm install haproxy-kubernetes-ingress haproxytech/kubernetes-ingress --create-namespace --namespace haproxy
 ```
+## Expose Hubble-UI through Ingress
+```
+kubectl apply yaml/Cilium/hubble-ingress.yaml
+```
 
 ## Installing Grafana and Prometheus
 Modify the `yaml/Cilium/monitoring.yaml` file, editing lines 14289 & 14290 to reflect the NFS server in the environment.
