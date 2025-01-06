@@ -19,7 +19,8 @@ spec:
           claimName: nginx-html-pvc
       containers:
       - name: reader
-        image: harbor.home.virtualelephant.com/ve-lab/reader:latest
+        image: harbor.home.virtualelephant.com/ve-lab/reader:latency
+        imagePullPolicy: Always
         volumeMounts:
         - name: html
           mountPath: "/usr/share/nginx/html"
