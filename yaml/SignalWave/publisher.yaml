@@ -20,6 +20,7 @@ spec:
       containers:
       - name: publisher
         image: harbor.home.virtualelephant.com/ve-lab/publisher:latency
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
 ---
