@@ -48,24 +48,26 @@ def initialize_html_template():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Logs</title>
+    <title>Network Observability Metrics</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; }
         header { background-color: #0073e6; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; }
         footer { background-color: #333; color: white; text-align: center; padding: 1rem; position: fixed; bottom: 0; width: 100%; }
         .container { margin: 2rem auto; width: 90%; max-width: 800px; background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 8px; }
-        .log-entry { padding: 0.5rem; margin: 0.5rem 0; background: #f9f9f9; border-left: 4px solid #0073e6; border-radius: 4px; }
+        .metric { padding: 0.5rem; margin: 0.5rem 0; border-bottom: 1px solid #ddd; }
+        .metric strong { font-size: 1.1rem; color: #333; }
     </style>
 </head>
 <body>
-    <header>Application Logs</header>
-    <div class="container" id="log-container">
-        <!-- Log messages will be appended here -->
+    <header>Network Observability Metrics</header>
+    <div class="container" id="metric-container">
+        <!-- Metrics will be appended here -->
     </div>
-    <footer>&copy; 2024 Virtual Elephant Consulting Application. All rights reserved.</footer>
+    <footer>&copy; 2025 Virtual Elephant Consulting Application. All rights reserved.</footer>
 </body>
 </html>
             """)
+
     except Exception as e:
         logger.error({"error": "Failed to initialize HTML template", "exception": str(e)})
 
@@ -85,18 +87,23 @@ try:
     def callback(ch, method, properties, body):
         try:
             message = json.loads(body.decode())
-            logger.info({"action": "consume", "message": message})
+            metrics = message.get("metrics", {})
+            logger.info({"action": "consume", "metrics": metrics})
 
-            # Append message content to the index.html file
-            log_entry = f"""
-            <div class="log-entry">
-                <strong>{message["timestamp"]}</strong>: {message["message"]}
-            </div>
-            """
+            # Append metrics to the HTML file
+            metric_entries = "\n".join([
+                f"""
+                <div class="metric">
+                    <strong>{key}</strong>: {value}
+                </div>
+                """
+                for key, value in metrics.items()
+            ])
+
             with open(HTML_TEMPLATE_PATH, 'r+') as file:
                 content = file.read()
-                insertion_point = content.find('<div class="container" id="log-container">') + len('<div class="container" id="log-container">')
-                updated_content = content[:insertion_point] + log_entry + content[insertion_point:]
+                insertion_point = content.find('<div class="container" id="metric-container">') + len('<div class="container" id="metric-container">')
+                updated_content = content[:insertion_point] + metric_entries + content[insertion_point:]
                 file.seek(0)
                 file.write(updated_content)
                 file.truncate()
