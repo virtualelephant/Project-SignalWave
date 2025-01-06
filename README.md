@@ -4,7 +4,38 @@ It integrates advanced observability tools and provides a real-world example of 
 
 This project is ideal for developers, architects, and DevOps engineers looking to understand and implement best practices for cloud-native development and operations.
 
+
 # Features
+
+## Network Observability Metrics
+
+The **SignalWave Publisher** application is designed with integrated network observability, providing detailed insights into its performance and interactions within the broader SignalWave microservices architecture. Below is an overview of the key metrics collected and exposed for monitoring via Prometheus:
+
+### Exposed Metrics
+
+1. **Request Metrics**
+   - **Total Requests (`http_requests_total`):** The cumulative count of HTTP requests received by the application.
+   - **Request Duration (`http_request_duration_seconds`):** Histogram of the time taken to process requests, enabling latency analysis.
+   - **Request Size (`http_request_size_bytes`):** Histogram of the size of incoming HTTP requests.
+
+2. **Response Metrics**
+   - **Response Status Codes (`http_response_status`):** Count of HTTP responses grouped by status codes (e.g., 2xx, 4xx, 5xx).
+   - **Response Duration (`http_response_duration_seconds`):** Histogram of the time taken to send responses to clients.
+   - **Response Size (`http_response_size_bytes`):** Histogram of the size of responses sent.
+
+3. **Network Traffic Metrics**
+   - **Incoming Traffic (`network_in_bytes`):** Total number of bytes received by the application.
+   - **Outgoing Traffic (`network_out_bytes`):** Total number of bytes transmitted by the application.
+   - **Connection Metrics (`tcp_active_connections`):** Current count of active TCP connections.
+
+4. **Error Metrics**
+   - **Request Errors (`http_request_errors_total`):** Total count of failed HTTP requests due to client or server errors.
+   - **Connection Errors (`network_connection_errors_total`):** Count of failed network connection attempts.
+
+5. **Custom Metrics**
+   - **Publisher-Specific Events (`publisher_events_total`):** Total number of events published to downstream services or message queues.
+   - **Latency Metrics (`publisher_event_latency_seconds`):** Histogram of event latency, tracking the time between event generation and publishing.
+   
 ## Microservices Architecture:
 
 - A Publisher Service for generating and publishing messages to RabbitMQ.
