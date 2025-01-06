@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: publisher
-        image: harbor.home.virtualelephant.com/ve-lab/publisher:latest
+        image: harbor.home.virtualelephant.com/ve-lab/publisher:latency
         ports:
         - containerPort: 8080
 ---
