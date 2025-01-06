@@ -1,3 +1,4 @@
 pika
 Faker
 prometheus-client
+requests
