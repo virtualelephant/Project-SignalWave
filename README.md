@@ -35,7 +35,16 @@ The **SignalWave Publisher** application is designed with integrated network obs
 5. **Custom Metrics**
    - **Publisher-Specific Events (`publisher_events_total`):** Total number of events published to downstream services or message queues.
    - **Latency Metrics (`publisher_event_latency_seconds`):** Histogram of event latency, tracking the time between event generation and publishing.
-   
+
+### Integration with Prometheus
+
+The metrics are exposed at the `/metrics` endpoint on port `8080`. Prometheus scrapes these metrics at regular intervals to enable real-time monitoring and alerting. To configure Prometheus scraping for this service, the following annotations are applied in the Kubernetes deployment:
+```
+prometheus.io/scrape: "true"
+prometheus.io/path: "/metrics"
+prometheus.io/port: "8080"
+```
+
 ## Microservices Architecture:
 
 - A Publisher Service for generating and publishing messages to RabbitMQ.
