@@ -99,21 +99,21 @@ try:
 
         return metrics
 
-    max_messages = 10
-    message_count = 0
+    logger.info(f"Starting metric publisher with a 3-minute interval")
 
-    logger.info(f"Starting metric publisher at {MESSAGE_RATE} messages per second")
-    while message_count < max_messages:
-        metrics = measure_metrics()
-        message = {
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()),
-            "metrics": metrics,
-        }
-        body = json.dumps(message)
-        channel.basic_publish(exchange='', routing_key=QUEUE_NAME, body=body)
-        logger.info({"action": "publish", "message": message})
-        message_count += 1
-        time.sleep(1 / MESSAGE_RATE)
+    try:
+        while True:
+            metrics = measure_metrics()
+            message = {
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()),
+                "metrics": metrics,
+            }
+            body = json.dumps(message)
+            channel.basic_publish(exchange='', routing_key=QUEUE_NAME, body=body)
+            logger.info({"action": "publish", "message": message})
+        
+            # Wait for 3 minutes before polling metrics again
+            time.sleep(3 * 60)
 
 except KeyboardInterrupt:
     logger.info("Shutting down publisher...")
@@ -123,3 +123,4 @@ finally:
     if 'connection' in locals() and connection.is_open:
         connection.close()
         logger.info("Connection to RabbitMQ closed")
+
