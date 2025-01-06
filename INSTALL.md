@@ -95,3 +95,23 @@ kubectl create -f fluentd_rbac.yaml
 kubectl create -f fluentd_configmap.yaml
 kubectl create -f fluentd_daemonset.yaml
 ```
+
+## Install the custom SignalWave application
+The first part of the SignalWave application is the Publisher microservice. The application is a small container housing a single script `publisher.py`.
+The script generates 500 random log messages per execution with a 1 second delay. The container is setup to run the script every minute through CRON.
+
+To start the microservice, execute the following command:
+```
+kubectl apply -f publisher.yaml
+```
+
+The second part of the SignalWave application is the Reader microservice. This part of the application reads from the RabbitMQ queue the Publisher microservice wrote the log messages to.
+The microservice requires a PV to write the messages it reads off of the RabbitMQ queue that is then shared with the NGINX microservice.
+
+To start the microservice for the Reader and NGINX, execute the following commands:
+```
+kubectl apply -f frontend-storage.yaml
+kubectl apply -f html-configmap.yaml
+kubectl apply -f frontend-reader.yaml
+kubectl apply -f frontend.yaml
+```

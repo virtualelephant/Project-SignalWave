@@ -21,11 +21,11 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 # RabbitMQ Configuration
-RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq.sample-app.svc.cluster.local')
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq.signalwave.svc.cluster.local')
 RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'deploy')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'VMware123!')
-QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'log-messages')
+QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'signalwave')
 
 # HTML Template Path
 HTML_TEMPLATE_PATH = "/usr/share/nginx/html/index.html"
