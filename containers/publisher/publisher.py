@@ -51,7 +51,7 @@ try:
     # Establish connection to RabbitMQ
     connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials))
     channel = connection.channel()
-    channel.queue_declare(queue=QUEUE_NAME, durable=TRUE)
+    channel.queue_declare(queue=QUEUE_NAME, durable=True)
     logger.info("Successfully connected to RabbitMQ and declared queue")
 
     # Message Generator
