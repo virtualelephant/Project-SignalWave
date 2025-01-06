@@ -9,7 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY publisher.py .
 
-RUN echo "* * * * * /usr/local/bin/python /app/publisher.py >> /var/log/publisher.log 2>&1" > /etc/cron.d/publisher-cron
-RUN crontab /etc/cron.d/publisher-cron
-
-CMD ["cron", "-f"]
+CMD ["python", "/app/publisher.py"]
