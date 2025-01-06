@@ -8,7 +8,7 @@ metadata:
     ingress.class: "haproxy"
 spec:
   rules:
-  - host: nginx.home.virtualelephant.com
+  - host: signalwave.home.virtualelephant.com
     http:
       paths:
       - path: /

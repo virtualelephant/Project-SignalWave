@@ -114,4 +114,5 @@ kubectl apply -f frontend-storage.yaml
 kubectl apply -f html-configmap.yaml
 kubectl apply -f frontend-reader.yaml
 kubectl apply -f frontend.yaml
+kubectl apply -f frontend-ingress.yaml
 ```
