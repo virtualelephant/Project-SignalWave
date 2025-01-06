@@ -94,14 +94,13 @@ try:
             </div>
             """
             with open(HTML_TEMPLATE_PATH, 'r+') as file:
-                lines = file.readlines()
-                # Insert log entry before the closing container div
-                for i, line in enumerate(lines):
-                    if '</div>' in line and 'log-container' in line:
-                        lines.insert(i + 1, log_entry)
-                        break
+                content = file.read()
+                insertion_point = content.find('<div class="container" id="log-container">') + len('<div class="container" id="log-container">')
+                updated_content = content[:insertion_point] + log_entry + content[insertion_point:]
                 file.seek(0)
-                file.writelines(lines)
+                file.write(updated_content)
+                file.truncate()
+                
         except json.JSONDecodeError as e:
             logger.error({"error": "Invalid JSON message", "body": body.decode(), "exception": str(e)})
         except Exception as e:
