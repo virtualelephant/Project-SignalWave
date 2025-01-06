@@ -4,7 +4,6 @@ It integrates advanced observability tools and provides a real-world example of 
 
 This project is ideal for developers, architects, and DevOps engineers looking to understand and implement best practices for cloud-native development and operations.
 
-
 # Features
 
 ## Network Observability Metrics
