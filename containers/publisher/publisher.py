@@ -67,12 +67,17 @@ try:
             "message": message
         }
 
+    max_messages = 500
+    message_count = 0
+
     logger.info(f"Starting message publisher at {MESSAGE_RATE} messages per second")
-    while True:
+    while message_count < max_messages:
         msg = generate_message()
         body = json.dumps(msg)
         channel.basic_publish(exchange='', routing_key=QUEUE_NAME, body=body)
         logger.info({"action": "publish", "message": msg})
+        message_count += 1
+        messages_published.inc()
         time.sleep(1 / MESSAGE_RATE)
 
 except KeyboardInterrupt:
