@@ -6,12 +6,12 @@ $vcPassword = ""
 
 Connect-VIServer -Server $vcServer -User $vcUsername -Password $vcPassword
 # Variables
-$templateName = "centos-stream-dhcp"
-$destinationFolder = "Cilium"
+$templateName = "centos-stream-k8s-dhcp"
+$destinationFolder = "Cilium AZ1"
 $datastore = "Synology"  # Replace with your datastore
 $cluster = "ve-m01-cluster-001"      # Replace with your cluster
 $networkAdapterName = "Network adapter 1"
-$newPortGroup = "ve-cilium-segment-az2"
+$newPortGroup = "ve-cilium-segment-az1"
 
 $template = Get-VM -Name $templateName -ErrorAction Stop
 $cluster = Get-Cluster -Name $clusterName -ErrorAction Stop
@@ -21,7 +21,7 @@ Write-Host "Cluster: $cluster"
 
 # Clone the template multiple times
 1..3 | ForEach-Object {
-    $vmName = "az2-cntrl-$($_)" # Define VM name dynamically
+    $vmName = "az1-cntrl-$($_)" # Define VM name dynamically
     New-VM -Name $vmName -VM $template -Datastore $datastore -Location $destinationFolder -ResourcePool $cluster
     $vm = Get-VM -Name $vmName
     $networkAdapter = Get-NetworkAdapter -VM $vm -Name $networkAdapterName
@@ -30,7 +30,7 @@ Write-Host "Cluster: $cluster"
 }
 
 1..5 | ForEach-Object {
-    $vmName = "az2-node-$($_)" # Define VM name dynamically
+    $vmName = "az1-node-$($_)" # Define VM name dynamically
     New-VM -Name $vmName -VM $template -Datastore $datastore -Location $destinationFolder -ResourcePool $cluster
     $vm = Get-VM -Name $vmName
     $networkAdapter = Get-NetworkAdapter -VM $vm -Name $networkAdapterName
