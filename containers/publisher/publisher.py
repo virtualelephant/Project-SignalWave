@@ -115,8 +115,8 @@ try:
             # Wait for 3 minutes before polling metrics again
             time.sleep(3 * 60)
 
-except KeyboardInterrupt:
-    logger.info("Shutting down publisher...")
+    except KeyboardInterrupt:
+        logger.info("Shutting down publisher...")
 except Exception as e:
     logger.error({"error": str(e)})
 finally:
