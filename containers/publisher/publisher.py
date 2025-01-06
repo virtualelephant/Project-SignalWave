@@ -3,6 +3,8 @@ import time
 import random
 import os
 import logging
+import json
+
 from faker import Faker
 from prometheus_client import start_http_server, Counter, Summary
 
