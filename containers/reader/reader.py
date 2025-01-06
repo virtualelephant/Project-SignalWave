@@ -27,6 +27,12 @@ RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'deploy')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'VMware123!')
 QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'signalwave')
 
+rabbitmq_port_env = os.getenv('RABBITMQ_PORT', '5672')
+if rabbitmq_port_env.startswith('tcp://'):
+    RABBITMQ_PORT = int(urlparse(rabbitmq_port_env).port)
+else:
+    RABBITMQ_PORT = int(rabbitmq_port_env)
+
 # HTML Template Path
 HTML_TEMPLATE_PATH = "/usr/share/nginx/html/index.html"
 
