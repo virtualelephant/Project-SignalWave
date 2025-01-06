@@ -6,6 +6,7 @@ import logging
 import json
 
 from faker import Faker
+from urllib.parse import urlparse
 from prometheus_client import start_http_server, Counter, Summary
 
 # Configure structured logging
@@ -26,11 +27,17 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq.signalwave.svc.cluster.local')
-RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
+#RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'deploy')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'VMware123!')
 QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'signalwave')
 MESSAGE_RATE = float(os.getenv('MESSAGE_RATE', 1.0)) # Messages per second
+
+rabbitmq_port_env = os.getenv('RABBITMQ_PORT', '5672')
+if rabbitmq_port_env.startswith('tcp://'):
+    RABBITMQ_PORT = int(urlparse(rabbitmq_port_env).port)
+else:
+    RABBITMQ_PORT = int(rabbitmq_port_env)
 
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
 
