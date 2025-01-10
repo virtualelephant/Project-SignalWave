@@ -26,4 +26,5 @@ COPY rrd-reader.py /app/
 RUN mkdir -p /app/rrd_files
 
 # Run the script
-CMD ["python", "rrd-reader.py"]
+#CMD ["python", "rrd-reader.py"]
+CMD ["tail", "-f", "/dev/null"]
