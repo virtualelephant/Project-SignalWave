@@ -3,6 +3,7 @@ import os
 import logging
 import json
 import time
+import rrdtool
 
 # Configure structured logging
 class JsonFormatter(logging.Formatter):
