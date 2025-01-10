@@ -19,9 +19,12 @@ RUN apt-get update && apt-get install -y \
 # Set up the directories
 RUN mkdir -p /app/rrd_files /app/graphs
 
+# Install Python dependencies
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
 # Copy the graph generation script
 COPY generate-graphs.py /app/
-RUN pip install --no-cache-dir -r requirements.txt
 
 # Set up a cron job to generate graphs every 5 minutes
 RUN \
