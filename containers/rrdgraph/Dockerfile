@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y \
     cron \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 # Set up the directories
-RUN mkdir -p /app/rrd_files /app/graphs
+RUN mkdir -p /app/rrd_files
+RUN mkdir -p /app/graphs
 
 # Install Python dependencies
 COPY requirements.txt /app/

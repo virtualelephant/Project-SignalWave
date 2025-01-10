@@ -10,6 +10,7 @@ WORKDIR /app
 # Install system dependencies for RRDtool
 RUN apt-get update && apt-get install -y \
     rrdtool \
+    python3-rrdtool \
     librrd-dev \
     python3-dev \
     gcc \
