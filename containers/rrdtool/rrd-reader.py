@@ -2,7 +2,6 @@ import pika
 import os
 import logging
 import json
-import rrdtool
 import time
 
 # Configure structured logging
