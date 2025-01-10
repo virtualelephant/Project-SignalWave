@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Logs</title>
+    <title>Project SignalWave</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,7 +16,14 @@
             color: white;
             padding: 1rem;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
+        }
+        nav {
+            background-color: #005bb5;
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 1.25rem;
         }
         footer {
             background-color: #333;
@@ -43,17 +50,33 @@
             border-left: 4px solid #0073e6;
             border-radius: 4px;
         }
+        #graphs img {
+            max-width: 100%;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
     <header>
-        Application Logs
+        Project SignalWave
     </header>
+    <nav>
+        Explore real-time network performance metrics
+    </nav>
     <div class="container" id="log-container">
-        <!-- Log messages will be appended here -->
+        <h2>Available Graphs</h2>
+        <div id="graphs">
+            <img src="/graphs/dns_resolution_time.png" alt="DNS Resolution Time">
+            <img src="/graphs/http_latency.png" alt="HTTP Latency">
+            <img src="/graphs/packet_loss.png" alt="Packet Loss">
+            <img src="/graphs/jitter.png" alt="Jitter">
+        </div>
     </div>
     <footer>
-        &copy; 2024 Virtual Elephant Consulting Application. All rights reserved.
+        &copy; 2025 Virtual Elephant Consulting, LLC. All rights reserved.
     </footer>
 </body>
 </html>
