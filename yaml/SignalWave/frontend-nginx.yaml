@@ -27,7 +27,7 @@ spec:
       volumes:
       - name: graph-storage
         persistentVolumeClaim:
-          claimName: rrdtool-pvc
+          claimName: shared-pvc
 ---
 apiVersion: v1
 kind: Service
