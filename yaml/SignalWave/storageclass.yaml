@@ -6,4 +6,3 @@ provisioner: cluster.local/nfs-subdir-external-provisioner
 parameters:
   nfsServerHostname: 10.3.43.100
   nfsPath: /opt/nfs
-reclaimPolicy: Retain
