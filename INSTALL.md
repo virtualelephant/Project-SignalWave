@@ -18,6 +18,7 @@ helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs
 In the `yaml/SignalWave` directory, modify the `storageclass.yaml` file to point to the NFS server and apply it in the cluster.
 ```
 kubectl apply -f storageclass.yaml
+kubectl apply -f storageclass-retain.yaml
 ```
 
 ## Installing HAProxy Ingress Controller
@@ -98,21 +99,20 @@ kubectl create -f fluentd_daemonset.yaml
 
 ## Install the custom SignalWave application
 The first part of the SignalWave application is the Publisher microservice. The application is a small container housing a single script `publisher.py`.
-The script generates 500 random log messages per execution with a 1 second delay. The container is setup to run the script every minute through CRON.
+The Publisher microservice gathers a number of networking metrics from the environment out to the 'virtualelephant.com' website as a means to monitor
+different network latencies.
 
 To start the microservice, execute the following command:
 ```
 kubectl apply -f publisher.yaml
 ```
 
-The second part of the SignalWave application is the Reader microservice. This part of the application reads from the RabbitMQ queue the Publisher microservice wrote the log messages to.
-The microservice requires a PV to write the messages it reads off of the RabbitMQ queue that is then shared with the NGINX microservice.
-
-To start the microservice for the Reader and NGINX, execute the following commands:
+The SignalWave application has three additional microservices that make up the application. The data written to the RabbitMQ service will be pulled
+off of the queue and input into an RRD compatible data format. From there the data is used to generate a number of graphs, one per metric, and finally the frontend
+microservice runs NGINX to display the graphs in a HTML format running behind a HAProxy ingress object. 
 ```
-kubectl apply -f frontend-storage.yaml
-kubectl apply -f html-configmap.yaml
-kubectl apply -f frontend-reader.yaml
-kubectl apply -f frontend.yaml
+kubectl apply -f rrd-reader.yaml
+kubectl apply -f rrd-graph.yaml
+kubectl apply -f frontend-nginx.yaml
 kubectl apply -f frontend-ingress.yaml
 ```
