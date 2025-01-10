@@ -49,7 +49,7 @@ request_size = Summary('http_request_size_bytes', 'HTTP request size in bytes')
 response_size = Summary('http_response_size_bytes', 'HTTP response size in bytes')
 
 logger.info("Exposing Prometheus metrics to be scraped by an external server")
-start_http_server(8000)  # Exposes metrics on port 8000
+start_http_server(8080)  # Exposes metrics on port 8000
 
 try:
     # Establish connection to RabbitMQ
@@ -112,8 +112,8 @@ try:
             channel.basic_publish(exchange='', routing_key=QUEUE_NAME, body=body)
             logger.info({"action": "publish", "message": message})
         
-            # Wait for 3 minutes before polling metrics again
-            time.sleep(3 * 60)
+            # Wait for 5 minutes before polling metrics again
+            time.sleep(300)
 
     except KeyboardInterrupt:
         logger.info("Shutting down publisher...")
