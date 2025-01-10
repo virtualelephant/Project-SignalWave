@@ -14,15 +14,15 @@ RUN apt-get update && apt-get install -y \
     librrd-dev \
     python3-dev \
     gcc \
-    cron \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-# Set up the directories
-RUN mkdir -p /app/rrd_files
-RUN mkdir -p /app/graphs
 
 # Install Python dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Set up the directories
+RUN mkdir -p /app/rrd_files
+RUN mkdir -p /app/graphs
 
 # Copy the graph generation script
 COPY generate-graphs.py /app/
