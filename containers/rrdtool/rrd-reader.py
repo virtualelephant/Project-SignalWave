@@ -51,6 +51,13 @@ def create_rrd(metric_name):
 def update_rrd(metric_name, value, timestamp):
     rrd_file = create_rrd(metric_name)
     try:
+        # Fetch the last update time for the RRD
+        last_update = int(rrdtool.info(rrd_file).get("last_update", 0))
+        if timestamp <= last_update:
+            logger.warning(f"Adjusting timestamp for {metric_name} from {timestamp} to {last_update + 1}")
+            timestamp = last_update + 1
+
+        # Update the RRD database with the adjusted timestamp
         rrdtool.update(rrd_file, f"{int(timestamp)}:{value}")
         logger.info(f"Updated RRD for {metric_name} with value {value} at {timestamp}")
     except Exception as e:
