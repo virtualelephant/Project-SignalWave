@@ -111,6 +111,7 @@ The SignalWave application has three additional microservices that make up the a
 off of the queue and input into an RRD compatible data format. From there the data is used to generate a number of graphs, one per metric, and finally the frontend
 microservice runs NGINX to display the graphs in a HTML format running behind a HAProxy ingress object. 
 ```
+kubectl apply -f rrd-storage.yaml
 kubectl apply -f rrd-reader.yaml
 kubectl apply -f rrd-graph.yaml
 kubectl apply -f frontend-nginx.yaml

@@ -26,12 +26,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the graph generation script
 COPY generate-graphs.py /app/
 
-# Set up a cron job to generate graphs every 5 minutes
-RUN \
-    echo "*/5 * * * * python3 /app/generate-graphs.py" > /etc/cron.d/generate-graphs && \
-    chmod 0644 /etc/cron.d/generate-graphs && \
-    crontab /etc/cron.d/generate-graphs
-
-# Start cron as the main process
-CMD ["cron", "-f"]
+# Run the script in an infinite loop
+CMD ["python3", "/app/generate-graphs.py"]
 
