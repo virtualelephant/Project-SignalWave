@@ -61,7 +61,8 @@ def process_messages():
         connection = pika.BlockingConnection(pika.ConnectionParameters(
             host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials))
         channel = connection.channel()
-        channel.queue_declare(queue=QUEUE_NAME, durable=True)
+        channel.queue_declare(queue=QUEUE_NAME, durable=True, arguments={"x-queue-type": "quorum"})
+        logger.info("Successfully connected to RabbitMQ and declared queue")
 
         for method, properties, body in channel.consume(queue=QUEUE_NAME, inactivity_timeout=10):
             if body is None:
