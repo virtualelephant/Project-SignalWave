@@ -15,6 +15,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: nginx-service
+            name: nginx-signalwave-service
             port:
               number: 80
