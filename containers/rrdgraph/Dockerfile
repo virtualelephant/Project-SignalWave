@@ -27,5 +27,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY generate-graphs.py /app/
 
 # Run the script in an infinite loop
-CMD ["python3", "/app/generate-graphs.py"]
-
+#CMD ["python3", "/app/generate-graphs.py"]
+CMD ["tail", "-f", "/dev/null"]
