@@ -17,7 +17,7 @@ RUN mkdir -p /app/rrd_files /app/graphs
 RUN echo "*/5 * * * * root python3 /app/generate-graphs.py" >> /etc/crontab
 
 # Copy NGINX configuration if you have custom settings
-COPY nginx.conf /etc/nginx/nginx.conf
+# COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose the directory with graphs
 RUN ln -s /app/graphs /usr/share/nginx/html/graphs
