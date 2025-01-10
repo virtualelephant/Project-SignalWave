@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rrdgraph
+  namespace: signalwave
+  labels:
+    app: rrdgraph
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rrdgraph
+  template:
+    metadata:
+      labels:
+        app: rrdgraph
+    spec:
+      containers:
+      - name: rrdgraph
+        image: harbor.home.virtualelephant.com/ve-lab/rrdgraph:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: rrd-storage
+          mountPath: /app/rrd_files
+        - name: graph-storage
+          mountPath: /app/graphs
+      volumes:
+      - name: rrd-storage
+        persistentVolumeClaim:
+          claimName: rrdtool-pvc
+      - name: graph-storage
+        persistentVolumeClaim:
+          claimName: rrdtool-pvc
