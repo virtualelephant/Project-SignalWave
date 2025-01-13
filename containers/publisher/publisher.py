@@ -51,9 +51,23 @@ response_size = Summary('http_response_size_bytes', 'HTTP response size in bytes
 logger.info("Exposing Prometheus metrics to be scraped by an external server")
 start_http_server(8080)  # Exposes metrics on port 8000
 
+def create_connection():
+    retry_delay = 5
+    max_delay  = 60 # cap the delay
+    while True:
+        try:
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials))
+            logger.info("Successfully connected to RabbitMQ")
+            return connection
+        except pika.exceptions.AMQPConnectionError as e:
+            logger.error({"error": str(e), "message": f"Retrying connection in {retry_delay} seconds..."})
+            time.sleep(retry_delay)
+            retry_delay = min(retry_delay * 2, max_delay)
+
 try:
     # Establish connection to RabbitMQ
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials))
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials))
+    connection = create_connection()
     channel = connection.channel()
     channel.queue_declare(queue=QUEUE_NAME, durable=True, arguments={"x-queue-type": "quorum"})
     logger.info("Successfully connected to RabbitMQ and declared queue")
