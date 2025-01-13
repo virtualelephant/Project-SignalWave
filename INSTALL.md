@@ -1,6 +1,6 @@
 # Installation Guide
-- Current Version: v1.0
-- Last Modified: 02.January.2025
+- Current Version: v1.1
+- Last Modified: 13.January.2025
 - Maintainer: chris@virtualelephant.com
 
 ## Installing NFS Client Provisioner
