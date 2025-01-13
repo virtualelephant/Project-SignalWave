@@ -8,6 +8,7 @@ import socket
 import argparse
 import requests
 from prometheus_client import start_http_server, Counter, Histogram, Summary, Gauge
+from elasticsearch import Elasticsearch
 
 # Configure structured logging
 class JsonFormatter(logging.Formatter):
@@ -20,11 +21,33 @@ class JsonFormatter(logging.Formatter):
         }
         return json.dumps(log_record)
 
+class ElasticsearchHandler(logging.Handler):
+    def __init__(self, host, index):
+        super().__init__()
+        self.es = Elasticsearch([host])
+        self.index = index
+    
+    def emit(self, record):
+        try:
+            log_entry = json.loads(self.format(record))
+            self.es.index(index=self.index, body=log_entry)
+        except Exception as e:
+            print (f"Failed to send log to Elasticsearch: {e}")
+
+# Elasticsearch configuration
+ELASTICSEARCH_HOST = os.getenv('ELASTICSEARCH_HOST', 'http://elasticsearch.kube-logging.svc.cluster.local:9200')
+LOG_INDEX = os.getenv('LOG_INDEX', 'logs-publisher-service')
+
 logger = logging.getLogger()
 handler = logging.StreamHandler()
 handler.setFormatter(JsonFormatter())
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
+
+# Elasticsearch logging
+elastic_handler = ElasticsearchHandler(ELASTICSEARCH_HOST, LOG_INDEX)
+elastic_handler.setFormatter(JsonFormatter())
+logger.addHandler(elastic_handler)
 
 # RabbitMQ Configuration
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq.signalwave.svc.cluster.local')
