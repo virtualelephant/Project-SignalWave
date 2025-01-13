@@ -17,17 +17,17 @@ spec:
     spec:
       containers:
       - name: rrd-graph
-        image: harbor.home.virtualelephant.com/ve-lab/rrd-graph:latest
+        image: harbor.home.virtualelephant.com/ve-lab/rrdgraph:latest
         imagePullPolicy: Always
- #       volumeMounts:
- #       - name: rrd-storage
- #         mountPath: /app/rrd_files
- #       - name: graph-storage
- #         mountPath: /app/graphs
- #     volumes:
- #     - name: rrd-storage
- #       persistentVolumeClaim:
- #         claimName: shared-pvc
- #     - name: graph-storage
- #       persistentVolumeClaim:
- #         claimName: shared-pvc
+        volumeMounts:
+        - name: rrd-storage
+          mountPath: /app/rrd_files
+        - name: graph-storage
+          mountPath: /app/graphs
+      volumes:
+      - name: rrd-storage
+        persistentVolumeClaim:
+          claimName: shared-pvc
+      - name: graph-storage
+        persistentVolumeClaim:
+          claimName: shared-pvc
