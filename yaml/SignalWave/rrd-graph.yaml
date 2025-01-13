@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rrdgraph
+  name: rrd-graph
   namespace: signalwave
   labels:
-    app: rrdgraph
+    app: rrd-graph
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rrdgraph
+      app: rrd-graph
   template:
     metadata:
       labels:
-        app: rrdgraph
+        app: rrd-graph
     spec:
       containers:
-      - name: rrdgraph
+      - name: rrd-graph
         image: harbor.home.virtualelephant.com/ve-lab/rrd-graph:latest
         imagePullPolicy: Always
-        volumeMounts:
-        - name: rrd-storage
-          mountPath: /app/rrd_files
-        - name: graph-storage
-          mountPath: /app/graphs
-      volumes:
-      - name: rrd-storage
-        persistentVolumeClaim:
-          claimName: shared-pvc
-      - name: graph-storage
-        persistentVolumeClaim:
-          claimName: shared-pvc
+ #       volumeMounts:
+ #       - name: rrd-storage
+ #         mountPath: /app/rrd_files
+ #       - name: graph-storage
+ #         mountPath: /app/graphs
+ #     volumes:
+ #     - name: rrd-storage
+ #       persistentVolumeClaim:
+ #         claimName: shared-pvc
+ #     - name: graph-storage
+ #       persistentVolumeClaim:
+ #         claimName: shared-pvc
