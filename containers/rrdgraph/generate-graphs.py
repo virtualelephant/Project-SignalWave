@@ -47,8 +47,8 @@ def main():
                 metric_name = filename[:-4]  # Remove .rrd extension
                 generate_graph(metric_name)
 
-        logger.info("Sleeping for 60 seconds before the next update.")
-        time.sleep(60)
+        logger.info("Sleeping for 180 seconds before the next update.")
+        time.sleep(180)
 
 if __name__ == "__main__":
     main()

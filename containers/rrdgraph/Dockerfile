@@ -22,11 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Set up the directories
 RUN mkdir -p /app/rrd_files
-RUN mkdir -p /app/graphs
 
 # Copy the graph generation script
 COPY generate-graphs.py /app/
 
 # Run the script in an infinite loop
-#CMD ["python3", "/app/generate-graphs.py"]
-CMD ["tail", "-f", "/dev/null"]
+CMD ["python3", "/app/generate-graphs.py"]
+#CMD ["tail", "-f", "/dev/null"]
