@@ -23,3 +23,6 @@ spec:
       - name: rrd-storage
         persistentVolumeClaim:
           claimName: shared-pvc
+      volumeMounts:
+      - name: rrd-storage
+        mountPath: /app/rrd_files

@@ -9,7 +9,7 @@ logger = logging.getLogger("generate-graphs")
 
 # Directories for RRD files and generated graphs
 RRD_FOLDER = "/app/rrd_files"
-GRAPH_FOLDER = "/app/graphs"
+GRAPH_FOLDER = "/app/rrd_files"
 os.makedirs(GRAPH_FOLDER, exist_ok=True)
 
 def generate_graph(metric_name):
