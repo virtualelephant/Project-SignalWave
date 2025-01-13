@@ -41,7 +41,7 @@ def create_rrd(metric_name):
         logger.info(f"Creating RRD database for metric: {metric_name}")
 
         # Define units for metrics
-        metric_unites = {
+        metric_units = {
             "dns_resolution_time": "seconds",
             "http_latency": "seconds",
             "http_response_code": "count",

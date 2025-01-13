@@ -18,7 +18,7 @@ def generate_graph(metric_name):
     graph_file = os.path.join(GRAPH_FOLDER, f"{metric_name}.png")
 
     # Define units for metrics
-    metric_unites = {
+    metric_units = {
         "dns_resolution_time": "seconds",
         "http_latency": "seconds",
         "http_response_code": "count",
