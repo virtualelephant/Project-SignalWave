@@ -85,6 +85,6 @@ Use as a base for developing advanced microservices.
 - Messaging: RabbitMQ
 - Monitoring: Prometheus, Grafana
 - Logging: Fluentd, Elasticsearch, Kibana
-- Frontend: NGINX with a dynamic log display
+- Frontend: NGINX with a RRD display
 - Containerization: Docker
 - Orchestration: Kubernetes
