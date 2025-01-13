@@ -18,7 +18,7 @@ spec:
       containers:
       - name: nginx-signalwave
         image: harbor.home.virtualelephant.com/ve-lab/nginx-signalwave:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         volumeMounts:
