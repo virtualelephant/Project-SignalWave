@@ -5,6 +5,7 @@ metadata:
   namespace: signalwave
 
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: publisher
