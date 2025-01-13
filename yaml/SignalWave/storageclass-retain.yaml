@@ -7,3 +7,7 @@ parameters:
   nfsServerHostname: 10.3.43.100
   nfsPath: /opt/nfs
 reclaimPolicy: Retain
+mountOptions:
+  - vers=4.1
+allowVolumeExpansion: true
+volumeBindingMode: Immediate
