@@ -19,3 +19,7 @@ spec:
       - name: rrd-graph
         image: harbor.home.virtualelephant.com/ve-lab/rrdgraph:latest
         imagePullPolicy: Always
+    volumes:
+      - name: rrd-storage
+        persistentVolumeClaim:
+          claimName: shared-pvc
