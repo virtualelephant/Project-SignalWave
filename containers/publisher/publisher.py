@@ -118,7 +118,7 @@ try:
 
         return metrics
 
-    logger.info(f"Starting metric publisher with a 1-minute interval")
+    logger.info(f"Starting metric publisher with a 5-minute interval")
 
     try:
         while True:
@@ -132,7 +132,7 @@ try:
             logger.info({"action": "publish", "message": message})
         
             # Wait for 5 minutes before polling metrics again
-            time.sleep(60)
+            time.sleep(300)
 
     except KeyboardInterrupt:
         logger.info("Shutting down publisher...")
