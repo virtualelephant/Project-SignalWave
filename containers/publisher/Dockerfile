@@ -9,4 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY publisher.py .
 
-CMD ["python", "/app/publisher.py"]
+CMD ["python", "/app/publisher.py", "--url", "https://virtualelephant.com"]

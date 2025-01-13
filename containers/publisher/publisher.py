@@ -5,6 +5,7 @@ import os
 import logging
 import json
 import socket
+import argparse
 import requests
 from prometheus_client import start_http_server, Counter, Histogram, Summary, Gauge
 
@@ -38,6 +39,10 @@ QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'signalwave')
 MESSAGE_RATE = float(os.getenv('MESSAGE_RATE', 1.0))
 
 credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
+
+parser = argparse.ArgumentParser(description="Publisher Service")
+parser.add_argument('--url', type=str, default="https://virtualelephant.com", help="Target website for URL metrics")
+args = parser.parse_args()
 
 # Prometheus Metrics
 latency_histogram = Histogram('http_request_latency_seconds', 'HTTP request latency to virtualelephant.com')
@@ -74,12 +79,12 @@ try:
 
     def measure_metrics():
         metrics = {}
-        target_url = "https://virtualelephant.com"
+        target_url = args.url
 
         # Measure DNS resolution time
         start_time = time.time()
         try:
-            ip = socket.gethostbyname("virtualelephant.com")
+            ip = socket.gethostbyname(target_url.split("//")[-1])
             dns_time = time.time() - start_time
             dns_resolution_time.observe(dns_time)
             metrics['dns_resolution_time'] = dns_time
@@ -113,7 +118,7 @@ try:
 
         return metrics
 
-    logger.info(f"Starting metric publisher with a 3-minute interval")
+    logger.info(f"Starting metric publisher with a 1-minute interval")
 
     try:
         while True:
@@ -127,7 +132,7 @@ try:
             logger.info({"action": "publish", "message": message})
         
             # Wait for 5 minutes before polling metrics again
-            time.sleep(300)
+            time.sleep(60)
 
     except KeyboardInterrupt:
         logger.info("Shutting down publisher...")
