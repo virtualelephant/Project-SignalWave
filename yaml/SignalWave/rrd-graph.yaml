@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: rrd-graph
-        image: harbor.home.virtualelephant.com/ve-lab/rrdgraph:latest
+        image: harbor.home.virtualelephant.com/ve-lab/rrdgraph:v1.2
         imagePullPolicy: Always
         volumeMounts:
         - name: rrd-storage
