@@ -42,7 +42,7 @@ def generate_graph(metric_name):
             "--title", f"{metric_name} over the last 24 hours",
             "--vertical-label", unit,
             f"DEF:mydata={rrd_file}:value:AVERAGE",
-            "LAREA:mydata#00FF00:Value"
+            "AREA:mydata#00FF00:Value"
         )
         logger.info(f"Graph generated for metric: {metric_name} with unit {unit}")
     except Exception as e:
