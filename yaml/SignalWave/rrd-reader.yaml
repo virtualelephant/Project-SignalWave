@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: rrd-reader
-        image: harbor.home.virtualelephant.com/ve-lab/rrdtool:latest
+        image: harbor.home.virtualelephant.com/ve-lab/rrdtool:v1.2
         imagePullPolicy: Always
         volumeMounts:
         - name: rrd-storage

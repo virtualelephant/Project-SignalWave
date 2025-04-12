@@ -2,3 +2,4 @@ pika
 Faker
 prometheus-client
 requests
+elasticsearch

@@ -17,6 +17,19 @@ def generate_graph(metric_name):
     rrd_file = os.path.join(RRD_FOLDER, f"{metric_name}.rrd")
     graph_file = os.path.join(GRAPH_FOLDER, f"{metric_name}.png")
 
+    # Define units for metrics
+    metric_units = {
+        "dns_resolution_time": "seconds",
+        "http_latency": "seconds",
+        "http_response_code": "count",
+        "request_size": "bytes",
+        "response_size": "bytes",
+        "packet_loss": "percentage",
+        "jitter": "seconds",
+    }
+
+    unit = metric_units.get(metric_name, "Value")
+
     try:
         end_time = int(time.time())
         start_time = end_time - 86400  # Last 24 hours
@@ -25,12 +38,13 @@ def generate_graph(metric_name):
             graph_file,
             "--start", str(start_time),
             "--end", str(end_time),
+            "--width", "1024",
             "--title", f"{metric_name} over the last 24 hours",
-            "--vertical-label", "Value",
+            "--vertical-label", unit,
             f"DEF:mydata={rrd_file}:value:AVERAGE",
-            "LINE1:mydata#0000FF:Value"
+            "AREA:mydata#00FF00:Value"
         )
-        logger.info(f"Graph generated for metric: {metric_name}")
+        logger.info(f"Graph generated for metric: {metric_name} with unit {unit}")
     except Exception as e:
         logger.error(f"Error generating graph for {metric_name}: {e}")
 

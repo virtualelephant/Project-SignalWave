@@ -39,6 +39,20 @@ def create_rrd(metric_name):
     rrd_file = os.path.join(RRD_FOLDER, f"{metric_name}.rrd")
     if not os.path.exists(rrd_file):
         logger.info(f"Creating RRD database for metric: {metric_name}")
+
+        # Define units for metrics
+        metric_units = {
+            "dns_resolution_time": "seconds",
+            "http_latency": "seconds",
+            "http_response_code": "count",
+            "request_size": "bytes",
+            "response_size": "bytes",
+            "packet_loss": "percentage",
+            "jitter": "seconds",
+        }
+
+        unit = metric_units.get(metric_name, "unknown")
+
         rrdtool.create(
             rrd_file,
             "--step", "300",  # 5-minute intervals
@@ -46,6 +60,8 @@ def create_rrd(metric_name):
             "RRA:AVERAGE:0.5:1:288",  # Retain 1-day data at 5-min resolution
             "RRA:AVERAGE:0.5:12:168"  # Retain 1-week data at 1-hour resolution
         )
+
+        logger.info(f"Added unit {unit} to RRD database for {metric_name}")
     return rrd_file
 
 def update_rrd(metric_name, value, timestamp):
