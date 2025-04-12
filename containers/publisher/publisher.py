@@ -14,7 +14,7 @@ from elasticsearch import Elasticsearch
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         log_record = {
-            "timestamp": self.formatTime(record),
+            "timestamp": self.formatTime(record, self.datefmt),
             "level": record.levelname,
             "message": record.getMessage(),
             "service": "publisher-service",
@@ -32,7 +32,7 @@ class ElasticsearchHandler(logging.Handler):
             log_entry = json.loads(self.format(record))
             self.es.index(index=self.index, body=log_entry)
         except Exception as e:
-            print (f"Failed to send log to Elasticsearch: {e}")
+            logger.error(f"Failed to send log to Elasticsearch: {e}")
 
 # Elasticsearch configuration
 ELASTICSEARCH_HOST = os.getenv('ELASTICSEARCH_HOST', 'http://elasticsearch.kube-logging.svc.cluster.local:9200')
@@ -77,7 +77,7 @@ request_size = Summary('http_request_size_bytes', 'HTTP request size in bytes')
 response_size = Summary('http_response_size_bytes', 'HTTP response size in bytes')
 
 logger.info("Exposing Prometheus metrics to be scraped by an external server")
-start_http_server(8080)  # Exposes metrics on port 8000
+start_http_server(8080)  # Exposes metrics on port 8080
 
 def create_connection():
     retry_delay = 5

@@ -1,0 +1,46 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snmp-exporter
+  labels:
+    app: snmp-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: snmp-exporter
+  template:
+    metadata:
+      labels:
+        app: snmp-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9116"
+    spec:
+      containers:
+      - name: snmp-exporter
+        image: prom/snmp-exporter:latest
+        ports:
+        - containerPort: 9116
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/snmp_exporter
+      volumes:
+      - name: config-volume
+        configMap:
+          name: snmp-exporter-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: snmp-exporter
+  labels:
+    app: snmp-exporter
+spec:
+  selector:
+    app: snmp-exporter
+  ports:
+    - name: metrics
+      port: 9116
+      targetPort: 9116
