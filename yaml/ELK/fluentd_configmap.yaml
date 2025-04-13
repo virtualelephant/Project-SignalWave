@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fluentd-config
+  name: monitoring
   namespace: kube-logging
 data:
   fluentd.conf: |

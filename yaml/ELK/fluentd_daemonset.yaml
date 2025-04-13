@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: fluentd
-  namespace: kube-logging
+  namespace: monitoring
   labels:
     app: fluentd
 spec:

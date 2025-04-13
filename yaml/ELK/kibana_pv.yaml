@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: kibana-elastic
-  namespace: kube-logging
+  namespace: monitoring
 spec:
   capacity:
     storage: 30Gi
@@ -22,7 +22,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: kibana
-  namespace: kube-logging
+  namespace: monitoring
 spec:
   storageClassName: nfs
   accessModes:

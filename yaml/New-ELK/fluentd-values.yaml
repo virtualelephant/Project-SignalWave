@@ -1,0 +1,34 @@
+fullnameOverride: fluentd
+namespaceOverride: monitoring
+
+daemonset:
+  enabled: true
+
+elasticsearch:
+  enabled: true
+  host: elasticsearch-master
+  port: 9200
+  scheme: http
+
+persistence:
+  enabled: true
+  storageClass: standard-retain
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+
+rbac:
+  create: true
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  interval: 30s
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi

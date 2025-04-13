@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kibana-ingress
-  namespace: kube-logging
+  namespace: monitoring
   annotations:
     ingress.class: "haproxy"
 spec:

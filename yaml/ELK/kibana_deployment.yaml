@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kibana
-  namespace: kube-logging
+  namespace: monitoring
   labels:
     app: kibana
 spec:

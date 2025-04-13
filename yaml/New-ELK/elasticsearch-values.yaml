@@ -1,0 +1,29 @@
+replicas: 3
+
+volumeClaimTemplate:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: standard-retain
+  resources:
+    requests:
+      storage: 30Gi
+
+esJavaOpts: "-Xmx2g -Xms2g"
+
+resources:
+  requests:
+    cpu: "1000m"
+    memory: "2Gi"
+  limits:
+    cpu: "2000m"
+    memory: "4Gi"
+
+protocol: http
+
+extraEnvs:
+  - name: "ES_JAVA_OPTS"
+    value: "-Xmx2g -Xms2g"
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
