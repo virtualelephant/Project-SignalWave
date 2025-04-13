@@ -15,6 +15,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: rabbitmq
+            name: influxdb
             port:
               number: 8086
+              
