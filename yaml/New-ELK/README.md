@@ -10,8 +10,9 @@ helm repo add elastic https://helm.elastic.co
 helm repo update
 ```
 
-Deploy ElasticSearch
+Deploy the ELK Stack
 ```
 helm install elasticsearch elastic/elasticsearch -n monitoring -f elasticsearch-values.yaml
 helm install kibana elastic/kibana -n monitoring -f kibana-values.yaml
+helm install fluentd bitnami/fluentd -n monitoring -f fluentd-values.yaml
 ```
