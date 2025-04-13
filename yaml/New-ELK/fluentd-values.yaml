@@ -8,7 +8,7 @@ elasticsearch:
   enabled: true
   host: elasticsearch-master
   port: 9200
-  scheme: http
+  scheme: https
 
 persistence:
   enabled: true
