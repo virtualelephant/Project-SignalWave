@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: influxdb-ingress
-  namespace: services
+  namespace: monitoring
   annotations:
     ingress.class: "haproxy"
 spec:
