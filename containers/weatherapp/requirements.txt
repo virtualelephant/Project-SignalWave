@@ -1,3 +1,2 @@
-pika
 requests
 influxdb-client

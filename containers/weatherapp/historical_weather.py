@@ -5,6 +5,7 @@ import datetime
 import requests
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
+from time import sleep
 
 # --- Logging (stdout for Fluentd) ---
 logging.basicConfig(
@@ -13,17 +14,36 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# --- Constants & Environment ---
-API_KEY = os.getenv("VISUAL_CROSSING_API_KEY")
+# --- Constants & Env Vars ---
 INFLUX_URL = os.getenv("INFLUXDB_URL", "http://influxdb.monitoring.svc.cluster.local:8086")
 INFLUX_TOKEN = os.getenv("INFLUXDB_TOKEN")
 INFLUX_ORG = os.getenv("INFLUXDB_ORG", "virtualelephant")
 INFLUX_BUCKET = os.getenv("INFLUXDB_BUCKET", "weather")
 
-# --- Load city list ---
+GEOCODE_URL = "https://nominatim.openstreetmap.org/search"
+
+# --- Load cities ---
 def load_cities(file_path="/app/cities.txt"):
     with open(file_path, "r") as f:
         return [line.strip() for line in f if line.strip()]
+
+# --- Get coordinates for a city (lat, lon) ---
+def get_coordinates(city):
+    try:
+        params = {"q": city, "format": "json", "limit": 1}
+        headers = {"User-Agent": "WeatherDataCollector/1.0"}
+        response = requests.get(GEOCODE_URL, params=params, headers=headers)
+        response.raise_for_status()
+        results = response.json()
+        if not results:
+            logger.warning(f"No coordinates found for city: {city}")
+            return None, None
+        lat = results[0]["lat"]
+        lon = results[0]["lon"]
+        return lat, lon
+    except Exception as e:
+        logger.error(f"Geocoding failed for {city}: {e}")
+        return None, None
 
 # --- Connect to InfluxDB ---
 def connect_to_influxdb():
@@ -34,7 +54,7 @@ def connect_to_influxdb():
     )
     return client, client.query_api(), client.write_api(write_options=SYNCHRONOUS)
 
-# --- Check if city/date exists ---
+# --- Check if record already exists in InfluxDB ---
 def record_exists(query_api, city, date):
     flux = f'''
     from(bucket: "{INFLUX_BUCKET}")
@@ -46,39 +66,25 @@ def record_exists(query_api, city, date):
         result = query_api.query(flux)
         return len(result) > 0
     except Exception as e:
-        logger.warning(f"InfluxDB query error for {city} on {date}: {e}")
+        logger.warning(f"InfluxDB query failed for {city} {date}: {e}")
         return False
 
-# --- Fetch weather data ---
-def fetch_weather_data(city, start_date, end_date):
-    all_days = []
-    delta = datetime.timedelta(days=30)
-    current_start = start_date
-
-    while current_start < end_date:
-        current_end = min(current_start + delta, end_date)
-        url = (
-            f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
-            f"{city}/{current_start}/{current_end}?unitGroup=us&key={API_KEY}&contentType=json"
-        )
-        try:
-            response = requests.get(url)
-            if response.status_code != 200:
-                logger.error(f"Failed to fetch data for {city} ({current_start} to {current_end}): {response.status_code} {response.text}")
-                break
-            days = response.json().get("days", [])
-            all_days.extend(days)
-        except Exception as e:
-            logger.error(f"Error fetching data for {city}: {e}")
-            break
-
-        # Stop after 30 days total (for now)
-        if (current_end - start_date).days >= 30:
-            break
-
-        current_start += delta
-
-    return all_days
+# --- Fetch weather data from Open-Meteo archive API ---
+def fetch_weather_data(lat, lon, start_date, end_date):
+    url = (
+        f"https://archive-api.open-meteo.com/v1/archive"
+        f"?latitude={lat}&longitude={lon}"
+        f"&start_date={start_date}&end_date={end_date}"
+        f"&daily=temperature_2m_max,temperature_2m_min"
+        f"&timezone=auto"
+    )
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        logger.error(f"Weather data fetch failed for {lat}, {lon}: {e}")
+        return None
 
 # --- Main ---
 def main():
@@ -90,29 +96,46 @@ def main():
     client, query_api, write_api = connect_to_influxdb()
 
     for city in cities:
-        logger.info(f"Fetching data for city: {city}")
-        weather_data = fetch_weather_data(city, start_date, end_date)
+        logger.info(f"Processing city: {city}")
+        lat, lon = get_coordinates(city)
+        if not lat or not lon:
+            continue
 
-        for entry in weather_data:
-            date = entry["datetime"]
+        data = fetch_weather_data(lat, lon, start_date, end_date)
+        if not data or "daily" not in data:
+            logger.warning(f"No data returned for {city}")
+            continue
+
+        dates = data["daily"]["time"]
+        highs = data["daily"]["temperature_2m_max"]
+        lows = data["daily"]["temperature_2m_min"]
+
+        for i in range(len(dates)):
+            date = dates[i]
+            high = highs[i]
+            low = lows[i]
+
             if record_exists(query_api, city, date):
-                logger.debug(f"Already in InfluxDB: {city} {date}")
+                logger.debug(f"Record already exists: {city} {date}")
                 continue
 
             point = (
                 Point("weather")
                 .tag("city", city)
                 .tag("type", "daily-history")
-                .field("temperature_high", entry["tempmax"])
-                .field("temperature_low", entry["tempmin"])
+                .field("temperature_high", high)
+                .field("temperature_low", low)
                 .time(f"{date}T00:00:00Z")
             )
 
             try:
                 write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
-                logger.info(f"Wrote to InfluxDB: {city} {date}")
+                logger.info(f"Wrote data for {city} on {date}")
             except Exception as e:
-                logger.error(f"Write failed for {city} {date}: {e}")
+                logger.error(f"Failed to write InfluxDB point for {city} {date}: {e}")
+
+        # Be polite to the geocoding and Open-Meteo APIs
+        sleep(1)
 
     client.close()
 
