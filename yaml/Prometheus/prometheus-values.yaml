@@ -1,0 +1,55 @@
+prometheusOperator:
+  enabled: true
+  admissionWebhooks:
+    enabled: true
+  tls:
+    enabled: true
+
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard-retain
+          resources:
+            requests:
+              storage: 10Gi
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    podMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelector: {}
+    podMonitorNamespaceSelector: {}
+    ruleSelectorNilUsesHelmValues: false
+    ruleSelector: {}
+    ruleNamespaceSelector: {}
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    retention: 7d
+    resources:
+      requests:
+        memory: 400Mi
+        cpu: 200m
+      limits:
+        memory: 2Gi
+        cpu: "1"
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard-retain
+          resources:
+            requests:
+              storage: 2Gi
+
+rbac:
+  create: true
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
