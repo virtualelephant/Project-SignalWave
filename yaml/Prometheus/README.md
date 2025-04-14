@@ -7,3 +7,9 @@ helm install prometheus prometheus-community/kube-prometheus-stack \
    --namespace monitoring \
    -f prometheus-values.yaml
 ```
+
+# Create Ingress objects for Prometheus and Grafana
+
+```
+kubectl apply -f prometheus-grafana-ingress.yaml
+```

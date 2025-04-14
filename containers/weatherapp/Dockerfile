@@ -10,5 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY historical_weather.py .
 COPY cities.txt .
 
-#CMD ["python", "backfill_weather.py"]
+#CMD ["python", "historical_weather.py"]
 CMD ["tail", "-f", "/dev/null"]
