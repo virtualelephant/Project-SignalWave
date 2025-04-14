@@ -45,6 +45,9 @@ def get_coordinates(city):
         logger.error(f"Geocoding failed for {city}: {e}")
         return None, None
 
+def c_to_f(celsius):
+    return (celsius * 9/5) + 32
+
 # --- Connect to InfluxDB ---
 def connect_to_influxdb():
     client = InfluxDBClient(
@@ -123,8 +126,8 @@ def main():
                 Point("weather")
                 .tag("city", city)
                 .tag("type", "daily-history")
-                .field("temperature_high", high)
-                .field("temperature_low", low)
+                .field("temperature_high", c_to_f(high))
+                .field("temperature_low", c_to_f(low))
                 .time(f"{date}T00:00:00Z")
             )
 

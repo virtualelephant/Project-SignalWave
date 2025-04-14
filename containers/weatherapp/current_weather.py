@@ -45,6 +45,9 @@ def get_coordinates(city):
         logger.error(f"Geocoding failed for {city}: {e}")
         return None, None
 
+def c_to_f(celsius):
+    return (celsius * 9/5) + 32
+
 # --- Fetch current weather from Open-Meteo ---
 def fetch_current_weather(lat, lon):
     url = (
@@ -82,7 +85,7 @@ def main():
             Point("weather")
             .tag("city", city)
             .tag("type", "current")
-            .field("temperature_current", data["temperature"])
+            .field("temperature_current", c_to_f(data["temperature"]))
             .time(now)
         )
 
