@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 API_KEY = os.getenv("VISUAL_CROSSING_API_KEY")
 INFLUX_URL = os.getenv("INFLUXDB_URL", "http://influxdb.monitoring.svc.cluster.local:8086")
 INFLUX_TOKEN = os.getenv("INFLUXDB_TOKEN")
-INFLUX_ORG = os.getenv("INFLUXDB_ORG", "weather-org")
+INFLUX_ORG = os.getenv("INFLUXDB_ORG", "virtualelephant")
 INFLUX_BUCKET = os.getenv("INFLUXDB_BUCKET", "weather")
 
 # --- Load city list ---
@@ -51,20 +51,39 @@ def record_exists(query_api, city, date):
 
 # --- Fetch weather data ---
 def fetch_weather_data(city, start_date, end_date):
-    url = (
-        f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
-        f"{city}/{start_date}/{end_date}?unitGroup=us&key={API_KEY}&contentType=json"
-    )
-    response = requests.get(url)
-    if response.status_code != 200:
-        logger.error(f"Failed to fetch data for {city}: {response.status_code} {response.text}")
-        return []
-    return response.json().get("days", [])
+    all_days = []
+    delta = datetime.timedelta(days=30)
+    current_start = start_date
+
+    while current_start < end_date:
+        current_end = min(current_start + delta, end_date)
+        url = (
+            f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
+            f"{city}/{current_start}/{current_end}?unitGroup=us&key={API_KEY}&contentType=json"
+        )
+        try:
+            response = requests.get(url)
+            if response.status_code != 200:
+                logger.error(f"Failed to fetch data for {city} ({current_start} to {current_end}): {response.status_code} {response.text}")
+                break
+            days = response.json().get("days", [])
+            all_days.extend(days)
+        except Exception as e:
+            logger.error(f"Error fetching data for {city}: {e}")
+            break
+
+        # Stop after 30 days total (for now)
+        if (current_end - start_date).days >= 30:
+            break
+
+        current_start += delta
+
+    return all_days
 
 # --- Main ---
 def main():
     today = datetime.date.today()
-    start_date = today - datetime.timedelta(days=365)
+    start_date = today - datetime.timedelta(days=30)
     end_date = today
 
     cities = load_cities()
