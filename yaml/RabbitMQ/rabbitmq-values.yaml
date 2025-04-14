@@ -14,12 +14,19 @@ persistence:
 
 metrics:
   enabled: true
+  serviceMonitor:
+    enabled: true
 
 serviceMonitor:
   enabled: true
   namespace: monitoring
   interval: 15s
   scrapeTimeout: 10s
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
 
 podAnnotations:
   fluentbit.io/include: 'true'

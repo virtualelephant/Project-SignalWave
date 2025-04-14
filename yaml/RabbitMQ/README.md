@@ -8,3 +8,9 @@ helm install rabbitmq bitnami/rabbitmq \
   --create-namespace \
   -f values.yaml
 ```
+
+# Enabling Ingress for RabbitMQ
+
+```
+kubectl apply -f rabbitmq-ingress.yaml
+```
