@@ -7,7 +7,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code and cities file
-COPY backfill_weather.py .
+COPY historical_weather.py .
 COPY cities.txt .
 
-CMD ["python", "backfill_weather.py"]
+#CMD ["python", "backfill_weather.py"]
+CMD ["tail", "-f", "/dev/null"]
