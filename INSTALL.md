@@ -3,6 +3,14 @@
 - Last Modified: 13.January.2025
 - Maintainer: chris@virtualelephant.com
 
+## Create Namespaces for Project SignalWave
+
+```
+kubectl create namespace signalwave
+kubectl create namespace shared-services
+kubectl create namespace monitoring
+```
+
 ## Installing NFS Client Provisioner
 https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
 
@@ -26,76 +34,77 @@ kubectl apply -f storageclass-retain.yaml
 helm repo add haproxytech https://haproxytech.github.io/helm-charts
 helm install haproxy-kubernetes-ingress haproxytech/kubernetes-ingress --create-namespace --namespace haproxy
 ```
-## Expose Hubble-UI through Ingress
+### Expose Hubble-UI through Ingress
 ```
 kubectl apply yaml/Cilium/hubble-ingress.yaml
 ```
 
-## Installing Grafana and Prometheus
-Modify the `yaml/Cilium/monitoring.yaml` file, editing lines 14289 & 14290 to reflect the NFS server in the environment.
-```
-kubectl apply -f yaml/Cilium/monitoring.yaml -n cilium-monitoring
-kubectl apply -f yaml/Cilium/monitoring-ingress.yaml -n cilium-monitoring
-```
+## Installing Prometheus and Grafana through Helm
 
-## Create SignalWave Namespace
-```
-kubectl create namespace signalwave
-```
-
-## Installing RabbitMQ Operator
-https://www.rabbitmq.com/kubernetes/operator/quickstart-operator.html
+The values file is setup to allow for scraping data from other services, as well as leveraging persistent storage from a storageclass object, 'standard-retain' which is created by the YAML found in yaml/SignalWave directory.
 
 ```
-kubectl apply -f "https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml"
+helm install prometheus prometheus-community/kube-prometheus-stack \
+   --namespace monitoring \
+   -f prometheus-values.yaml
 ```
 
-Build the local RabbitMQ application in the Kubernetes environment:
-```
-kubectl apply -f yaml/RabbitMQ/rabbitmq-prod.yaml -n signalwave
-kubectl apply -f yaml/RabbitMQ/rabbitmq-ingress.yaml -n signalwave
-```
-
-Wait until the StatefulSet for RabbitMQ is online. From there you can get the default username and password.
+### Create Ingress objects for Prometheus and Grafana
 
 ```
-username="$(kubectl -n signalwave get secret rabbitmq-default-user -o jsonpath='{.data.username}' | base64 --decode)"
-echo "username: $username"
-password="$(kubectl -n signalwave get secret rabbitmq-default-user -o jsonpath='{.data.password}' | base64 --decode)"
-echo "password: $password"
+kubectl apply -f prometheus-grafana-ingress.yaml
+```
+
+## Installing RabbitMQ
+
+I am moving away from deploying RabbitmQ with the Operator to doing it with Helm. The Helm leverages a values file and can be deployed with the following command:
+
+```
+helm install rabbitmq bitnami/rabbitmq \
+  --namespace shared-services \
+  --create-namespace \
+  -f values.yaml
+```
+
+### Enabling Ingress for RabbitMQ
+
+```
+kubectl apply -f rabbitmq-ingress.yaml
 ```
 
 ### Access RabbitMQ UI
 Using the username and password above, log into the RabbitMQ UI. From there create a new user with administrator privileges
 that the SignalWave application will leverage.
 
-## Installing ELK Stack (elasticsearch, kibana, and fluentd)
-Create the namespace for the ELK stack:
-```
-kubectl create namespace kube-logging
-```
-Edit the `elasticsearch_pv.yaml` file to include the correct PV path for the local NFS server running in the environment.
+## Deploying ELK through Helm
 
+Add Bitnami Helm Repo (includes Fluentd)
 ```
-kubectl create -f elasticsearch_pv.yaml
-kubectl create -f elasticsearch_svc.yaml
-kubectl create -f elasticsearch_statefulset.yaml
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
 ```
 
-Edit the `kibana_pv.yaml` file to include the correct PV path for the local NFS server running in the environment.
-
+Add Elastic Helm Repo (inclused ElasticSearch and Kibana)
 ```
-kubectl create -f kibana_pv.yaml
-kubectl create -f kibana_svc.yaml
-kubectl create -f kibana_deployment.yaml
+helm repo add elastic https://helm.elastic.co
+helm repo update
 ```
 
-Deploy the fluentd application:
+Deploy the ELK Stack
 ```
-kubectl create -f fluentd_rbac.yaml
-kubectl create -f fluentd_configmap.yaml
-kubectl create -f fluentd_daemonset.yaml
+helm install elasticsearch elastic/elasticsearch -n monitoring -f elasticsearch-values.yaml
+helm install kibana elastic/kibana -n monitoring -f kibana-values.yaml
+helm install fluentd bitnami/fluentd -n monitoring -f fluentd-values.yaml
+kubectl apply -f kibana-ingress.yaml
 ```
+
+Get the default username & password that Elastic generated
+```
+kubectl get secret elasticsearch-master-credentials -n monitoring -o go-template='{{.data.username | base64decode}}'
+kubectl get secret elasticsearch-master-credentials -n monitoring -o go-template='{{.data.password | base64decode}}'
+```
+
+Go to the Web Console - http://kibana.YOUR.DOMAIN.NAME
 
 ## Install the custom SignalWave application
 The first part of the SignalWave application is the Publisher microservice. The application is a small container housing a single script `publisher.py`.
