@@ -1,0 +1,34 @@
+auth:
+  username: admin
+  password: thAswU53n-CE
+  erlangCookie: AJSDFJLKJ234LKJ234LJ23LKJ234LJ23897BDFT26374
+
+replicaCount: 3
+
+clustering:
+  enabled: true
+
+persistence:
+  enabled: true
+  storageClass: standard-retain
+
+metrics:
+  enabled: true
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  interval: 15s
+  scrapeTimeout: 10s
+
+podAnnotations:
+  fluentbit.io/include: 'true'
+  fluentbit.io/log-type: application
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: rabbitmq
+      topologyKey: kubernetes.io/hostname

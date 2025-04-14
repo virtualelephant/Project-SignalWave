@@ -2,7 +2,7 @@ apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
 metadata:
   name: rabbitmq
-  namespace: services
+  namespace: shared-services
   labels:
     app: rabbitmq
 spec:

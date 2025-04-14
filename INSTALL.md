@@ -52,8 +52,8 @@ kubectl apply -f "https://github.com/rabbitmq/cluster-operator/releases/latest/d
 
 Build the local RabbitMQ application in the Kubernetes environment:
 ```
-kubectl apply -f yaml/SignalWave/rabbitmq-prod.yaml -n signalwave
-kubectl apply -f yaml/SignalWave/rabbitmq-ingress.yaml -n signalwave
+kubectl apply -f yaml/RabbitMQ/rabbitmq-prod.yaml -n signalwave
+kubectl apply -f yaml/RabbitMQ/rabbitmq-ingress.yaml -n signalwave
 ```
 
 Wait until the StatefulSet for RabbitMQ is online. From there you can get the default username and password.
