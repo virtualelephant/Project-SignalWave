@@ -46,6 +46,8 @@ def get_coordinates(city):
         return None, None
 
 def c_to_f(celsius):
+    if celsius is None:
+        return None
     return (celsius * 9/5) + 32
 
 # --- Connect to InfluxDB ---

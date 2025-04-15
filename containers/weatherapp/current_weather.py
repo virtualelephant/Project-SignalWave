@@ -91,7 +91,7 @@ def main():
 
         try:
             write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
-            logger.info(f"Wrote current temp for {city} at {now}: {data['temperature']}°C")
+            logger.info(f"Wrote current temp for {city} at {now}: {c_to_f(data['temperature'])}°F")
         except Exception as e:
             logger.error(f"Failed to write current temp for {city}: {e}")
 
