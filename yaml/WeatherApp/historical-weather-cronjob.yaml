@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: historical-weather
-  namespace: apps
+  namespace: weather
 spec:
   schedule: "0 2 * * *"  # runs at 2:00 AM UTC daily
   jobTemplate:

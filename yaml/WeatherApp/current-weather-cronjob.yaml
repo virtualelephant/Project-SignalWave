@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: current-weather
-  namespace: apps
+  namespace: weather
 spec:
   schedule: "0 * * * *"  # runs every hour on the hour
   jobTemplate:
