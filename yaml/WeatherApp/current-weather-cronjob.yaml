@@ -12,6 +12,7 @@ spec:
           containers:
             - name: current-weather
               image: harbor.home.virtualelephant.com/ve-lab/current-weather:latest
+              imagePullPolicy: Always
               env:
                 - name: INFLUXDB_URL
                   value: "http://influxdb.monitoring.svc.cluster.local:8086"
