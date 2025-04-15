@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: historical-weather
-              image: your-registry/historical-weather:latest
+              image: harbor.home.virtualelephant.com/ve-lab/historical-weather:latest
               env:
                 - name: INFLUXDB_URL
                   value: "http://influxdb.monitoring.svc.cluster.local:8086"
