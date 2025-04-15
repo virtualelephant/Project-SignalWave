@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: current-weather
+  namespace: apps
+spec:
+  schedule: "0 * * * *"  # runs every hour on the hour
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: current-weather
+              image: your-registry/current-weather:latest
+              env:
+                - name: INFLUXDB_URL
+                  value: "http://influxdb.monitoring.svc.cluster.local:8086"
+                - name: INFLUXDB_ORG
+                  value: "virtualelephant"
+                - name: INFLUXDB_BUCKET
+                  value: "weather"
+                - name: INFLUXDB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: influxdb-auth
+                      key: token
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "100m
