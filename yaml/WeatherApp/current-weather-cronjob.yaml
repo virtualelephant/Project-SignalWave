@@ -28,4 +28,4 @@ spec:
               resources:
                 requests:
                   memory: "128Mi"
-                  cpu: "100m
+                  cpu: "100m"
