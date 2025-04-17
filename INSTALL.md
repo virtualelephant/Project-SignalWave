@@ -71,9 +71,9 @@ helm repo update
 
 Deploy the ELK Stack
 ```
-helm install elasticsearch elastic/elasticsearch -n monitoring -f elasticsearch-values.yaml
-helm install kibana elastic/kibana -n monitoring -f kibana-values.yaml
-helm install fluentd bitnami/fluentd -n monitoring -f fluentd-values.yaml
+helm install elasticsearch elastic/elasticsearch -n services -f elasticsearch-values.yaml
+helm install kibana elastic/kibana -n services -f kibana-values.yaml
+helm install fluentd bitnami/fluentd -n services -f fluentd-values.yaml
 kubectl apply -f kibana-ingress.yaml
 ```
 
