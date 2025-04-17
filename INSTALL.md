@@ -1,13 +1,12 @@
 # Installation Guide
-- Current Version: v1.1
-- Last Modified: 13.January.2025
+- Current Version: v1.2
 - Maintainer: chris@virtualelephant.com
 
 ## Create Namespaces for Project SignalWave
 
 ```
 kubectl create namespace signalwave
-kubectl create namespace shared-services
+kubectl create namespace services
 kubectl create namespace monitoring
 ```
 
@@ -44,6 +43,7 @@ kubectl apply yaml/Cilium/hubble-ingress.yaml
 The values file is setup to allow for scraping data from other services, as well as leveraging persistent storage from a storageclass object, 'standard-retain' which is created by the YAML found in yaml/SignalWave directory.
 
 ```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm install prometheus prometheus-community/kube-prometheus-stack \
    --namespace monitoring \
    -f prometheus-values.yaml
@@ -54,27 +54,6 @@ helm install prometheus prometheus-community/kube-prometheus-stack \
 ```
 kubectl apply -f prometheus-grafana-ingress.yaml
 ```
-
-## Installing RabbitMQ
-
-I am moving away from deploying RabbitmQ with the Operator to doing it with Helm. The Helm leverages a values file and can be deployed with the following command:
-
-```
-helm install rabbitmq bitnami/rabbitmq \
-  --namespace shared-services \
-  --create-namespace \
-  -f values.yaml
-```
-
-### Enabling Ingress for RabbitMQ
-
-```
-kubectl apply -f rabbitmq-ingress.yaml
-```
-
-### Access RabbitMQ UI
-Using the username and password above, log into the RabbitMQ UI. From there create a new user with administrator privileges
-that the SignalWave application will leverage.
 
 ## Deploying ELK through Helm
 
@@ -105,6 +84,27 @@ kubectl get secret elasticsearch-master-credentials -n monitoring -o go-template
 ```
 
 Go to the Web Console - http://kibana.YOUR.DOMAIN.NAME
+
+## Installing RabbitMQ
+
+I am moving away from deploying RabbitmQ with the Operator to doing it with Helm. The Helm leverages a values file and can be deployed with the following command:
+
+```
+helm install rabbitmq bitnami/rabbitmq \
+  --namespace shared-services \
+  --create-namespace \
+  -f values.yaml
+```
+
+### Enabling Ingress for RabbitMQ
+
+```
+kubectl apply -f rabbitmq-ingress.yaml
+```
+
+### Access RabbitMQ UI
+Using the username and password above, log into the RabbitMQ UI. From there create a new user with administrator privileges
+that the SignalWave application will leverage.
 
 ## Install the custom SignalWave application
 The first part of the SignalWave application is the Publisher microservice. The application is a small container housing a single script `publisher.py`.

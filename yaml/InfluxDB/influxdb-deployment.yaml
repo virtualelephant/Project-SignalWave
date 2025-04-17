@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: influxdb
-  namespace: monitoring
+  namespace: services
 spec:
   replicas: 1
   selector:

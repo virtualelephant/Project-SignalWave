@@ -45,6 +45,13 @@ alertmanager:
             requests:
               storage: 2Gi
 
+grafana:
+  persistence:
+    enabled: true
+    storageClassName: standard-retain
+    size: 10Gi
+  adminPassword: ChangeMe123!
+
 rbac:
   create: true
 
