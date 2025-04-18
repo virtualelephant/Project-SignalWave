@@ -34,11 +34,6 @@ spec:
               value: "10.1.10.2"
             - name: INFLUX_URL
               value: "http://influxdb.home.virtualelephant.com"
-            - name: INFLUX_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: influxdb-creds
-                  key: INFLUX_TOKEN
             - name: INFLUX_ORG
               value: "virtualelephant"
             - name: INFLUX_BUCKET
