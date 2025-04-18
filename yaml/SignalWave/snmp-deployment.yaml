@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snmp-monitoring
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: snmp-monitoring
+  template:
+    metadata:
+      labels:
+        app: snmp-monitoring
+    spec:
+      containers:
+        - name: snmp-monitoring
+          image: harbor.home.virtualelephant.com/ve-lab/snmp-influx:latest
+          imagePullPolicy: Always
+            - name: SNMP_USER
+              value: "admin"
+            - name: SNMP_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-creds
+                  key: SNMP_AUTH_KEY
+            - name: SNMP_PRIV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-creds
+                  key: SNMP_PRIV_KEY
+            - name: TARGET_IP
+              value: "10.1.10.2"
+            - name: INFLUX_URL
+              value: "http://influxdb.home.virtualelephant.com"
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-creds
+                  key: INFLUX_TOKEN
+            - name: INFLUX_ORG
+              value: "virtualelephant"
+            - name: INFLUX_BUCKET
+              value: "monitoring"
