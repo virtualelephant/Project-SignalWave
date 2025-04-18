@@ -106,6 +106,14 @@ kubectl apply -f rabbitmq-ingress.yaml
 Using the username and password above, log into the RabbitMQ UI. From there create a new user with administrator privileges
 that the SignalWave application will leverage.
 
+## Installing InfluxDB in the services namespace
+
+```
+kubectl apply -f influxdb-pvc.yaml
+kubectl apply -f influxdb-deployment.yaml
+kubectl apply -f influxdb-ingress.yaml
+```
+
 ## Install the custom SignalWave application
 The first part of the SignalWave application is the Publisher microservice. The application is a small container housing a single script `publisher.py`.
 The Publisher microservice gathers a number of networking metrics from the environment out to the 'virtualelephant.com' website as a means to monitor
