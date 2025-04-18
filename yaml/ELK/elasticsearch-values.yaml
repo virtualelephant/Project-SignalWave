@@ -47,7 +47,30 @@ readinessProbe:
       - |
         set -e
         curl -k -u "elastic:${ELASTIC_PASSWORD}" --silent --fail https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s > /dev/null
-  
+
+extraContainers:
+  - name: es-exporter
+    image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
+    ports:
+      - containerPort: 9114
+        name: metrics
+    env:
+      - name: ES_URI
+        value: https://localhost:9200
+      - name: ES_USERNAME
+        value: elastic
+      - name: ES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: elasticsearch-master-credentials
+            key: password
+service:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9114
+      targetPort: 9114
+
 metrics:
   enabled: true
   serviceMonitor:
