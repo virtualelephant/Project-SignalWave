@@ -17,6 +17,7 @@ spec:
         - name: snmp-monitoring
           image: harbor.home.virtualelephant.com/ve-lab/snmp-influx:latest
           imagePullPolicy: Always
+          env:
             - name: SNMP_USER
               value: "admin"
             - name: SNMP_AUTH_KEY
