@@ -1,4 +1,9 @@
-from pysnmp.hlapi import *
+from pysnmp.hlapi import (
+    SnmpEngine, UsmUserData, UdpTransportTarget, ContextData,
+    ObjectType, ObjectIdentity,
+    usmHMACMD5AuthProtocol, usmDESPrivProtocol,
+    nextCmd
+)
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 import time
