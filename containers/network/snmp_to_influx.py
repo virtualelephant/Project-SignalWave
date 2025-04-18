@@ -54,7 +54,7 @@ def snmp_walk(oid, target_ip):
         UsmUserData(SNMP_USER, AUTH_KEY, PRIV_KEY,
                     authProtocol=usmHMACMD5AuthProtocol,
                     privProtocol=usmDESPrivProtocol),
-        UdpTransportTarget((TARGET_IP, 161), timeout=2, retries=1),
+        UdpTransportTarget((target_ip, 161), timeout=2, retries=1),
         ContextData(),
         ObjectType(ObjectIdentity('1.3.6.1.2.1')),  # Start of SNMP MIB tree
         lexicographicMode=False
@@ -79,8 +79,14 @@ def collect_interface_stats(target_ip):
     for oid, label in METRIC_OIDS.items():
         values = snmp_walk(oid, target_ip)
         for idx, val in values.items():
-            if idx in stats_by_if:
+            try:
                 stats_by_if[idx][label] = int(val)
+            except (ValueError, TypeError):
+                try:
+                    stats_by_if[idx][label] = int.from_bytes(bytes(val), byteorder='big')
+                except Exception as e:
+                    stats_by_if[idx][label] = 0
+                    logger.warning(f"Failed to convert value '{val}' for {label} on index {idx}: {e}")
 
     return list(stats_by_if.values())
 
