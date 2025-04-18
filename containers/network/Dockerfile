@@ -5,7 +5,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-MKDIR /app
+RUN mkdir /app
 COPY snmp-to-influxdb.py /app
 WORKDIR /app
 
