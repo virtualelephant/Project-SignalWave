@@ -12,7 +12,10 @@ WORKDIR /app
 COPY snmp_to_influx.py .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir pysnmp influxdb-client
+RUN pip install --no-cache-dir \
+    pysnmp==4.4.12 \
+    influxdb-client==1.40.0 \
+    pyasn1==0.4.8
 
 # Run the script by default (optional — remove ENTRYPOINT for manual exec)
 #ENTRYPOINT ["python", "snmp_to_influx.py"]
