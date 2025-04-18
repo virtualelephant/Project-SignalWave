@@ -1,5 +1,5 @@
 fullnameOverride: fluentd
-namespaceOverride: monitoring
+namespaceOverride: services
 
 daemonset:
   enabled: true
@@ -22,7 +22,7 @@ rbac:
 
 serviceMonitor:
   enabled: true
-  namespace: monitoring
+  namespace: services
   interval: 30s
 
 resources:
