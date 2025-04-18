@@ -9,9 +9,9 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 import time
 
 # SNMPv3 credentials
-SNMP_USER = 'admin'
-AUTH_KEY = 'yourAuthPass'
-PRIV_KEY = 'yourPrivPass'
+SNMP_USER = 'deploy'
+AUTH_KEY = os.getenv("SNMP_AUTH_KEY")
+PRIV_KEY = os.getenv("SNMP_PRIV_KEY")
 TARGET_IP = '10.1.10.2'
 
 # InfluxDB setup
