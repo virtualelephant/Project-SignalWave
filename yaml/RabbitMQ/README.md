@@ -4,9 +4,8 @@ I am moving away from deploying RabbitmQ with the Operator to doing it with Helm
 
 ```
 helm install rabbitmq bitnami/rabbitmq \
-  --namespace shared-services \
-  --create-namespace \
-  -f values.yaml
+  --namespace services \
+  -f rabbitmq-values.yaml
 ```
 
 # Enabling Ingress for RabbitMQ

@@ -24,6 +24,12 @@ serviceMonitor:
   enabled: true
   namespace: monitoring
   interval: 30s
+  scrapeTimeout: 10s
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
 
 resources:
   limits:
