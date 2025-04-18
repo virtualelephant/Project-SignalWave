@@ -7,6 +7,7 @@ from pysnmp.hlapi import (
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 import time
+import os
 
 # SNMPv3 credentials
 SNMP_USER = 'deploy'
