@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: snmp-cisco-monitor
+  namespace: monitoring
+spec:
+  schedule: "*/5 * * * *"  # Every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: snmp-cisco-monitor
+              image: harbor.home.virtualelephant.com/ve-lab/snmp-collector:latest
+              imagePullPolicy: Always
+              command: ["python", "snmp_to_influx.py"]
+              env:
+                - name: SNMP_USER
+                  value: "deploy"
+                - name: SNMP_AUTH_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: snmp-creds
+                      key: SNMP_AUTH_KEY
+                - name: SNMP_PRIV_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: snmp-creds
+                      key: SNMP_PRIV_KEY
+                - name: INFLUX_URL
+                  value: "http://influxdb.home.virtualelephant.com"
+                - name: INFLUX_ORG
+                  value: "virtualelephant"
+                - name: INFLUX_BUCKET
+                  value: "monitoring"
