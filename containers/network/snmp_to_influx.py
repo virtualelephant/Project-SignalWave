@@ -8,12 +8,19 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 import time
 import os
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+logger = logging.getLogger("snmp-monitor")
 
 # SNMPv3 credentials
 SNMP_USER = 'deploy'
 AUTH_KEY = os.getenv("SNMP_AUTH_KEY")
 PRIV_KEY = os.getenv("SNMP_PRIV_KEY")
-TARGET_IP = '10.1.10.2'
+SWITCH_IPS = ['10.1.10.2', '10.1.10.3']
 
 # InfluxDB setup
 INFLUX_URL = 'http://influxdb.home.virtualelephant.com'
@@ -40,7 +47,7 @@ METRIC_OIDS = {
     IFOUTDISCARDS_OID: "out_discards"
 }
 
-def snmp_walk(oid):
+def snmp_walk(oid, target_ip):
     results = {}
     for (errorIndication, errorStatus, errorIndex, varBinds) in nextCmd(
         SnmpEngine(),
@@ -53,10 +60,10 @@ def snmp_walk(oid):
         lexicographicMode=False
     ):
         if errorIndication:
-            print(f"SNMP error: {errorIndication}")
+            logger.info(f"SNMP error: {errorIndication}")
             break
         elif errorStatus:
-            print(f"{errorStatus.prettyPrint()} at {errorIndex and varBinds[int(errorIndex) - 1][0] or '?'}")
+            logger.warning(f"{errorStatus.prettylogger.info()} at {errorIndex and varBinds[int(errorIndex) - 1][0] or '?'}")
             break
         else:
             for varBind in varBinds:
@@ -65,29 +72,29 @@ def snmp_walk(oid):
                 results[index] = str(value)
     return results
 
-def collect_interface_stats():
-    if_names = snmp_walk(IFDESCR_OID)
+def collect_interface_stats(target_ip):
+    if_names = snmp_walk(IFDESCR_OID, target_ip)
     stats_by_if = {idx: {"interface": if_names[idx]} for idx in if_names}
 
     for oid, label in METRIC_OIDS.items():
-        values = snmp_walk(oid)
+        values = snmp_walk(oid, target_ip)
         for idx, val in values.items():
             if idx in stats_by_if:
                 stats_by_if[idx][label] = int(val)
 
     return list(stats_by_if.values())
 
-def write_to_influx(data):
+def write_to_influx(target_ip,data):
     client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=ORG)
-    write_api = client.write_api(write_options=WritePrecision.NS)
+    write_api = client.write_api(write_options=SYNCHRONOUS)
 
     for iface in data:
         point = Point("interface_stats") \
-            .tag("device", TARGET_IP) \
+            .tag("device", target_ip) \
             .tag("interface", iface.get("interface", "unknown"))
 
         for key, value in iface.items():
-            if key not in ["interface"]:
+            if key != "interface":
                 point.field(key, value)
 
         point.time(time.time_ns(), WritePrecision.NS)
@@ -96,9 +103,11 @@ def write_to_influx(data):
     client.close()
 
 if __name__ == "__main__":
-    stats = collect_interface_stats()
-    if stats:
-        write_to_influx(stats)
-        print=(f"Wrote {len(statis)} interface stats to InfluxDB.")
-    else:
-        print("No interface data collected.")
+    for ip in SWITCH_IPS:
+        logger.info(f"Collecting stats from {ip}")
+        stats = collect_interface_stats()
+        if stats:
+            write_to_influx(stats)
+            logger.info(f"Wrote {len(stats)} interface stats for {ip} to InfluxDB.")
+        else:
+            logger.warning("No interface data collected from {ip}.")
