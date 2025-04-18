@@ -105,7 +105,7 @@ def write_to_influx(target_ip,data):
 if __name__ == "__main__":
     for ip in SWITCH_IPS:
         logger.info(f"Collecting stats from {ip}")
-        stats = collect_interface_stats()
+        stats = collect_interface_stats(ip)
         if stats:
             write_to_influx(stats)
             logger.info(f"Wrote {len(stats)} interface stats for {ip} to InfluxDB.")
