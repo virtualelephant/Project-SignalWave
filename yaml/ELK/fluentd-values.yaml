@@ -22,7 +22,7 @@ rbac:
 
 serviceMonitor:
   enabled: true
-  namespace: services
+  namespace: monitoring
   interval: 30s
 
 resources:

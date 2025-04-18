@@ -52,3 +52,5 @@ metrics:
   enabled: true
   serviceMonitor:
     enabled: true
+    namespace: monitoring
+    interval: 30s
