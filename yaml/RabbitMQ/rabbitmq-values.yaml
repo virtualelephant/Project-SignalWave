@@ -19,7 +19,7 @@ metrics:
 
 serviceMonitor:
   enabled: true
-  namespace: monitoring
+  namespace: services
   interval: 15s
   scrapeTimeout: 10s
   endpoints:
