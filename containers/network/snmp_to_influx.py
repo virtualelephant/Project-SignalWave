@@ -41,7 +41,7 @@ METRIC_OIDS = {
 }
 
 def snmp_walk(oid):
-    results = []
+    results = {}
     for (errorIndication, errorStatus, errorIndex, varBinds) in nextCmd(
         SnmpEngine(),
         UsmUserData(SNMP_USER, AUTH_KEY, PRIV_KEY,
