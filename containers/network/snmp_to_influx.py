@@ -21,7 +21,26 @@ INFLUX_TOKEN = 'nZHQrwn2ONAps6aCVCOtGx8OCdjfMIYfXU_iIOqsqyH4Ar0_SJNvPP9G4nswy-Jh
 ORG = 'virtualelephant'
 BUCKET = 'monitoring'
 
-def snmp_walk():
+# OIDs from IF-MIB
+IFDESCR_OID       = '1.3.6.1.2.1.2.2.1.2'
+IFINOCTETS_OID    = '1.3.6.1.2.1.2.2.1.10'
+IFOUTOCTETS_OID   = '1.3.6.1.2.1.2.2.1.16'
+IFINERRORS_OID    = '1.3.6.1.2.1.2.2.1.14'
+IFOUTERRORS_OID   = '1.3.6.1.2.1.2.2.1.20'
+IFINDISCARDS_OID  = '1.3.6.1.2.1.2.2.1.13'
+IFOUTDISCARDS_OID = '1.3.6.1.2.1.2.2.1.19'
+
+# List of metric OIDs to collect
+METRIC_OIDS = {
+    IFINOCTETS_OID: "in_octets",
+    IFOUTOCTETS_OID: "out_octets",
+    IFINERRORS_OID: "in_errors",
+    IFOUTERRORS_OID: "out_errors",
+    IFINDISCARDS_OID: "in_discards",
+    IFOUTDISCARDS_OID: "out_discards"
+}
+
+def snmp_walk(oid):
     results = []
     for (errorIndication, errorStatus, errorIndex, varBinds) in nextCmd(
         SnmpEngine(),
@@ -41,26 +60,45 @@ def snmp_walk():
             break
         else:
             for varBind in varBinds:
-                results.append(varBind)
+                oid_str, value = varBind
+                index = int(str(oid_str).split('.')[-1])
+                results[index] = str(value)
     return results
+
+def collect_interface_stats():
+    if_names = snmp_walk(IFDESCR_OID)
+    stats_by_if = {idx: {"interface": if_names[idx]} for idx in if_names}
+
+    for oid, label in METRIC_OIDS.items():
+        values = snmp_walk(oid)
+        for idx, val in values.items():
+            if idx in stats_by_if:
+                stats_by_if[idx][label] = int(val)
+
+    return list(stats_by_if.values())
 
 def write_to_influx(data):
     client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=ORG)
-    write_api = client.write_api(write_options=SYNCHRONOUS)
+    write_api = client.write_api(write_options=WritePrecision.NS)
 
-    for oid, value in data:
-        point = Point("snmpwalk") \
-            .tag("target", TARGET_IP) \
-            .field(str(oid), str(value)) \
-            .time(time.time_ns(), WritePrecision.NS)
+    for iface in data:
+        point = Point("interface_stats") \
+            .tag("device", TARGET_IP) \
+            .tag("interface", iface.get("interface", "unknown"))
+
+        for key, value in iface.items():
+            if key not in ["interface"]:
+                point.field(key, value)
+
+        point.time(time.time_ns(), WritePrecision.NS)
         write_api.write(bucket=BUCKET, org=ORG, record=point)
 
     client.close()
 
 if __name__ == "__main__":
-    snmp_data = snmp_walk()
-    if snmp_data:
-        write_to_influx(snmp_data)
-        print("SNMP data written to InfluxDB.")
+    stats = collect_interface_stats()
+    if stats:
+        write_to_influx(stats)
+        print=(f"Wrote {len(statis)} interface stats to InfluxDB.")
     else:
-        print("No SNMP data collected.")
+        print("No interface data collected.")
