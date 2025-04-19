@@ -17,4 +17,5 @@ RUN pip install --no-cache-dir \
     influxdb-client==1.40.0 \
     pyasn1==0.4.8
 
-CMD ["python", "snmp_to_influx.py"]
+# CMD ["python", "snmp_to_influx.py"]
+CMD ["tail", "-f", "/dev/null"]

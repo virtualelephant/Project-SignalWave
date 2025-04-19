@@ -63,7 +63,7 @@ def snmp_walk(oid, target_ip):
             logger.info(f"SNMP error: {errorIndication}")
             break
         elif errorStatus:
-            logger.warning(f"{errorStatus.prettylogger.info()} at {errorIndex and varBinds[int(errorIndex) - 1][0] or '?'}")
+            logger.warning(f"{errorStatus.prettyPrint()} at {errorIndex and varBinds[int(errorIndex) - 1][0] or '?'}")
             break
         else:
             for varBind in varBinds:
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         logger.info(f"Collecting stats from {ip}")
         stats = collect_interface_stats(ip)
         if stats:
-            write_to_influx(stats)
+            write_to_influx(ip, stats)
             logger.info(f"Wrote {len(stats)} interface stats for {ip} to InfluxDB.")
         else:
             logger.warning("No interface data collected from {ip}.")

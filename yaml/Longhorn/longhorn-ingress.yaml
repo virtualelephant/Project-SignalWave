@@ -2,19 +2,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: rabbitmq-ingress
-  namespace: services
+  name: longhorn-ingress
+  namespace: longhorn
   annotations:
     ingress.class: "haproxy"
 spec:
   rules:
-  - host: rabbitmq.home.virtualelephant.com
+  - host: longhorn.home.virtualelephant.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: rabbitmq
+            name: longhorn-frontend
             port:
-              number: 15672
+              number: 80
