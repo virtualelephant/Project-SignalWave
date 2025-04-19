@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: longhorn-ingress
-  namespace: longhorn
+  namespace: longhorn-system
   annotations:
     ingress.class: "haproxy"
 spec:
