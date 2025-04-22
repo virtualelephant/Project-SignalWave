@@ -1,0 +1,52 @@
+defaultSettings:
+  defaultReplicaCount: 3
+  replicaAutoBalance: "best-effort"
+  storageOverProvisioningPercentage: 200
+  storageMinimalAvailablePercentage: 25
+  defaultDataPath: /opt/longhorn-d1
+
+ingress:
+  enabled: true
+  host: longhorn.home.virtualelephant.com
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  tls: true
+  tlsSecret: longhorn-tls
+
+persistence:
+  defaultClass: true
+  defaultClassReplicaCount: 3
+
+service:
+  ui:
+    type: ClusterIP
+    port: 80
+
+longhornManager:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+longhornDriver:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+longhornUI:
+  replicas: 1
+
+preUpgradeChecker:
+  jobEnabled: true
+
+csi:
+  attacherReplicaCount: 2
+  provisionerReplicaCount: 2
+  resizerReplicaCount: 2
+  snapshotterReplicaCount: 2
+
+metrics:
+  serviceMonitor:
+    enabled: true
