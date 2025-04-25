@@ -19,7 +19,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: INFLUX_URL
-          value: "http://influxdb.home.virtualelephant.com:8086"
+          value: "http://influxdb.home.virtualelephant.com"
         - name: INFLUX_BUCKET
           value: "ping"
         - name: INFLUX_ORG
