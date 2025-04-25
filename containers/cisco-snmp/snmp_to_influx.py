@@ -83,16 +83,16 @@ def snmp_walk(oid, target_ip):
                 results[index] = str(value)
     return results
 
-def collect_target_interface_stats(target_ip):
+def collect_target_interface_stats(target_ip, target_interfaces):
     if_names = snmp_walk(IFDESCR_OID, target_ip)
-    logger.info(f"{target_ip} - Interface names returned: {if_names}") # <-- DEBUG line
-    
-    # Find the index for Ethernet1/3
-    target_indices = [idx for idx, name in if_names.items() if name == TARGET_INTERFACE_NAME]
+    logger.info(f"{target_ip} - Interface names returned: {if_names}")
+
+    # Correct: find index:name pairs for ALL target interfaces
+    target_indices = {idx: name for idx, name in if_names.items() if name in target_interfaces}
     
     if not target_indices:
-        logger.warning(f"{target_ip}: Target interface '{TARGET_INTERFACE_NAME}' not found.")
-        return None
+        logger.warning(f"{target_ip}: No matching interfaces found.")
+        return []
 
     collected_stats = []
     for idx, interface_name in target_indices.items():
@@ -116,25 +116,6 @@ def collect_target_interface_stats(target_ip):
         collected_stats.append(stats)
 
     return collected_stats
-# OLD ROUTINE
-#    idx = target_indices[0]  # Assume only one match
-#    stats = {"interface": TARGET_INTERFACE_NAME}
-#
-#    for oid, label in METRIC_OIDS.items():
-#        values = snmp_walk(oid, target_ip)
-#        logger.info(f"{target_ip} - SNMP walk for {label} {oid}: {values}") # <-- DEBUG line\
-#
-#        value = values.get(idx, 0)
-#        try:
-#            stats[label] = int(value)
-#        except (ValueError, TypeError):
-#            try:
-#                stats[label] = int.from_bytes(bytes(value), byteorder='big')
-#            except Exception as e:
-#                stats[label] = 0
-#                logger.warning(f"Failed to convert value '{value}' for {label} on {target_ip}: {e}")
-#    logger.info(f"{target_ip} - Final collected stats: {stats}") # <-- DEBUG line
-#    return stats
 
 def write_to_influx(target_ip, iface_data):
     client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
@@ -159,7 +140,7 @@ if __name__ == "__main__":
 
     for ip in devices:
         logger.info(f"Collecting stats from {ip}")
-        stats_list = collect_target_interfaces_stats(ip, interfaces)
+        stats_list = collect_target_interface_stats(ip, interfaces)
         if stats_list:
             for iface_stats in stats_list:
                 write_to_influx(ip, iface_stats)
