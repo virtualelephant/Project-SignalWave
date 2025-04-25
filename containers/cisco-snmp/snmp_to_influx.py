@@ -85,7 +85,7 @@ def snmp_walk(oid, target_ip):
 
 def collect_target_interface_stats(target_ip, target_interfaces):
     if_names = snmp_walk(IFDESCR_OID, target_ip)
-    logger.info(f"{target_ip} - Interface names returned: {if_names}")
+    #logger.info(f"{target_ip} - Interface names returned: {if_names}")
 
     # Correct: find index:name pairs for ALL target interfaces
     target_indices = {idx: name for idx, name in if_names.items() if name in target_interfaces}
@@ -100,7 +100,7 @@ def collect_target_interface_stats(target_ip, target_interfaces):
 
         for oid, label in METRIC_OIDS.items():
             values = snmp_walk(oid, target_ip)
-            logger.info(f"{target_ip} - SNMP walk for {label} ({oid}): {values}")
+            #logger.info(f"{target_ip} - SNMP walk for {label} ({oid}): {values}")
 
             value = values.get(idx, 0)
             try:
