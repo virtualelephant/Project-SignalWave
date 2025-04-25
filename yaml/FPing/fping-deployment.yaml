@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fping-monitor
+  namespace: services
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fping-monitor
+  template:
+    metadata:
+      labels:
+        app: fping-monitor
+    spec:
+      containers:
+      - name: fping
+        image: harbor.home.virtualelephant.com/ve-lab/fping-monitor:latest
+        imagePullPolicy: Always
+        env:
+        - name: INFLUX_URL
+          value: "http://influxdb.home.virtualelephant.com:8086"
+        - name: INFLUX_BUCKET
+          value: "ping"
+        - name: INFLUX_ORG
+          value: "virtualelephant"
+        - name: INFLUX_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: influxdb-fping-token
+              key: token
