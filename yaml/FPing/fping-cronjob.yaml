@@ -16,7 +16,7 @@ spec:
             - name: INFLUX_URL
               value: "http://influxdb.home.virtualelephant.com"
             - name: INFLUX_BUCKET
-              value: "ping"
+              value: "monitoring"
             - name: INFLUX_ORG
               value: "virtualelephant"
             - name: INFLUX_TOKEN

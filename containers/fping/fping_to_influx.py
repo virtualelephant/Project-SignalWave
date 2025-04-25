@@ -5,7 +5,7 @@ import time
 import os
 
 INFLUX_URL = os.getenv("INFLUX_URL", "http://influxdb.home.virtualelephant.com")
-INFLUX_BUCKET = os.getenv("INFLUX_BUCKET", "ping")
+INFLUX_BUCKET = os.getenv("INFLUX_BUCKET", "monitoring")
 INFLUX_TOKEN = os.getenv("INFLUX_TOKEN")
 INFLUX_ORG = os.getenv("INFLUX_ORG", "virtualelephant")
 TARGET_FILE = os.getenv("TARGET_FILE", "/app/targets.txt")
