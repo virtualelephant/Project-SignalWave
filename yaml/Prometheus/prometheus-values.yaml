@@ -51,6 +51,9 @@ grafana:
     storageClassName: standard-retain
     size: 10Gi
   adminPassword: ChangeMe123!
+  serviceMonitor:
+    enabled: true
+  defaultDashboardsTimezone: UTC-6
 
 rbac:
   create: true
