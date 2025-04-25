@@ -18,5 +18,5 @@ WORKDIR /app
 COPY snmp_to_influx.py /app/snmp_to_influx.py
 COPY devices.txt /app/devices.txt
 
-# CMD ["python", "snmp_to_influx.py"]
-CMD ["tail", "-f", "/dev/null"]
+CMD ["python", "snmp_to_influx.py"]
+#CMD ["tail", "-f", "/dev/null"]

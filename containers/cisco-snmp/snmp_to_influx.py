@@ -27,6 +27,7 @@ INFLUX_BUCKET = os.getenv("INFLUX_BUCKET", "monitoring")
 INFLUX_TOKEN = os.getenv("INFLUX_TOKEN")
 INFLUX_ORG = os.getenv("INFLUX_ORG", "virtualelephant")
 TARGET_FILE = os.getenv("TARGET_FILE", "/app/devices.txt")
+INTERFACE_FILE = os.getenv("INTERFACE_FILE", "/app/interfaces.txt")
 
 # Interface we care about
 TARGET_INTERFACE_NAME = "Ethernet1/3"
@@ -51,6 +52,10 @@ METRIC_OIDS = {
 
 def load_devices():
     with open(TARGET_FILE, "r") as f:
+        return [line.strip() for line in f if line.strip()]
+
+def load_interfaces():
+    with open(INTERFACE_FILE, "r") as f:
         return [line.strip() for line in f if line.strip()]
 
 def snmp_walk(oid, target_ip):
@@ -89,24 +94,47 @@ def collect_target_interface_stats(target_ip):
         logger.warning(f"{target_ip}: Target interface '{TARGET_INTERFACE_NAME}' not found.")
         return None
 
-    idx = target_indices[0]  # Assume only one match
-    stats = {"interface": TARGET_INTERFACE_NAME}
+    collected_stats = []
+    for idx, interface_name in target_indices.items():
+        stats = {"interface": interface_name}
 
-    for oid, label in METRIC_OIDS.items():
-        values = snmp_walk(oid, target_ip)
-        logger.info(f"{target_ip} - SNMP walk for {label} {oid}: {values}") # <-- DEBUG line\
-        
-        value = values.get(idx, 0)
-        try:
-            stats[label] = int(value)
-        except (ValueError, TypeError):
+        for oid, label in METRIC_OIDS.items():
+            values = snmp_walk(oid, target_ip)
+            logger.info(f"{target_ip} - SNMP walk for {label} ({oid}): {values}")
+
+            value = values.get(idx, 0)
             try:
-                stats[label] = int.from_bytes(bytes(value), byteorder='big')
-            except Exception as e:
-                stats[label] = 0
-                logger.warning(f"Failed to convert value '{value}' for {label} on {target_ip}: {e}")
-    logger.info(f"{target_ip} - Final collected stats: {stats}") # <-- DEBUG line
-    return stats
+                stats[label] = int(value)
+            except (ValueError, TypeError):
+                try:
+                    stats[label] = int.from_bytes(bytes(value), byteorder='big')
+                except Exception as e:
+                    stats[label] = 0
+                    logger.warning(f"Failed to convert value '{value}' for {label} on {target_ip}: {e}")
+
+        logger.info(f"{target_ip} - Final collected stats for {interface_name}: {stats}")
+        collected_stats.append(stats)
+
+    return collected_stats
+# OLD ROUTINE
+#    idx = target_indices[0]  # Assume only one match
+#    stats = {"interface": TARGET_INTERFACE_NAME}
+#
+#    for oid, label in METRIC_OIDS.items():
+#        values = snmp_walk(oid, target_ip)
+#        logger.info(f"{target_ip} - SNMP walk for {label} {oid}: {values}") # <-- DEBUG line\
+#
+#        value = values.get(idx, 0)
+#        try:
+#            stats[label] = int(value)
+#        except (ValueError, TypeError):
+#            try:
+#                stats[label] = int.from_bytes(bytes(value), byteorder='big')
+#            except Exception as e:
+#                stats[label] = 0
+#                logger.warning(f"Failed to convert value '{value}' for {label} on {target_ip}: {e}")
+#    logger.info(f"{target_ip} - Final collected stats: {stats}") # <-- DEBUG line
+#    return stats
 
 def write_to_influx(target_ip, iface_data):
     client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
@@ -127,11 +155,14 @@ def write_to_influx(target_ip, iface_data):
 
 if __name__ == "__main__":
     devices = load_devices()
+    interfaces = load_interfaces()
+
     for ip in devices:
         logger.info(f"Collecting stats from {ip}")
-        stats = collect_target_interface_stats(ip)
-        if stats:
-            write_to_influx(ip, stats)
-            logger.info(f"Wrote interface stats for {ip} to InfluxDB.")
+        stats_list = collect_target_interfaces_stats(ip, interfaces)
+        if stats_list:
+            for iface_stats in stats_list:
+                write_to_influx(ip, iface_stats)
+            logger.info(f"Wrote {len(stats_list)} interface stats for {ip} to InfluxDB.")
         else:
             logger.warning(f"No stats collected for {ip}.")
