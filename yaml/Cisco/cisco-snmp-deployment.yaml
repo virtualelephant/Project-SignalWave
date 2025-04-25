@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snmp-monitor
+  name: cisco-snmp-monitor
   namespace: monitoring
 spec:
   replicas: 1
@@ -30,7 +30,7 @@ spec:
         - name: INFLUX_TOKEN
           valueFrom:
             secretKeyRef:
-              name: influxdb-secrets
+              name: influxdb-monitoring-token
               key: influx_token
         - name: INFLUX_BUCKET
           value: monitoring
