@@ -3,3 +3,6 @@
 10.1.10.12
 8.8.8.8
 1.1.1.1
+75.75.75.75
+google.com
+virtualelephant.com
