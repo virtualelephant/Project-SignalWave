@@ -22,6 +22,6 @@ spec:
             - name: INFLUX_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: influxdb-ping-token
+                  name: influxdb-fping-token
                   key: token
           restartPolicy: OnFailure
