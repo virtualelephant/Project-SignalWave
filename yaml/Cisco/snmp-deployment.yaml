@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: snmp-monitoring
-          image: harbor.home.virtualelephant.com/ve-lab/snmp-client:debug
+          image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-client:debug
           imagePullPolicy: Always
           env:
             - name: SNMP_USER

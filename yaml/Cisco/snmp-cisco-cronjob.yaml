@@ -12,7 +12,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: snmp-cisco-monitor
-              image: harbor.home.virtualelephant.com/ve-lab/snmp-collector:latest
+              image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-client:latest
               imagePullPolicy: Always
               command: ["python", "snmp_to_influx.py"]
               env:
