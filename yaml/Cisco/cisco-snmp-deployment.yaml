@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: snmp-interface-monitor
-          image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:latest
+          image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:next
           env:
             - name: SNMP_USER
               value: "admin"
@@ -52,7 +52,7 @@ spec:
             - name: snmp-monitoring-config
               mountPath: /app
         - name: snmp-system-monitor
-          image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:latest
+          image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:next
           env:
             - name: SNMP_USER
               value: "admin"
