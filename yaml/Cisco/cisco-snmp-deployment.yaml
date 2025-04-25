@@ -17,27 +17,29 @@ spec:
       - name: snmp-monitor
         image: harbor.home.virtualelephant.com/monitoring/cisco-snmp-monitor:latest
         env:
-        - name: SNMP_AUTH_KEY
-          valueFrom:
-            secretKeyRef:
-              name: snmp-secrets
-              key: auth_key
-        - name: SNMP_PRIV_KEY
-          valueFrom:
-            secretKeyRef:
-              name: snmp-secrets
-              key: priv_key
-        - name: INFLUX_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: influxdb-monitoring-token
-              key: influx_token
-        - name: INFLUX_BUCKET
-          value: monitoring
-        - name: INFLUX_ORG
-          value: virtualelephant
-        - name: POLL_INTERVAL_SECONDS
-          value: "300"  # 5 min
+          - name: SNMP_USER
+            value: "deploy"
+          - name: SNMP_AUTH_KEY
+            valueFrom:
+              secretKeyRef:
+                name: snmp-creds
+                key: SNMP_AUTH_KEY
+          - name: SNMP_PRIV_KEY
+            valueFrom:
+              secretKeyRef:
+                name: snmp-creds
+                key: SNMP_PRIV_KEY
+          - name: INFLUX_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: influxdb-monitoring-token
+                key: influx_token
+          - name: INFLUX_BUCKET
+            value: monitoring
+          - name: INFLUX_ORG
+            value: virtualelephant
+          - name: POLL_INTERVAL_SECONDS
+            value: "300"  # 5 min
         volumeMounts:
         - name: app-code
           mountPath: /app
