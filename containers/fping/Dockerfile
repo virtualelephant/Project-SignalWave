@@ -8,5 +8,5 @@ WORKDIR /app
 COPY fping_to_influx.py /app/fping_to_influx.py
 COPY targets.txt /app/targets.txt
 
-ENTRYPOINT ["python", "/app/fping_to_influx.py"]
+CMD ["python", "/app/fping_to_influx.py"]
 #CMD ["tail", "-f", "/dev/null"]
