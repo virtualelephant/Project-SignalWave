@@ -106,7 +106,7 @@ def collect_target_interface_stats(target_ip):
     return stats
 
 def write_to_influx(target_ip, iface_data):
-    client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=ORG)
+    client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
     point = Point("cisco_devices") \
@@ -119,7 +119,7 @@ def write_to_influx(target_ip, iface_data):
 
     point.time(time.time_ns(), WritePrecision.NS)
 
-    write_api.write(bucket=BUCKET, org=ORG, record=point)
+    write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
     client.close()
 
 if __name__ == "__main__":
