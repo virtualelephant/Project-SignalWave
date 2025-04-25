@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cisco-snmp-full-monitoring
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: snmp-monitoring
+  template:
+    metadata:
+      labels:
+        app: snmp-monitoring
+    spec:
+      containers:
+        - name: snmp-interface-monitor
+          image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:latest
+          env:
+            - name: SNMP_USER
+              value: "admin"
+            - name: SNMP_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-creds
+                  key: SNMP_AUTH_KEY
+            - name: SNMP_PRIV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-creds
+                  key: SNMP_PRIV_KEY
+            - name: INFLUX_URL
+              value: "http://influxdb.home.virtualelephant.com"
+            - name: INFLUX_ORG
+              value: "virtualelephant"
+            - name: INFLUX_BUCKET
+              value: "monitoring"
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-monitoring-token
+                  key: token
+            - name: SCRIPT_NAME
+              value: "cisco_snmp_polling.py"  # Interface polling script
+            - name: TARGET_FILE
+              value: "/app/devices.txt"  # Path to interface polling targets
+            - name: INTERFACE_FILE
+              value: "/app/interfaces.txt"
+            - name: POLL_INTERVAL_SECONDS
+              value: "300"
+          volumeMounts:
+            - name: snmp-monitoring-config
+              mountPath: /app
+        - name: snmp-system-monitor
+          image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:latest
+          env:
+            - name: SNMP_USER
+              value: "admin"
+            - name: SNMP_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-creds
+                  key: SNMP_AUTH_KEY
+            - name: SNMP_PRIV_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-creds
+                  key: SNMP_PRIV_KEY
+            - name: INFLUX_URL
+              value: "http://influxdb.home.virtualelephant.com"
+            - name: INFLUX_ORG
+              value: "virtualelephant"
+            - name: INFLUX_BUCKET
+              value: "monitoring"
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-monitoring-token
+                  key: token
+            - name: SCRIPT_NAME
+              value: "cisco_snmp_system_polling.py"  # System metrics script
+            - name: TARGET_FILE
+              value: "/app/system_devices.txt"  # Path to system polling targets
+            - name: POLL_INTERVAL_SECONDS
+              value: "300"
+          volumeMounts:
+            - name: snmp-monitoring-config
+              mountPath: /app
+      volumes:
+        - name: snmp-monitoring-config
+          configMap:
+            name: snmp-monitoring-config  # This needs to exist and have your *.txt files inside it

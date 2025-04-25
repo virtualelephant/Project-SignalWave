@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -15,9 +15,14 @@ pyasn1==0.4.8
 WORKDIR /app
 
 # Copy custom files
-COPY cisco_snmp_polling.py /app/cisco_snmp_polling.py
-COPY devices.txt /app/devices.txt
-COPY interfaces.txt /app/interfaces.txt
+COPY . .
 
-CMD ["python", "cisco_snmp_polling.py"]
-#CMD ["tail", "-f", "/dev/null"]
+# Accept a build-time argument for default script (optional)
+ARG DEFAULT_SCRIPT=cisco_snmp_polling.py
+ENV DEFAULT_SCRIPT=${DEFAULT_SCRIPT}
+
+# Allow passing SCRIPT_NAME at runtime (override DEFAULT_SCRIPT)
+ENV SCRIPT_NAME=${DEFAULT_SCRIPT}
+
+# Default command to run the script
+CMD ["sh", "-c", "python /app/$SCRIPT_NAME"]
