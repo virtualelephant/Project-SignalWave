@@ -20,13 +20,16 @@ logger = logging.getLogger("snmp-monitor")
 SNMP_USER = 'deploy'
 AUTH_KEY = os.getenv("SNMP_AUTH_KEY")
 PRIV_KEY = os.getenv("SNMP_PRIV_KEY")
-SWITCH_IPS = ['10.1.10.2', '10.1.10.3']
 
 # InfluxDB setup
 INFLUX_URL = 'http://influxdb.home.virtualelephant.com'
-INFLUX_TOKEN = 'nZHQrwn2ONAps6aCVCOtGx8OCdjfMIYfXU_iIOqsqyH4Ar0_SJNvPP9G4nswy-JhNvXvs74yKds5T5Rp1gmwsQ=='
-ORG = 'virtualelephant'
-BUCKET = 'monitoring'
+INFLUX_BUCKET = os.getenv("INFLUX_BUCKET", "monitoring")
+INFLUX_TOKEN = os.getenv("INFLUX_TOKEN")
+INFLUX_ORG = os.getenv("INFLUX_ORG", "virtualelephant")
+TARGET_FILE = os.getenv("TARGET_FILE", "/app/devices.txt")
+
+# Interface we care about
+TARGET_INTERFACE_NAME = "Ethernet1/3"
 
 # OIDs from IF-MIB
 IFDESCR_OID       = '1.3.6.1.2.1.2.2.1.2'
@@ -37,7 +40,6 @@ IFOUTERRORS_OID   = '1.3.6.1.2.1.2.2.1.20'
 IFINDISCARDS_OID  = '1.3.6.1.2.1.2.2.1.13'
 IFOUTDISCARDS_OID = '1.3.6.1.2.1.2.2.1.19'
 
-# List of metric OIDs to collect
 METRIC_OIDS = {
     IFINOCTETS_OID: "in_octets",
     IFOUTOCTETS_OID: "out_octets",
@@ -46,6 +48,10 @@ METRIC_OIDS = {
     IFINDISCARDS_OID: "in_discards",
     IFOUTDISCARDS_OID: "out_discards"
 }
+
+def load_devices():
+    with open(TARGET_FILE, "r") as f:
+        return [line.strip() for line in f if line.strip()]
 
 def snmp_walk(oid, target_ip):
     results = {}
@@ -56,11 +62,11 @@ def snmp_walk(oid, target_ip):
                     privProtocol=usmDESPrivProtocol),
         UdpTransportTarget((target_ip, 161), timeout=2, retries=1),
         ContextData(),
-        ObjectType(ObjectIdentity('1.3.6.1.2.1')),  # Start of SNMP MIB tree
+        ObjectType(ObjectIdentity(oid)),
         lexicographicMode=False
     ):
         if errorIndication:
-            logger.info(f"SNMP error: {errorIndication}")
+            logger.error(f"SNMP error on {target_ip}: {errorIndication}")
             break
         elif errorStatus:
             logger.warning(f"{errorStatus.prettyPrint()} at {errorIndex and varBinds[int(errorIndex) - 1][0] or '?'}")
@@ -72,48 +78,57 @@ def snmp_walk(oid, target_ip):
                 results[index] = str(value)
     return results
 
-def collect_interface_stats(target_ip):
+def collect_target_interface_stats(target_ip):
     if_names = snmp_walk(IFDESCR_OID, target_ip)
-    stats_by_if = {idx: {"interface": if_names[idx]} for idx in if_names}
+    
+    # Find the index for Ethernet1/3
+    target_indices = [idx for idx, name in if_names.items() if name == TARGET_INTERFACE_NAME]
+    
+    if not target_indices:
+        logger.warning(f"{target_ip}: Target interface '{TARGET_INTERFACE_NAME}' not found.")
+        return None
+
+    idx = target_indices[0]  # Assume only one match
+    stats = {"interface": TARGET_INTERFACE_NAME}
 
     for oid, label in METRIC_OIDS.items():
         values = snmp_walk(oid, target_ip)
-        for idx, val in values.items():
+        value = values.get(idx, 0)
+        try:
+            stats[label] = int(value)
+        except (ValueError, TypeError):
             try:
-                stats_by_if[idx][label] = int(val)
-            except (ValueError, TypeError):
-                try:
-                    stats_by_if[idx][label] = int.from_bytes(bytes(val), byteorder='big')
-                except Exception as e:
-                    stats_by_if[idx][label] = 0
-                    logger.warning(f"Failed to convert value '{val}' for {label} on index {idx}: {e}")
+                stats[label] = int.from_bytes(bytes(value), byteorder='big')
+            except Exception as e:
+                stats[label] = 0
+                logger.warning(f"Failed to convert value '{value}' for {label} on {target_ip}: {e}")
 
-    return list(stats_by_if.values())
+    return stats
 
-def write_to_influx(target_ip,data):
+def write_to_influx(target_ip, iface_data):
     client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=ORG)
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
-    for iface in data:
-        point = Point("interface_stats") \
-            .tag("device", target_ip) \
-            .tag("interface", iface.get("interface", "unknown"))
+    point = Point("cisco_devices") \
+        .tag("device", target_ip) \
+        .tag("interface", iface_data["interface"])
 
-        for key, value in iface.items():
-            if key != "interface":
-                point.field(key, value)
+    for key, value in iface_data.items():
+        if key != "interface":
+            point.field(key, value)
 
-        point.time(time.time_ns(), WritePrecision.NS)
-        write_api.write(bucket=BUCKET, org=ORG, record=point)
+    point.time(time.time_ns(), WritePrecision.NS)
 
+    write_api.write(bucket=BUCKET, org=ORG, record=point)
     client.close()
 
 if __name__ == "__main__":
-    for ip in SWITCH_IPS:
+    devices = load_devices()
+    for ip in devices:
         logger.info(f"Collecting stats from {ip}")
-        stats = collect_interface_stats(ip)
+        stats = collect_target_interface_stats(ip)
         if stats:
             write_to_influx(ip, stats)
-            logger.info(f"Wrote {len(stats)} interface stats for {ip} to InfluxDB.")
+            logger.info(f"Wrote interface stats for {ip} to InfluxDB.")
         else:
-            logger.warning("No interface data collected from {ip}.")
+            logger.warning(f"No stats collected for {ip}.")
