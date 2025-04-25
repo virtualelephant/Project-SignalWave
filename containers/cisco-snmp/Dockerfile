@@ -16,8 +16,9 @@ WORKDIR /app
 
 # Copy custom files
 COPY snmp_to_influx.py /app/snmp_to_influx.py
+COPY cisco_snmp_polling.py /app/cisco_snmp_polling.py
 COPY devices.txt /app/devices.txt
 COPY interfaces.txt /app/interfaces.txt
 
-CMD ["python", "snmp_to_influx.py"]
-#CMD ["tail", "-f", "/dev/null"]
+#CMD ["python", "snmp_to_influx.py"]
+CMD ["tail", "-f", "/dev/null"]
