@@ -16,6 +16,7 @@ spec:
       containers:
         - name: snmp-interface-monitor
           image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:next
+          imagePullPolicy: Always
           env:
             - name: SNMP_USER
               value: "admin"
@@ -50,6 +51,7 @@ spec:
               value: "300"
         - name: snmp-system-monitor
           image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:next
+          imagePullPolicy: Always
           env:
             - name: SNMP_USER
               value: "admin"
