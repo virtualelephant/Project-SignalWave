@@ -1,3 +1,4 @@
+Ethernet1/2
 Ethernet1/3
 Ethernet1/4
 Ethernet1/5
@@ -15,6 +16,8 @@ Ethernet1/49
 Vlan10
 Vlan11
 Vlan12
+Vlan136
+Vlan137
 Vlan210
 Vlan211
 Vlan212
