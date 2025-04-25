@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy your script
-COPY snmp_to_influx.py .
+COPY snmp_to_influx.py /app/snmp_to_influx.py
+COPY devices.txt /app/devices.txt
 
 # Install Python dependencies
 RUN pip install --no-cache-dir \
