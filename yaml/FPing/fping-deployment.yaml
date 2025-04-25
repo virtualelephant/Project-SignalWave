@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fping-monitor
-  namespace: services
+  namespace: monitoring
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: fping
-        image: harbor.home.virtualelephant.com/ve-lab/fping-monitor:latest
+        image: harbor.home.virtualelephant.com/ve-lab/fping-monitor:debug
         imagePullPolicy: Always
         env:
         - name: INFLUX_URL
