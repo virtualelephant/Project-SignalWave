@@ -80,6 +80,7 @@ def snmp_walk(oid, target_ip):
 
 def collect_target_interface_stats(target_ip):
     if_names = snmp_walk(IFDESCR_OID, target_ip)
+    logger.info(f"{target_ip} - Interface names returned: {if_names}") # <-- DEBUG line
     
     # Find the index for Ethernet1/3
     target_indices = [idx for idx, name in if_names.items() if name == TARGET_INTERFACE_NAME]
@@ -93,6 +94,8 @@ def collect_target_interface_stats(target_ip):
 
     for oid, label in METRIC_OIDS.items():
         values = snmp_walk(oid, target_ip)
+        logger.info(f"{target_ip} - SNMP walk for {label} {oid}: {values}") # <-- DEBUG line\
+        
         value = values.get(idx, 0)
         try:
             stats[label] = int(value)
@@ -102,7 +105,7 @@ def collect_target_interface_stats(target_ip):
             except Exception as e:
                 stats[label] = 0
                 logger.warning(f"Failed to convert value '{value}' for {label} on {target_ip}: {e}")
-
+    logger.info(f"{target_ip} - Final collected stats: {stats}") # <-- DEBUG line
     return stats
 
 def write_to_influx(target_ip, iface_data):
