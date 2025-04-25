@@ -27,5 +27,5 @@ spec:
         - name: INFLUX_TOKEN
           valueFrom:
             secretKeyRef:
-              name: influxdb-fping-token
+              name: influxdb-monitoring-token
               key: token

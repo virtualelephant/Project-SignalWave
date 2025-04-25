@@ -38,3 +38,9 @@ spec:
               value: "virtualelephant"
             - name: INFLUX_BUCKET
               value: "monitoring"
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-monitoring-token
+                  key: token
+
