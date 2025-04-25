@@ -140,6 +140,20 @@ def write_to_influx(target_ip, iface_data, timestamp):
     write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
     client.close()
 
+def write_monitoring_metrics(target_ip, interfaces_polled, poll_duration_seconds, success, timestamp):
+    client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
+    write_api = client.write_api(write_options=SYNCHRONOUS)
+
+    point = Point("snmp_monitor_runtime") \
+        .tag("device", target_ip) \
+        .field("interfaces_polled", interfaces_polled) \
+        .field("poll_duration_seconds", float(poll_duration_seconds)) \
+        .field("success", int(success)) \
+        .time(timestamp, WritePrecision.S)
+
+    write_api.write(bucket=INFLUX_BUCKET, org=INFLUX_ORG, record=point)
+    client.close()
+
 # ---------------------------
 # Main Polling Loop
 # ---------------------------
@@ -155,17 +169,28 @@ if __name__ == "__main__":
             rounded_time = round_time_to_interval(now)
 
             for ip in devices:
+                start_time = time.time()  # Start timer
                 logger.info(f"Collecting stats from {ip}")
+                success = False
                 stats_list = collect_target_interface_stats(ip, interfaces)
                 if stats_list:
                     for iface_stats in stats_list:
                         write_to_influx(ip, iface_stats, timestamp=rounded_time)
                     logger.info(f"Wrote {len(stats_list)} interface stats for {ip} to InfluxDB.")
+                    success = True
                 else:
                     logger.warning(f"No stats collected for {ip}.")
+
+                end_time = time.time()
+                poll_duration = end_time - start_time
+                logger.info(f"Polling {ip} completed in {poll_duration:.2f} seconds.")
+
+                # Write monitoring metrics
+                write_monitoring_metrics(ip, len(stats_list), poll_duration, success, rounded_time)
 
         except Exception as e:
             logger.error(f"Polling cycle failed: {e}")
 
         logger.info(f"Sleeping for {POLL_INTERVAL} seconds...")
         time.sleep(POLL_INTERVAL)
+
