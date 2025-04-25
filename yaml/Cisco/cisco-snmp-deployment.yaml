@@ -48,9 +48,6 @@ spec:
               value: "/app/interfaces.txt"
             - name: POLL_INTERVAL_SECONDS
               value: "300"
-          volumeMounts:
-            - name: snmp-monitoring-config
-              mountPath: /app
         - name: snmp-system-monitor
           image: harbor.home.virtualelephant.com/ve-lab/cisco-snmp-monitor:next
           env:
@@ -83,10 +80,3 @@ spec:
               value: "/app/system_devices.txt"  # Path to system polling targets
             - name: POLL_INTERVAL_SECONDS
               value: "300"
-          volumeMounts:
-            - name: snmp-monitoring-config
-              mountPath: /app
-      volumes:
-        - name: snmp-monitoring-config
-          configMap:
-            name: snmp-monitoring-config  # This needs to exist and have your *.txt files inside it
