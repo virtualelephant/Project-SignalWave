@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snmp-monitoring
+  name: snmp-cisco-monitoring
   namespace: monitoring
 spec:
   replicas: 1
