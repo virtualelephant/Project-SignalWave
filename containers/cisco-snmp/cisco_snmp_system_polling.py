@@ -38,11 +38,8 @@ POLL_INTERVAL = int(os.getenv("POLL_INTERVAL_SECONDS", "300"))  # default 5 min
 # ---------------------------
 # OIDs for System Stats
 # ---------------------------
-SYS_UPTIME_OID = '1.3.6.1.2.1.1.3.0'  # sysUpTimeInstance
-CPU_LOAD_OID = '1.3.6.1.4.1.9.2.1.58.0'  # cpmCPUTotal5minRev
-MEMORY_USED_OID = '1.3.6.1.4.1.9.9.48.1.1.1.5.1'  # Used memory pool
-MEMORY_FREE_OID = '1.3.6.1.4.1.9.9.48.1.1.1.6.1'  # Free memory pool
-TEMP_SENSOR_OID = '1.3.6.1.2.1.99.1.1.1.4.1'  # First temperature sensor value
+CPU_LOAD_OID = '1.3.6.1.4.1.9.9.305.1.1.1.0'
+MEMORY_USAGE_OID = '1.3.6.1.4.1.9.9.305.1.1.2.0'
 
 # ---------------------------
 # Helper Functions
@@ -83,11 +80,8 @@ def snmp_get(oid, target_ip):
 
 def collect_system_stats(target_ip):
     stats = {}
-    stats["sys_uptime"] = snmp_get(SYS_UPTIME_OID, target_ip)
-    stats["cpu_load"] = snmp_get(CPU_LOAD_OID, target_ip)
-    stats["memory_used"] = snmp_get(MEMORY_USED_OID, target_ip)
-    stats["memory_free"] = snmp_get(MEMORY_FREE_OID, target_ip)
-    stats["temperature_celsius"] = snmp_get(TEMP_SENSOR_OID, target_ip)
+    stats["cpu_load_percent"] = snmp_get(CPU_LOAD_OID, target_ip)
+    stats["memory_usage_percent"] = snmp_get(MEMORY_USAGE_OID, target_ip)
     return stats
 
 def write_system_metrics(target_ip, system_data, timestamp):
