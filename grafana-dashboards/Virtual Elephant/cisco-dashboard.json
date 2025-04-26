@@ -1,0 +1,1974 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 43,
+    "links": [],
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 7,
+        "panels": [],
+        "title": "Uplink Ethernet Interfaces",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 24,
+          "x": 0,
+          "y": 1
+        },
+        "id": 1,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/49\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/49\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "Uplink to Spine (Ethernet1/49)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 24,
+          "x": 0,
+          "y": 7
+        },
+        "id": 2,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/48\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/48\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "Uplink to pfSense (Ethernet1/48)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 24,
+          "x": 0,
+          "y": 13
+        },
+        "id": 3,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/43\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/43\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "Uplink 1 to Synology (Ethernet1/43)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 24,
+          "x": 0,
+          "y": 19
+        },
+        "id": 4,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/44\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/44\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "Uplink 1 to Synology (Ethernet1/44)",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 25
+        },
+        "id": 8,
+        "panels": [],
+        "title": "ESXi Ethernet Interfaces",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 26
+        },
+        "id": 5,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/3\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/3\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "esxi01 (Ethernet1/3)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 26
+        },
+        "id": 6,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/5\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/5\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "esxi02 (Ethernet1/5)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 32
+        },
+        "id": 10,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/7\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/7\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "esxi03 (Ethernet1/7)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 32
+        },
+        "id": 11,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/9\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/9\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "esxi04 (Ethernet1/9)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 38
+        },
+        "id": 12,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/11\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Ethernet1/11\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "esxi05 (Ethernet1/11)",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 44
+        },
+        "id": 9,
+        "panels": [],
+        "title": "VLAN Interfaces",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 45
+        },
+        "id": 13,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan10\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan10\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 10 (User)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 45
+        },
+        "id": 14,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan11\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan11\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 11 (iSCSI)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 45
+        },
+        "id": 15,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan12\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan12\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 12 (iSCSI)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 51
+        },
+        "id": 16,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan210\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan210\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 210 (VM Management)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 51
+        },
+        "id": 17,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan211\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan211\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 211 (Host Management)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 51
+        },
+        "id": 18,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan212\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan212\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 212 (vMotion)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 57
+        },
+        "id": 21,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan213\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan213\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 213 (vSAN)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 57
+        },
+        "id": 19,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan611\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan611\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 611 (Overlay Network 1)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "fej9n2lkrpkowb"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "Mbits"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 57
+        },
+        "id": 20,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan612\" and\r\n    r._field == \"in_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 }))\r\n",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "fej9n2lkrpkowb"
+            },
+            "hide": false,
+            "query": "from(bucket: \"monitoring\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => \r\n    r._measurement == \"cisco_devices\" and\r\n    (r.device == \"10.1.10.2\" or r.device == \"10.1.10.3\") and\r\n    r.interface == \"Vlan612\" and\r\n    r._field == \"out_octets\"\r\n  )\r\n  |> derivative(unit: 1s, nonNegative: true)\r\n  |> map(fn: (r) => ({ r with _value: float(v: r._value) * 8.0 / 1000000.0 * -1.0 }))\r\n",
+            "refId": "B"
+          }
+        ],
+        "title": "VLAN 612 (Overlay Network 2)",
+        "type": "timeseries"
+      }
+    ],
+    "preload": false,
+    "schemaVersion": 41,
+    "tags": [
+      "virtualelephant",
+      "kubernetes",
+      "prometheus",
+      "influxdb"
+    ],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "Virtual Elephant / Home Lab / Cisco Devices",
+    "uid": "bek03shxnmoe8a",
+    "version": 7
+  }
