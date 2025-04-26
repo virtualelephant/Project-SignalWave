@@ -16,15 +16,22 @@ This project is ideal for developers, architects, and DevOps engineers looking t
 
 # Repo Structure
 
-- Ansible
 - Containers
 - Core-Services
 - Grafana-Dashboards
 - PowerCLI
 - YAML
 
-# Grafana Dashboard
+# Containers
+These are the containers used by many of the applications running within the Kubernetes clusters. These containers are leveraged for various activities, some are actual
+applications running or providing a service, others are used for monitoring various aspects of both the physical infrastructure and the VMware Cloud Foundation supporting
+software components.
 
+- cisco-snmp: `READY` Container for monitoring physical network devices over SNMP.
+- fping: `READY` Container for testing external connectivity to a set of user-specified endpoints.
+- weatherapp: `WIP` Container for gathering weather information for a set of user-specified endpoints.
+
+# Grafana Dashboards
 Project SignalWave provides a set of dasbhoards that show off the core components of the Kubernetes cluster and the applications running within it. These may need to be modified
 based on the container repository you use, as well as panel names based on your physical hardware.
 
