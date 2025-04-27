@@ -45,6 +45,8 @@ spec:
           value: "http://elasticsearch.monitoring.svc.cluster.local:9200"
         - name: LOG_INDEX
           value: "logs-publisher-service"
+        - name: RABBITMQ_HOST
+          value: "rabbitmq.services.svc.cluster.local"
 ---
 apiVersion: v1
 kind: Service
