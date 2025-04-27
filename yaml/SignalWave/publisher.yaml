@@ -47,6 +47,16 @@ spec:
           value: "logs-publisher-service"
         - name: RABBITMQ_HOST
           value: "rabbitmq.services.svc.cluster.local"
+        - name: RABBITMQ_USER
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: RABBITMQ_USER
+        - name: RABBITMQ_PASS
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-credentials
+              key: RABBITMQ_PASS
 ---
 apiVersion: v1
 kind: Service
