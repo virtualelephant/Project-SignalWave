@@ -24,7 +24,10 @@ class JsonFormatter(logging.Formatter):
 class ElasticsearchHandler(logging.Handler):
     def __init__(self, host, index):
         super().__init__()
-        self.es = Elasticsearch([host])
+        self.es = Elasticsearch(
+            [host],
+            verify_certs=False
+        )
         self.index = index
     
     def emit(self, record):
