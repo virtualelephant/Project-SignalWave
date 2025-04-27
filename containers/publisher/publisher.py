@@ -26,7 +26,8 @@ class ElasticsearchHandler(logging.Handler):
         super().__init__()
         self.es = Elasticsearch(
             [host],
-            verify_certs=False
+            verify_certs=False,
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
         )
         self.index = index
     
