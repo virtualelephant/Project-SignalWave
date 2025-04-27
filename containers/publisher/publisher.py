@@ -32,7 +32,7 @@ class ElasticsearchHandler(logging.Handler):
             log_entry = json.loads(self.format(record))
             self.es.index(index=self.index, body=log_entry)
         except Exception as e:
-            logger.error(f"Failed to send log to Elasticsearch: {e}")
+            print(f"[ElasticsearchHandler] Failed to send log to Elasticsearch: {e}")
 
 # Elasticsearch configuration
 ELASTICSEARCH_HOST = os.getenv('ELASTICSEARCH_HOST', 'http://elasticsearch.kube-logging.svc.cluster.local:9200')
