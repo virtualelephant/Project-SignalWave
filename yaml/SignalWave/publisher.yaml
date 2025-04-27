@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: publisher
+  name: signalwave-publisher
   namespace: signalwave
 
 spec:
@@ -42,7 +42,7 @@ spec:
           failureThreshold: 3
         env:
         - name: ELASTICSEARCH_HOST
-          value: "http://elasticsearch.monitoring.svc.cluster.local:9200"
+          value: "http://elasticsearch.services.svc.cluster.local:9200"
         - name: LOG_INDEX
           value: "logs-publisher-service"
         - name: RABBITMQ_HOST
@@ -51,11 +51,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: publisher
+  name: signalwave-publisher
   namespace: signalwave
 spec:
   selector:
-    app: publisher
+    app: signalwave-publisher
   ports:
     - protocol: TCP
       port: 8080
