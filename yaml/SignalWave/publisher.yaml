@@ -41,10 +41,6 @@ spec:
           timeoutSeconds: 2
           failureThreshold: 3
         env:
-        - name: ELASTICSEARCH_HOST
-          value: "https://elasticsearch-master.services.svc.cluster.local:9200"
-        - name: LOG_INDEX
-          value: "logs-publisher-service"
         - name: RABBITMQ_HOST
           value: "rabbitmq.services.svc.cluster.local"
         - name: RABBITMQ_USER
