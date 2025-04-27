@@ -29,6 +29,8 @@ software components.
 
 - cisco-snmp: `READY` Container for monitoring physical network devices over SNMP.
 - fping: `READY` Container for testing external connectivity to a set of user-specified endpoints.
+- signalwave-publisher: `READY` Container for getting external connectivity metrics to website and pushing them to RabbitMQ
+- signalwave-reader: `READY` Container for pulling metrics off of RabbitMQ and publishing to InfluxDB
 - weatherapp: `WIP` Container for gathering weather information for a set of user-specified endpoints.
 
 # Grafana Dashboards
@@ -59,7 +61,7 @@ Use as a base for developing advanced microservices.
 ## Technology Stack
 
 - Messaging: RabbitMQ
-- Monitoring: Prometheus, Grafana
+- Monitoring: Prometheus, Grafana, InfluxDB
 - Logging: Fluentd, Elasticsearch, Kibana
 - Containerization: Docker
 - Orchestration: Kubernetes
