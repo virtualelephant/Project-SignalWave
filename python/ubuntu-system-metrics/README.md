@@ -141,12 +141,6 @@ sudo journalctl -u metrics-collector -f
 
 ---
 
-## License
-
-MIT License
-
----
-
 ## Author
 
 Virtual Elephant Consulting, LLC
