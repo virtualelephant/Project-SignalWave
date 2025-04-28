@@ -1,0 +1,7 @@
+influxdb:
+  url: "http://influxdb.home.virtualelephant.com"       # Change this to your InfluxDB URL
+  token: "nZHQrwn2ONAps6aCVCOtGx8OCdjfMIYfXU_iIOqsqyH4Ar0_SJNvPP9G4nswy-JhNvXvs74yKds5T5Rp1gmwsQ=="       # InfluxDB API token
+  org: "virtualelephant"                   # Organization name in InfluxDB
+  bucket: "monitoring"              # Bucket name
+
+poll_interval_minutes: 1            # Options: 1, 3, or 5

@@ -1,0 +1,3 @@
+psutil
+influxdb-client
+pyyaml
