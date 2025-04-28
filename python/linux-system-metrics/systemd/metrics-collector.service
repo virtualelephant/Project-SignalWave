@@ -1,5 +1,5 @@
 [Unit]
-Description=Ubuntu VM System Metrics Collector
+Description=Linux VM System Metrics Collector
 After=network.target
 
 [Service]
