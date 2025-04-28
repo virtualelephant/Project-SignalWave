@@ -1,4 +1,4 @@
-# Ubuntu System Metrics Collector
+# Linux System Metrics Collector
 
 A lightweight Python application that runs on an Ubuntu VM, gathers detailed system metrics, and pushes them into InfluxDB.
 
@@ -75,10 +75,19 @@ cd ubuntu-system-metrics
 
 ### 2. Create and Activate a Virtual Environment (Optional but Recommended)
 
+If running Ubuntu:
+
 ```bash
-sudo apt install python3-venv
+sudo apt install python3-venv pip
 python3 -m venv venv
 source venv/bin/activate
+```
+
+If running RHEL or CentOS Stream
+
+```bash
+sudo dnf update
+sudo dnf install python3 python3-devel gcc pip
 ```
 
 ### 3. Install Python Requirements

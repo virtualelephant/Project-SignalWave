@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User=deploy
-WorkingDirectory=/opt/ubuntu-system-metrics
-ExecStart=/usr/bin/python3 /opt/ubuntu-system-metrics/metrics_collector.py
+WorkingDirectory=/opt/linux-system-metrics
+ExecStart=/usr/bin/python3 /opt/linux-system-metrics/metrics_collector.py
 Restart=always
 RestartSec=5
 
