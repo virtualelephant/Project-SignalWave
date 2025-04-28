@@ -53,7 +53,7 @@ All metrics are tagged with the **hostname** of the VM for easy multi-host aggre
 ## Directory Structure
 
 ```bash
-ubuntu-system-metrics/
+linux-system-metrics/
 ├── metrics_collector.py
 ├── config.yaml
 ├── requirements.txt
@@ -65,15 +65,7 @@ ubuntu-system-metrics/
 
 ## Installation Instructions
 
-### 1. Clone or Download the Repository
-
-```bash
-cd /opt
-sudo git clone <repo-url> ubuntu-system-metrics
-cd ubuntu-system-metrics
-```
-
-### 2. Create and Activate a Virtual Environment (Optional but Recommended)
+### 1. Create and Activate a Virtual Environment (Optional but Recommended)
 
 If running Ubuntu:
 
@@ -90,13 +82,13 @@ sudo dnf update
 sudo dnf install python3 python3-devel gcc pip
 ```
 
-### 3. Install Python Requirements
+### 2. Install Python Requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure InfluxDB Connection
+### 3. Configure InfluxDB Connection
 
 Edit `config.yaml`:
 
@@ -110,7 +102,7 @@ influxdb:
 poll_interval_minutes: 1  # Options: 1, 3, or 5
 ```
 
-### 5. Setup systemd Service
+### 4. Setup systemd Service
 
 ```bash
 sudo cp systemd/metrics-collector.service /etc/systemd/system/
