@@ -11,7 +11,7 @@ function App() {
     setError('');
     setResponse('');
     try {
-      const res = await fetch('http://codellama-service.default.svc.cluster.local/generate', {
+      const res = await fetch('http://codellama-service.codellama.svc.cluster.local/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
