@@ -7,6 +7,10 @@ prometheusOperator:
 
 prometheus:
   prometheusSpec:
+    replicas: 2
+    externalLabels:
+      cluster: "ve-promtheus-cluster"
+      replica: "${REPLICA}"
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -28,11 +32,51 @@ prometheus:
     retention: 7d
     resources:
       requests:
-        memory: 400Mi
-        cpu: 200m
+        memory: 1Gi
+        cpu: 500m
       limits:
-        memory: 2Gi
-        cpu: "1"
+        memory: 4Gi
+        cpu: "2"
+    livenessProbe:
+      httpGet:
+        path: /-/healthy
+        port: 9090
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /-/healthy
+        port: 9090
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    thanos:
+      enabled: true
+      version: v0.36.0
+      objectStorageConfig:
+        key: thanos.yaml
+        name: thanos-objstore-config
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+thanos:
+  query:
+    enabled: true
+    replicaLabel: "replica"
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 1Gi
+    service:
+      type: ClusterIP
+      port: 9090
 
 alertmanager:
   enabled: true
@@ -54,6 +98,26 @@ grafana:
   serviceMonitor:
     enabled: true
   defaultDashboardsTimezone: UTC-6
+  resources:
+    requests:
+      cpu: 250m
+      memory: 750Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  pod:
+    livenessProbe:
+      httpGet:
+        path: /api/health
+        port: 3000
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /api/health
+        port: 3000
+      initialDelaySeconds: 5
+      periodSeconds: 5
 
 rbac:
   create: true
