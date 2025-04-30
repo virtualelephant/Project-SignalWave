@@ -1,0 +1,43 @@
+- name: Deploy Core Kubernetes Services with Helm
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  roles:
+    - role: helm_deploy
+      vars:
+        helm_releases:
+          - name: prometheus
+            chart: prometheus-community/kube-prometheus-stack
+            namespace: monitoring
+            values_file: values/prometheus-values.yaml
+
+          - name: influxdb
+            chart: bitnami/influxdb
+            namespace: services
+            values_file: values/influxdb-values.yaml
+
+          - name: rabbitmq
+            chart: bitnami/rabbitmq
+            namespace: services
+            values_file: values/rabbitmq-values.yaml
+
+          - name: longhorn
+            chart: longhorn/longhorn
+            namespace: longhorn-system
+            values_file: values/longhorn-values.yaml
+
+          - name: elasticsearch
+            chart: elastic/elasticsearch
+            namespace: elasticsearch
+            values_file: values/elasticsearch-values.yaml
+
+          - name: kibana
+            chart: elastic/kibana
+            namespace: elasticsearch
+            values_file: values/kibana-values.yaml
+
+          - name: fluentd
+            chart: bitnami/fluentd
+            namespace: logging
+            values_file: values/fluentd-values.yaml

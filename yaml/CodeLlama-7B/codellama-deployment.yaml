@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codellama-deployment
+  namespace: codellama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codellama
+  template:
+    metadata:
+      labels:
+        app: codellama
+    spec:
+      containers:
+      - name: codellama
+        image: harbor.home.virtualelephant.com/ve-lab/llama-ai:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "4"
+          limits:
+            memory: "16Gi"
+            cpu: "8"
+        volumeMounts:
+        - name: model-storage
+          mountPath: /model
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: codellama-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: codellama-pvc
+  namespace: codellama
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard-retain
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codellama-service
+  namespace: codellama
+spec:
+  selector:
+    app: codellama
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: ClusterIP
