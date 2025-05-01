@@ -16,6 +16,7 @@ This project is ideal for developers, architects, and DevOps engineers looking t
 
 # Repo Structure
 
+- Ansible
 - Containers
 - Core-Services
 - Grafana-Dashboards
@@ -24,14 +25,21 @@ This project is ideal for developers, architects, and DevOps engineers looking t
 - YAML
 
 ---
+# Ansible
+`WIP` Ansible playbooks for standing up a Kubernetes environment identical to the version running inside my home lab environment. Uses the Helm repos for standing up all the required services to support Project SignalWave and all of it's components.
+
+---
 # Containers
 These are the containers used by many of the applications running within the Kubernetes clusters. These containers are leveraged for various activities, some are actual
 applications running or providing a service, others are used for monitoring various aspects of both the physical infrastructure and the VMware Cloud Foundation supporting
 software components.
 
 - cisco-snmp: `READY` Container for monitoring physical network devices over SNMP.
+- codellama-backend: `WIP` Container for running the CodeLlama-7B model locally.
+- codellama-frontend: `WIP` Container for interacting with locally running CodeLlama-7B model.
 - fping: `READY` Container for testing external connectivity to a set of user-specified endpoints.
 - mtg-publisher: `READY` Container for pulling Magic:The Gathering cards off public API and pushing them to RabbitMQ.
+- python-debug: `READY` Container for testing Python code in an isolated environment that can edit files and pull directly from a Git repo.
 - signalwave-publisher: `READY` Container for getting external connectivity metrics to website and pushing them to RabbitMQ.
 - signalwave-reader: `READY` Container for pulling metrics off of RabbitMQ and publishing to InfluxDB.
 - weatherapp: `WIP` Container for gathering weather information for a set of user-specified endpoints.
