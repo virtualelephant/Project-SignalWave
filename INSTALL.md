@@ -133,3 +133,30 @@ kubectl apply -f influx-reader.yaml
 ```
 
 From there, a custom Grafana dashboard leverages the data metrics to create a dashboard showing external connectivity to the given set of external websites for the user to monitor. Alerts can be generated through Grafana based on connectivity latency or if the site goes offline for longer than X polling intervals.
+
+## Install local CodeLlama AI Model
+
+Having a local model to run internally and then train based off the type of projects and coding I am working on is a good exercise is learning more about AI models and what it takes to writes agents, interfaces, etc. Using Grok, I've built a backend that leverages the CodeLlama-7B model (https://huggingface.co/codellama/CodeLlama-7b-hf). The frontend then provides a way of interacing the AI model to write code.
+
+***This is currently a WIP and modifications may be required***
+
+To build the containers required:
+
+```bash
+cd containers/codellama-backend
+docker build -t --no-cache codellama-backend:latest .
+docker push YOUR.REPO/LIBRARY/codellama-backend:lastest
+
+cd containers/codellama-frontend
+docker build -t --no-cache codellama-frontend:latest .
+docker push YOUR.REPO/LIBRARY/codellama-frontend:latest
+```
+
+To run the AI model inside Kubernetes:
+
+```
+kubectl create namespace codellama
+kubectl apply yaml/CodeLlama-7B/codellama-deployment.yaml
+kubectl apply yaml/CodeLlama-7B/codellama-frontend-deployment.yaml
+kubectl apply yaml/CodeLlama-7B/codellama-frontend-ingress.yaml
+```

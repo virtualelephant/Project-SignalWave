@@ -19,7 +19,7 @@ spec:
                 - name: INFLUXDB_ORG
                   value: "virtualelephant"
                 - name: INFLUXDB_BUCKET
-                  value: "weather"
+                  value: "monitoring"
                 - name: INFLUXDB_TOKEN
                   valueFrom:
                     secretKeyRef:

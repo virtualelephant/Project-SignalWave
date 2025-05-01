@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 INFLUX_URL = os.getenv("INFLUXDB_URL", "http://influxdb.monitoring.svc.cluster.local:8086")
 INFLUX_TOKEN = os.getenv("INFLUXDB_TOKEN")
 INFLUX_ORG = os.getenv("INFLUXDB_ORG", "virtualelephant")
-INFLUX_BUCKET = os.getenv("INFLUXDB_BUCKET", "weather")
+INFLUX_BUCKET = os.getenv("INFLUXDB_BUCKET", "monitoring")
 
 GEOCODE_URL = "https://nominatim.openstreetmap.org/search"
 
