@@ -8,6 +8,7 @@
 kubectl create namespace signalwave
 kubectl create namespace services
 kubectl create namespace monitoring
+kubectl create namespace codellama
 ```
 
 ## Installing NFS Client Provisioner
@@ -116,21 +117,19 @@ kubectl apply -f influxdb-ingress.yaml
 
 ## Install the custom SignalWave application
 The first part of the SignalWave application is the Publisher microservice. The application is a small container housing a single script `publisher.py`.
-The Publisher microservice gathers a number of networking metrics from the environment out to the 'virtualelephant.com' website as a means to monitor
-different network latencies.
+
+The Publisher microservice gathers a number of networking metrics from the environment out to the 'virtualelephant.com' website as a means to monitor different network latencies.
 
 To start the microservice, execute the following command:
 ```
 kubectl apply -f publisher.yaml
 ```
 
-The SignalWave application has three additional microservices that make up the application. The data written to the RabbitMQ service will be pulled
-off of the queue and input into an RRD compatible data format. From there the data is used to generate a number of graphs, one per metric, and finally the frontend
-microservice runs NGINX to display the graphs in a HTML format running behind a HAProxy ingress object. 
+The second part of the SignalWave application is the Influx Reader microservice. The application is a small container housing a single script `influx-writer.py`. The Python script reads the metrics off of the RabbitMQ queue and then writes the metrics data into the InfluxDB `monitoring` bucket running in the `services` namespace.
+
 ```
-kubectl apply -f rrd-storage.yaml
-kubectl apply -f rrd-reader.yaml
-kubectl apply -f rrd-graph.yaml
-kubectl apply -f frontend-nginx.yaml
-kubectl apply -f frontend-ingress.yaml
+kubectl apply -f influxdb-secret.yaml
+kubectl apply -f influx-reader.yaml
 ```
+
+From there, a custom Grafana dashboard leverages the data metrics to create a dashboard showing external connectivity to the given set of external websites for the user to monitor. Alerts can be generated through Grafana based on connectivity latency or if the site goes offline for longer than X polling intervals.
