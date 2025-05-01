@@ -95,7 +95,7 @@ Go to the Web Console - http://kibana.YOUR.DOMAIN.NAME
 
 ## Installing RabbitMQ
 
-I am moving away from deploying RabbitmQ with the Operator to doing it with Helm. The Helm leverages a values file and can be deployed with the following command:
+I am moving away from deploying RabbitmQ with the Operator to doing it with Helm. The Helm installation leverages a values file and can be deployed with the following command:
 
 ```bash
 helm install rabbitmq bitnami/rabbitmq \
@@ -147,9 +147,9 @@ From there, a custom Grafana dashboard leverages the data metrics to create a da
 
 ## Install local CodeLlama AI Model
 
-Having a local model to run internally and then train based off the type of projects and coding I am working on is a good exercise is learning more about AI models and what it takes to writes agents, interfaces, etc. Using Grok, I've built a backend that leverages the CodeLlama-7B model (https://huggingface.co/codellama/CodeLlama-7b-hf). The frontend then provides a way of interacing the AI model to write code.
-
 ***This is currently a WIP and modifications may be required***
+
+Having a local model to run internally and then train it based off the type of projects and coding I am working on is a good exercise is learning more about AI models and what it takes to writes agents, interfaces, etc. Using Grok, I've built a backend that leverages the CodeLlama-7B model (https://huggingface.co/codellama/CodeLlama-7b-hf). The frontend then provides a way of interacting with the AI model to write code.
 
 To build the containers required:
 
