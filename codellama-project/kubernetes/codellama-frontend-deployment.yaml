@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codellama-frontend-deployment
+  namespace: codellama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codellama-frontend
+  template:
+    metadata:
+      labels:
+        app: codellama-frontend
+    spec:
+      containers:
+      - name: codellama-frontend
+        image: harbor.home.virtualelephant.com/ve-lab/codellama-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"

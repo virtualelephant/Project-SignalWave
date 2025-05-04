@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codellama-deployment
+  namespace: codellama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codellama
+  template:
+    metadata:
+      labels:
+        app: codellama
+    spec:
+      containers:
+      - name: codellama
+        image: harbor.home.virtualelephant.com/ve-lab/codellama-ai:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "4"
+          limits:
+            memory: "16Gi"
+            cpu: "8"
+        env:
+        - name: DB_HOST
+          value: "postgres-service.codellama.svc.cluster.local"
+        - name: DB_NAME
+          value: "codellama"
+        - name: DB_USER
+          value: "codellama"
+        - name: DB_PASSWORD
+          value: "securepassword"
+        - name: DB_PORT
+          value: "5432"
+        volumeMounts:
+        - name: model-storage
+          mountPath: /model
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: codellama-pvc
