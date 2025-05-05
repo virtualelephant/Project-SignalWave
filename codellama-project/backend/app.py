@@ -10,7 +10,7 @@ from datetime import datetime
 app = FastAPI()
 
 # Environment variables for PostgreSQL
-DB_HOST = os.getenv("DB_HOST", "postgres-service.default.svc.cluster.local")
+DB_HOST = os.getenv("DB_HOST", "postgres-service.codellama.svc.cluster.local")
 DB_NAME = os.getenv("DB_NAME", "codellama")
 DB_USER = os.getenv("DB_USER", "codellama")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "securepassword")
@@ -53,7 +53,6 @@ def load_model():
         model_path,
         cache_dir=MODEL_DIR,
         torch_dtype=torch.float16,
-        load_in_8bit=True,
         device_map="auto"
     )
     return tokenizer, model

@@ -30,10 +30,10 @@ spec:
         - containerPort: 8000
         resources:
           requests:
-            memory: "8Gi"
+            memory: "12Gi"
             cpu: "4"
           limits:
-            memory: "16Gi"
+            memory: "20Gi"
             cpu: "8"
         env:
         - name: DB_HOST
