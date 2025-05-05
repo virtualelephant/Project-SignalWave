@@ -31,7 +31,10 @@ spec:
         - name: POSTGRES_USER
           value: "codellama"
         - name: POSTGRES_PASSWORD
-          value: "securepassword"
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
