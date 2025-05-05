@@ -5,21 +5,21 @@
 * Backend
 ```bash
 cd backend
-docker build -t --no-cache harbor.home.virtualelephant.com/ve-lab/codeama-ai:latest .
+docker build --no-cache -t harbor.home.virtualelephant.com/ve-lab/codellama-ai:latest .
 docker push harbor.home.virtualelephant.com/ve-lab/codellama-ai:latest
 ```
 
 * Frontend
 ```bash
 cd frontend
-docker build -t --no-cache harbor.home.virtualelephant.com/ve-lab/codellama-frontend:latest .
+docker build --no-cache -t harbor.home.virtualelephant.com/ve-lab/codellama-frontend:latest .
 docker push harbor.home.virtualelephant.com/ve-lab/codellama-frontend:latest
 ```
 
 * Fine-Tuning
 ```bash
 cd fine-tuning
-docker build -t --no-cache harbor.home.virtualelephant.com/ve-lab/codellama-fine-tuning:latest .
+docker build --no-cache -t harbor.home.virtualelephant.com/ve-lab/codellama-fine-tuning:latest .
 docker push harbor.home.virtualelephant.com/ve-lab/codellama-fine-tuning:latest
 ```
 

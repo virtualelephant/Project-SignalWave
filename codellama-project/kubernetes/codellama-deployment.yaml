@@ -13,6 +13,15 @@ spec:
       labels:
         app: codellama
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ai-role
+                operator: In
+                values:
+                - ai-backend
       containers:
       - name: codellama
         image: harbor.home.virtualelephant.com/ve-lab/codellama-ai:latest
