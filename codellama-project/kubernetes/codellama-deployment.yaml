@@ -43,7 +43,10 @@ spec:
         - name: DB_USER
           value: "codellama"
         - name: DB_PASSWORD
-          value: "securepassword"
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
         - name: DB_PORT
           value: "5432"
         volumeMounts:
