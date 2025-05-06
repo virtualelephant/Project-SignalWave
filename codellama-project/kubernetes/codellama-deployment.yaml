@@ -30,11 +30,11 @@ spec:
         - containerPort: 8000
         resources:
           requests:
-            memory: "16Gi"
-            cpu: "4"
-          limits:
-            memory: "20Gi"
+            memory: "24Gi"
             cpu: "8"
+          limits:
+            memory: "32Gi"
+            cpu: "816"
         env:
         - name: DB_HOST
           value: "postgres-service.codellama.svc.cluster.local"
