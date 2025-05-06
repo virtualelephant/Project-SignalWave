@@ -2,20 +2,20 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: codellama-frontend-ingress
+  name: codellama-ingress
   namespace: codellama
   annotations:
     ingress.class: "haproxy"
 spec:
   rules:
-  - host: codellama.home.virtualelephant.com
+  - host: codellama-backend.home.virtualelephant.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: codellama-frontend-service
+            name: codellama-service
             port:
               number: 80
               
