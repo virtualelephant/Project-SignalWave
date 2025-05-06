@@ -11,7 +11,7 @@ function App() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch('http://codellama-backend.home.virtualelephant.com/history');
+        const res = await fetch('http://codellama-service.codellama.svc.cluster.local/history');
         const data = await res.json();
         setChatHistory(data.history);
       } catch (err) {
@@ -26,7 +26,7 @@ function App() {
     setError('');
     setResponse('');
     try {
-      const res = await fetch('http://codellama-backend.home.virtualelephant.com/generate', {
+      const res = await fetch('http://codellama-service.codellama.svc.cluster.local/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
@@ -34,7 +34,7 @@ function App() {
       const data = await res.json();
       setResponse(data.code);
       // Refresh history
-      const historyRes = await fetch('http://codellama-backend.home.virtualelephant.com/history');
+      const historyRes = await fetch('http://codellama-service.codellama.svc.cluster.local/history');
       const historyData = await historyRes.json();
       setChatHistory(historyData.history);
     } catch (err) {

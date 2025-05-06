@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
@@ -8,12 +9,25 @@ from psycopg2.extras import RealDictCursor
 from datetime import datetime
 import logging
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
+# Set up logging with timestamps
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 logger.info("Starting app.py")
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://codellama.home.virtualelephant.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Environment variables for PostgreSQL
 DB_HOST = os.getenv("DB_HOST", "postgres-service.codellama.svc.cluster.local")
@@ -50,7 +64,6 @@ def init_db():
         logger.info("PostgreSQL database initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize PostgreSQL: {str(e)}")
-        # Allow startup to continue even if DB fails
 
 try:
     init_db()
