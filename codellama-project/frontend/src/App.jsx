@@ -46,7 +46,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-      <h1 className="text-3xl font-bold mb-6">CodeLlama Assistant</h1>
+      <h1 className="text-3xl font-bold mb-6">Virtual Elephant CodeLlama Assistant</h1>
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
         <textarea
           className="w-full p-2 border rounded-md mb-4"
