@@ -6,6 +6,12 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.info("Starting app.py")
 
 app = FastAPI()
 
@@ -21,87 +27,117 @@ MODEL_DIR = "/model/codellama-7b"
 
 # Initialize PostgreSQL connection
 def init_db():
-    conn = psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        port=DB_PORT
-    )
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS chat_history (
-            id SERIAL PRIMARY KEY,
-            prompt TEXT NOT NULL,
-            response TEXT NOT NULL,
-            timestamp TIMESTAMP NOT NULL
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            port=DB_PORT
         )
-    """)
-    conn.commit()
-    cursor.close()
-    conn.close()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS chat_history (
+                id SERIAL PRIMARY KEY,
+                prompt TEXT NOT NULL,
+                response TEXT NOT NULL,
+                timestamp TIMESTAMP NOT NULL
+            )
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        logger.info("PostgreSQL database initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize PostgreSQL: {str(e)}")
+        # Allow startup to continue even if DB fails
 
-init_db()
+try:
+    init_db()
+except Exception as e:
+    logger.error("Database initialization failed, but continuing startup")
 
 # Download and load CodeLlama-7B
 def load_model():
-    if not os.path.exists(MODEL_DIR):
-        os.makedirs(MODEL_DIR)
-    model_path = "/model/fine_tuned" if os.path.exists("/model/fine_tuned") else "codellama/CodeLlama-7b-hf"
-    tokenizer = AutoTokenizer.from_pretrained(model_path, cache_dir=MODEL_DIR)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path,
-        cache_dir=MODEL_DIR,
-        torch_dtype=torch.float16,
-        device_map="auto"
-    )
-    return tokenizer, model
+    try:
+        if not os.path.exists(MODEL_DIR):
+            os.makedirs(MODEL_DIR)
+        model_path = "/model/fine_tuned" if os.path.exists("/model/fine_tuned") else "codellama/CodeLlama-7b-hf"
+        logger.info(f"Loading model from {model_path}")
+        tokenizer = AutoTokenizer.from_pretrained(model_path, cache_dir=MODEL_DIR)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            cache_dir=MODEL_DIR,
+            torch_dtype=torch.float16,
+            device_map="auto"
+        )
+        logger.info("Model loaded successfully")
+        return tokenizer, model
+    except Exception as e:
+        logger.error(f"Failed to load model: {str(e)}")
+        raise
 
-tokenizer, model = load_model()
+try:
+    tokenizer, model = load_model()
+except Exception as e:
+    logger.error("Model loading failed, exiting")
+    raise
 
 class Prompt(BaseModel):
     prompt: str
 
 @app.post("/generate")
 async def generate_code(prompt: Prompt):
-    inputs = tokenizer(prompt.prompt, return_tensors="pt")
-    outputs = model.generate(inputs["input_ids"], max_length=200, num_return_sequences=1)
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
-    # Save to PostgreSQL
-    conn = psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        port=DB_PORT
-    )
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO chat_history (prompt, response, timestamp) VALUES (%s, %s, %s)",
-        (prompt.prompt, response, datetime.utcnow())
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
-    return {"code": response}
+    try:
+        inputs = tokenizer(prompt.prompt, return_tensors="pt")
+        outputs = model.generate(inputs["input_ids"], max_length=200, num_return_sequences=1)
+        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        
+        # Save to PostgreSQL
+        try:
+            conn = psycopg2.connect(
+                host=DB_HOST,
+                database=DB_NAME,
+                user=DB_USER,
+                password=DB_PASSWORD,
+                port=DB_PORT
+            )
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO chat_history (prompt, response, timestamp) VALUES (%s, %s, %s)",
+                (prompt.prompt, response, datetime.utcnow())
+            )
+            conn.commit()
+            cursor.close()
+            conn.close()
+            logger.info("Saved prompt and response to PostgreSQL")
+        except Exception as e:
+            logger.error(f"Failed to save to PostgreSQL: {str(e)}")
+        
+        return {"code": response}
+    except Exception as e:
+        logger.error(f"Error generating code: {str(e)}")
+        return {"error": str(e)}
 
 @app.get("/history")
 async def get_history():
-    conn = psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        port=DB_PORT
-    )
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    cursor.execute("SELECT prompt, response, timestamp FROM chat_history ORDER BY timestamp DESC")
-    history = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return {"history": history}
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            port=DB_PORT
+        )
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT prompt, response, timestamp FROM chat_history ORDER BY timestamp DESC")
+        history = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return {"history": history}
+    except Exception as e:
+        logger.error(f"Failed to fetch history: {str(e)}")
+        return {"error": str(e)}
 
 @app.get("/health")
 async def health_check():
