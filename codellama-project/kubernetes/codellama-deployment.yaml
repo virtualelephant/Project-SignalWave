@@ -34,7 +34,7 @@ spec:
             cpu: "8"
           limits:
             memory: "32Gi"
-            cpu: "816"
+            cpu: "16"
         env:
         - name: DB_HOST
           value: "postgres-service.codellama.svc.cluster.local"
