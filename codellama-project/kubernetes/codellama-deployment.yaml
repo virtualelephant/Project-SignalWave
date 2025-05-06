@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: codellama-deployment
+  name: codellama-backend
   namespace: codellama
 spec:
   replicas: 1
