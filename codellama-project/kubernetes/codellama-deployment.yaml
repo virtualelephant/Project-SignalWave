@@ -31,10 +31,10 @@ spec:
         resources:
           requests:
             memory: "24Gi"
-            cpu: "8"
+            cpu: "20"
           limits:
             memory: "32Gi"
-            cpu: "16"
+            cpu: "24"
         env:
         - name: DB_HOST
           value: "postgres-service.codellama.svc.cluster.local"
