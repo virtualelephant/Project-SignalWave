@@ -23,7 +23,7 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://codellama.home.virtualelephant.com"],
+    allow_origins=["http://ai.home.virtualelephant.com", "http://codellama.home.virtualelephant.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -78,10 +78,13 @@ def load_model():
         model_path = "/model/fine_tuned" if os.path.exists("/model/fine_tuned") else "codellama/CodeLlama-7b-hf"
         logger.info(f"Loading model from {model_path}")
         tokenizer = AutoTokenizer.from_pretrained(model_path, cache_dir=MODEL_DIR)
+        # Set pad_token_id explicitly
+        if tokenizer.pad_token_id is None:
+            tokenizer.pad_token_id = tokenizer.eos_token_id
         model = AutoModelForCausalLM.from_pretrained(
             model_path,
             cache_dir=MODEL_DIR,
-            torch_dtype=torch.float16,
+            torch_dtype=torch.bfloat16,  # Use bfloat16 for CPU compatibility
             device_map="auto"
         )
         logger.info("Model loaded successfully")
@@ -102,8 +105,24 @@ class Prompt(BaseModel):
 @app.post("/generate")
 async def generate_code(prompt: Prompt):
     try:
-        inputs = tokenizer(prompt.prompt, return_tensors="pt")
-        outputs = model.generate(inputs["input_ids"], max_length=200, num_return_sequences=1)
+        # Tokenize with attention mask and padding
+        inputs = tokenizer(
+            prompt.prompt,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            return_attention_mask=True
+        )
+        # Ensure pad_token_id is set
+        if tokenizer.pad_token_id is None:
+            tokenizer.pad_token_id = tokenizer.eos_token_id
+        outputs = model.generate(
+            input_ids=inputs["input_ids"],
+            attention_mask=inputs["attention_mask"],
+            max_length=200,
+            num_return_sequences=1,
+            pad_token_id=tokenizer.pad_token_id
+        )
         response = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
         # Save to PostgreSQL
