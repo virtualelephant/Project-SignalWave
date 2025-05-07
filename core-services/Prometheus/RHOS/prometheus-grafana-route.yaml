@@ -1,0 +1,33 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  host: grafana.rhos.home.virtualelephant.com
+  to:
+    kind: Service
+    name: prometheus-grafana
+    weight: 100
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  host: prometheus.rhos.home.virtualelephant.com
+  to:
+    kind: Service
+    name: prometheus-kube-prometheus-prometheus
+    weight: 100
+  port:
+    targetPort: 9090
+  tls:
+    termination: edge
+  wildcardPolicy: None
