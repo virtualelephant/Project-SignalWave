@@ -1,0 +1,12 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  host: longhorn.rhos.home.virtualelephant.com
+  to:
+    kind: Service
+    name: longhorn-frontend
+  port:
+    targetPort: http
