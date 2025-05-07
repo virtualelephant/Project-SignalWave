@@ -1,6 +1,8 @@
 # Caveats for running Project SignalWave in Red Hat OpenShift
 Red Hat OpenShift is very opinionated around how certian things should be done within the environment. For instance, NFS is not allowed as a CSI, so leveraging the typical NFS external provisioner is not an option within Red Hat OpenShift without significant modification to the security policies.
 
+*This document strives to capture the additional bits needed to make Red Hat OpenShift operational within a virtualized environment.*
+
 ## Configuring LDAP for Authentication
 
 ```yaml
