@@ -50,10 +50,13 @@ Project SignalWave provides a set of dasbhoards that show off the core component
 based on the container repository you use, as well as panel names based on your physical hardware.
 
 ## Main Dashboard
-![Alt text](images/grafana-main-dashboard.png)
+![alt text](main-dashboard-grafana.jpeg)
 
 ## Cisco Dashboard
-![Alt text](images/grafana-cisco-dashboard.png)
+![alt text](cisco-dashboard-grafana.jpeg)
+
+## Linux Dashboard
+![alt text](linux-dashboard-grafana.jpeg)
 
 ---
 # Python
