@@ -1,29 +1,115 @@
 # Caveats for running Project SignalWave in Red Hat OpenShift
+Red Hat OpenShift is very opinionated around how certian things should be done within the environment. For instance, NFS is not allowed as a CSI, so leveraging the typical NFS external provisioner is not an option within Red Hat OpenShift without significant modification to the security policies.
 
-## Installing the NFS Provisioner
-```bash
-helm install nfs-subdir-external-provisioner \
-  nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
-  --namespace nfs-storage \
-  --set nfs.server=nfs.home.virtualelephant.com \
-  --set nfs.path=/opt/nfs/rhos \
-  --set storageClass.name=nfs-sc \
-  --set storageClass.defaultClass=true \
-  --set podSecurityContext.runAsUser=1001 \
-  --set podSecurityContext.runAsGroup=1001 \
-  --set podSecurityContext.fsGroup=1001 \
-  --set podSecurityContext.fsGroupChangePolicy="OnRootMismatch" \
-  --set podSecurityContext.runAsNonRoot=true \
-  --set podSecurityContext.seccompProfile.type=RuntimeDefault \
-  --set securityContext.allowPrivilegeEscalation=false \
-  --set securityContext.capabilities.drop[0]=ALL
+## Configuring LDAP for Authentication
+
+```yaml
+identityProviders:
+- name: ldap_provider
+  mappingMethod: claim
+  type: LDAP
+  ldap:
+    url: "ldap://ldap01.home.virtualelephant.com:389/ou=People,dc=home,dc=virtualelephant,dc=com?uid"
+    bindDN: "uid=k8s-service,ou=People,dc=home,dc=virtualelephant,dc=com"
+    bindPassword:
+      name: ldap-bind-secret
+    insecure: true
+    attributes:
+      id: ["uid"]
+      email: ["mail"]
+      name: ["cn"]
+      preferredUsername: ["uid"]
 ```
 
+Additional steps are required after adding the authentication source in the GUI or through the CLI.
+
 ```bash
-oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:nfs-storage:nfs-subdir-external-provisioner
-oc adm policy add-scc-to-user privileged system:serviceaccount:nfs-storage:nfs-subdir-external-provisioner
-oc rollout restart deployment/nfs-subdir-external-provisioner -n nfs-storage
+oc create secret generic ldap-bind-secret \
+  --namespace=openshift-config \
+  --from-literal=bindPassword='your_k8s-service_password'
 ```
+
+You can verify the OAuth Provider afterwards with the following check:
+
+```bash
+oc get oauth cluster -o yaml
+```
+
+Next we want to either grant permissions to a single user or to a group of users:
+
+```bash
+oc adm policy add-cluster-role-to-user cluster-admin devops-user1
+```
+
+To add a group of users, you need to sync the LDAP Groups with RHOS.
+
+First, create a groupsync.yaml file with your specific information in it:
+
+```yaml
+apiVersion: v1
+kind: LDAPSyncConfig
+url: "ldap://ldap01.home.virtualelephant.com:389"
+bindDN: "uid=k8s-service,ou=People,dc=home,dc=virtualelephant,dc=com"
+bindPassword:
+  file: "/home/deploy/ldap-config/bindPassword"
+insecure: true
+rfc2307:
+  groupsQuery:
+    baseDN: "ou=Groups,dc=home,dc=virtualelephant,dc=com"
+    scope: sub
+    derefAliases: never
+    filter: "(objectClass=groupOfNames)"
+  groupUIDAttribute: "dn"
+  groupNameAttributes:
+    - cn
+  groupMembershipAttributes:
+    - member
+  usersQuery:
+    baseDN: "ou=People,dc=home,dc=virtualelephant,dc=com"
+    scope: sub
+    derefAliases: never
+  userUIDAttribute: "dn"
+  userNameAttributes:
+    - uid
+groupUIDNameMapping:
+  "cn=devops-team,ou=Groups,dc=home,dc=virtualelephant,dc=com": "devops-team"
+ ```
+
+You need to create the `bindPassword` file before syncing the LDAP group:
+
+```bash
+echo 'your_k8s_service_password' | sudo tee /home/deploy/ldap-config/bindPassword > /dev/null
+chmod 644 /home/deploy/ldap-config/bindPassword
+tr -d '\n' < /home/deploy/ldap-config/bindPassword > temp && mv temp /home/deploy/ldap-config/bindPassword
+```
+
+ Once you have created the `groupsync.yaml` file, you can sync RHOS:
+
+ ```bash
+ oc adm groups sync \
+  --sync-config=groupsync.yaml \
+  --confirm
+```
+
+Verify the group was created:
+
+```bash
+oc get group devops-team -o yaml
+```
+
+Assign the group Cluster-wide Access:
+
+```bash
+oc adm policy add-cluster-role-to-group cluster-admin devops-team
+```
+
+Or assign the group Namespace-specific Access:
+
+```bash
+oc adm policy add-role-to-group edit devops-team -n devops-project
+```
+
+---
 
 ## Harbor repo for Global Pull Secret
 
