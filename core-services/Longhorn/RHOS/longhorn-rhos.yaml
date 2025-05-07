@@ -5077,8 +5077,6 @@ spec:
       containers:
         - name: longhorn-driver-deployer
           image: longhornio/longhorn-manager:v1.8.1
-          securityContext:
-            privileged: true
           imagePullPolicy: IfNotPresent
           command:
           - longhorn-manager
@@ -5117,6 +5115,7 @@ spec:
       serviceAccountName: longhorn-service-account
       securityContext:
         runAsUser: 0
+        privileged: true
 ---
 # Source: longhorn/templates/deployment-ui.yaml
 apiVersion: apps/v1
