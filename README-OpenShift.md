@@ -113,6 +113,41 @@ oc adm policy add-role-to-group edit devops-team -n devops-project
 
 ---
 
+## Adding Wildcard Certificate to RHOS Nodes
+Leveraging a self-signed custom internal CA within the environment, adding the bundle certificate to the nodes is only possible through the following steps.
+
+*This is a different method from how Rancher let's us do this through the cloud-init YAML*
+
+Create a ConfigMap with the CA in `openshift-config`
+
+```bash
+oc create configmap home-ve-ca \
+  --from-file=ca-bundle.crt=/path/to/rootCA.crt \
+  -n openshift-config
+```
+
+Patch the Cluster Proxy to Use Your Custom CA
+
+```bash
+oc patch proxy/cluster \
+  --type=merge \
+  -p '{"spec":{"trustedCA":{"name":"home-ve-ca"}}}'
+```
+
+Verify the ConfigMap contains a file named `ca-bundle.crt` and no other key names are used:
+
+```bash
+oc get configmap home-ve-ca -n openshift-config -o yaml
+```
+
+Verify the patch was applied:
+
+```bash
+oc get proxy/cluster -o yaml | grep -A1 trustedCA
+```
+
+---
+
 ## Harbor repo for Global Pull Secret
 
 ```bash
