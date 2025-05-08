@@ -75,7 +75,8 @@ def load_model():
     try:
         if not os.path.exists(MODEL_DIR):
             os.makedirs(MODEL_DIR)
-        model_path = "/model/fine_tuned" if os.path.exists("/model/fine_tuned") else "codellama/CodeLlama-7b-hf"
+        #model_path = "/model/fine_tuned" if os.path.exists("/model/fine_tuned") else "codellama/CodeLlama-7b-hf"
+        model_path = "/model/fine_tuned" if os.path.exists("/model/fine_tuned") else "codellama/CodeLlama-7b-Instruct-hf"
         logger.info(f"Loading model from {model_path}")
         tokenizer = AutoTokenizer.from_pretrained(model_path, cache_dir=MODEL_DIR)
         # Set pad_token_id explicitly
