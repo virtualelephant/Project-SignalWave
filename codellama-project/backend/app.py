@@ -119,7 +119,7 @@ async def generate_code(prompt: Prompt):
         outputs = model.generate(
             input_ids=inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
-            max_length=200,
+            max_length=100,
             num_return_sequences=1,
             pad_token_id=tokenizer.pad_token_id
         )
