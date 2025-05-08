@@ -1,4 +1,3 @@
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -6,6 +5,9 @@ metadata:
   namespace: codellama
   annotations:
     ingress.class: "haproxy"
+    haproxy.org/timeout-connect: "10s"
+    haproxy.org/timeout-client: "3m"
+    haproxy.org/timeout-server: "3m"
 spec:
   rules:
   - host: codellama-backend.home.virtualelephant.com
@@ -18,4 +20,3 @@ spec:
             name: codellama-service
             port:
               number: 80
-              
