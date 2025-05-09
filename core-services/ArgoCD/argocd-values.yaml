@@ -43,7 +43,12 @@ server:
   service:
     type: ClusterIP
   ingress:
-    enabled: false  # You’ll create the HAProxy Ingress manually
+    enabled: false
+  tls:
+    enabled: true
+    secretName: wildcard-tls-secret
+  extraArgs:
+    - --insecure=false
 
 applicationSet:
   resources:
