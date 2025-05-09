@@ -17,5 +17,4 @@ spec:
           service:
             name: argocd-server
             port:
-              number: 8086
-              
+              number: 80
