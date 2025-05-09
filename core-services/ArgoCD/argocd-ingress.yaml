@@ -21,4 +21,4 @@ spec:
           service:
             name: argocd-server
             port:
-              number: 443  # HTTPS internal
+              number: 80  # HTTPS internal

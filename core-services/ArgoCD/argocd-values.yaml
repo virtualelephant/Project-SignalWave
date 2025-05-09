@@ -45,10 +45,10 @@ server:
   ingress:
     enabled: false
   tls:
-    enabled: true
+    enabled: false
     secretName: wildcard-tls-secret
   extraArgs:
-    - --insecure=false
+    - --insecure=true
 
 applicationSet:
   resources:
