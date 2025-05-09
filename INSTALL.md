@@ -126,6 +126,17 @@ kubectl apply -f influxdb-deployment.yaml
 kubectl apply -f influxdb-ingress.yaml
 ```
 
+## Installing ArgoCD in the services namespace
+
+```bash
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+
+helm upgrade --install argocd argo/argo-cd \
+  -n services \
+  -f argocd-values.yaml
+```
+
 ## Install the SignalWave application
 The first part of the SignalWave application is the Publisher microservice. The application is a small container housing a single script `publisher.py`.
 

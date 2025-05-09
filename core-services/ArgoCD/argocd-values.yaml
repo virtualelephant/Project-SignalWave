@@ -1,0 +1,95 @@
+## File: argocd-values.yaml
+
+global:
+  image:
+    tag: v2.11.3  # latest stable at time of writing
+
+controller:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+  metrics:
+    enabled: true
+
+repoServer:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+
+server:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false  # You’ll create the HAProxy Ingress manually
+
+applicationSet:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+notifications:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+redis:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+## Storage configuration for persistence
+configs:
+  cm:
+    application.resourceTrackingMethod: annotation
+  secret:
+    create: true
+
+controller:
+  persistence:
+    enabled: true
+    storageClass: standard-retain
+    accessMode: ReadWriteOnce
+    size: 8Gi
+
+repoServer:
+  persistence:
+    enabled: true
+    storageClass: standard-retain
+    accessMode: ReadWriteOnce
+    size: 8Gi
