@@ -1,4 +1,3 @@
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -7,6 +6,11 @@ metadata:
   annotations:
     ingress.class: "haproxy"
 spec:
+  tls:
+  - hosts:
+    - argocd.home.virtualelephant.com
+    secretName: wildcard-tls-secret  # <-- Your wildcard cert secret
+
   rules:
   - host: argocd.home.virtualelephant.com
     http:
@@ -17,4 +21,4 @@ spec:
           service:
             name: argocd-server
             port:
-              number: 443
+              number: 443  # HTTPS internal
