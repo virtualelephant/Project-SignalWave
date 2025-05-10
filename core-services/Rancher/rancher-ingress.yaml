@@ -18,6 +18,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: rancher-server
+            name: rancher
             port:
               number: 80

@@ -141,11 +141,13 @@ helm upgrade --install argocd argo/argo-cd \
 Rancher will be used inconjunction with ArgoCD and GitLab to automate full pipeline testing of applications, by creating on-demand Kubernetes clusters that are short-lived instances.
 
 ```bash
-helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo add rancher-stable https://releases.rancher.com/server-charts/latest
 helm repo update
 
+kubectl create namespace cattle-system
+
 helm install rancher rancher-latest/rancher \
---namespace services \
+--namespace cattle-system \
 --values rancher-values.yaml
 ```
 

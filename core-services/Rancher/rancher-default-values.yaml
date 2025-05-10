@@ -48,7 +48,7 @@ agentTLSMode: ""
 #   value: "1.0"
 
 # Fully qualified name to reach your Rancher server
-hostname: rancher.home.virtualelephant.com
+# hostname: rancher.my.org
 
 ## Optional array of imagePullSecrets containing private registry credentials
 ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -64,7 +64,7 @@ ingress:
   enabled: true
   includeDefaultExtraAnnotations: true
   extraAnnotations: {}
-  ingressClassName: "haproxy"
+  ingressClassName: ""
   # Certain ingress controllers will require the pathType or path to be set to a different value.
   pathType: ImplementationSpecific
   path: "/"
@@ -78,7 +78,7 @@ ingress:
 
   tls:
     # options: rancher, letsEncrypt, secret
-    source: secret
+    source: rancher
     secretName: tls-rancher-ingress
 
 ### service ###
@@ -93,15 +93,15 @@ service:
 ### LetsEncrypt config ###
 # ProTip: The production environment only allows you to register a name 5 times a week.
 #         Use staging until you have your config right.
-#letsEncrypt:
+letsEncrypt:
   # email: none@example.com
- # environment: production
- # ingress:
+  environment: production
+  ingress:
     # options: traefik, nginx
- #   class: ""
+    class: ""
 # If you are using certs signed by a private CA set to 'true' and set the 'tls-ca'
 # in the 'cattle-system' namespace. See the README.md for details
-privateCA: true
+privateCA: false
 
 # http[s] proxy server passed into rancher server.
 # proxy: http://<username>@<password>:<url>:<port>
@@ -118,7 +118,7 @@ rancherImage: rancher/rancher
 # Override imagePullPolicy for rancher server images
 # options: Always, Never, IfNotPresent
 # Defaults to IfNotPresent
-rancherImagePullPolicy: Always
+# rancherImagePullPolicy: <pullPolicy>
 
 # Number of Rancher server replicas. Setting to negative number will dynamically between 0 and the abs(replicas) based on available nodes.
 # of available nodes in the cluster
@@ -158,7 +158,7 @@ customLogos:
   # volumeName: custom-logos
   ## Just for volumeKind: persistentVolumeClaim
   ## To disables dynamic provisioning, set storageClass: "" or storageClass: "-"
-  storageClass: "standard-retain"
+  # storageClass: "-"
   accessMode: ReadWriteOnce
   size: 1Gi
 

@@ -82,8 +82,37 @@ redis:
 configs:
   cm:
     application.resourceTrackingMethod: annotation
+    dex.config: |
+      connectors:
+        - type: ldap
+          id: ldap
+          name: LDAP
+          config:
+            host: ldap01.home.virtualelephant.com:389
+            insecureNoSSL: true
+            bindDN: uid=gitlab,ou=ServiceAccounts,dc=home,dc=virtualelephant,dc=com
+            bindPWEnv: LDAP_BIND_PASSWORD
+            usernamePrompt: Username
+            userSearch:
+              baseDN: ou=People,dc=home,dc=virtualelephant,dc=com
+              filter: "(objectClass=person)"
+              username: uid
+              idAttr: uid
+              emailAttr: mail
+              nameAttr: cn
+            groupSearch:
+              baseDN: ou=Groups,dc=home,dc=virtualelephant,dc=com
+              filter: "(objectClass=groupOfNames)"
+              userAttr: DN
+              groupAttr: member
+              nameAttr: cn
   secret:
     create: true
+
+dex:
+  envFrom:
+    - secretRef:
+        name: argocd-ldap-secret
 
 controller:
   persistence:
