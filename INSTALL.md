@@ -143,10 +143,30 @@ Rancher will be used inconjunction with ArgoCD and GitLab to automate full pipel
 ```bash
 helm repo add rancher-stable https://releases.rancher.com/server-charts/latest
 helm repo update
+```
 
+Create the namespace for Rancher
+
+```bash
 kubectl create namespace cattle-system
+```
 
-helm install rancher rancher-latest/rancher \
+If using self-signed certificates, create the following secrets
+
+```bash
+kubectl create secret generic tls-ca \
+  --from-file=cacerts.pem=rancher-ca.crt \
+  -n cattle-system
+
+kubectl create secret tls tls-rancher-ingress \
+  --cert=home.virtualelephant.com.bundle.crt \
+  --key=home.virtualelephant.com.key \
+  -n cattle-system
+```
+
+Install Rancher using Helm
+```bash
+helm install rancher rancher-stable/rancher \
 --namespace cattle-system \
 --values rancher-values.yaml
 ```

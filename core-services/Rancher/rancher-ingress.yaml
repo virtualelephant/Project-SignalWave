@@ -2,13 +2,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: rancher-ingress
-  namespace: services
+  namespace: cattle-system
   annotations:
     ingress.class: "haproxy"
 spec:
   tls:
   - hosts:
     - rancher.home.virtualelephant.com
+    secretName: tls-rancher-ingress
 
   rules:
   - host: rancher.home.virtualelephant.com
