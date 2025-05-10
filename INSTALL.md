@@ -137,6 +137,18 @@ helm upgrade --install argocd argo/argo-cd \
   -f argocd-values.yaml
 ```
 
+## Installing Rancher in the services namespace
+Rancher will be used inconjunction with ArgoCD and GitLab to automate full pipeline testing of applications, by creating on-demand Kubernetes clusters that are short-lived instances.
+
+```bash
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo update
+
+helm install rancher rancher-latest/rancher \
+--namespace services \
+--values rancher-values.yaml
+```
+
 ## Install the SignalWave application
 The first part of the SignalWave application is the Publisher microservice. The application is a small container housing a single script `publisher.py`.
 
