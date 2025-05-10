@@ -3,14 +3,11 @@
 # See README.md for details.
 additionalTrustedCAs: false
 
+bootstrapPassword: admin
+
 antiAffinity: preferred
 topologyKey: kubernetes.io/hostname
 
-# Audit Logs
-# Source: https://ranchermanager.docs.rancher.com/how-to-guides/advanced-user-guides/enable-api-audit-log
-# The audit log is piped to the console of the rancher-audit-log container in the rancher pod.
-# level: Verbosity of logs, 0 to 3. 0 is off, 3 most verbose.
-# Docs: https://ranchermanager.docs.rancher.com/how-to-guides/advanced-user-guides/enable-api-audit-log#audit-log-levels
 auditLog:
   destination: sidecar
   hostPath: /var/log/rancher/audit/
@@ -19,11 +16,14 @@ auditLog:
   maxBackup: 1
   maxSize: 100
 
-  # Set pod resource requests/limits for Audit log sidecar (ONLY used if destination=sidecar).
-  resources: {}
+ resources:
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+  limits:
+    cpu: "2"
+    memory: "4Gi"
 
-  # Image for collecting rancher audit logs.
-  # Important: update pkg/image/export/resolve.go when this default image is changed, so that it's reflected accordingly in rancher-images.txt generated for air-gapped setups.
   image:
     repository: "rancher/mirrored-bci-micro"
     tag: 15.6.24.2
@@ -61,15 +61,12 @@ ingress:
   # If set to false, ingress will not be created
   # Defaults to true
   # options: true, false
-  enabled: false
-  includeDefaultExtraAnnotations: true
+  enabled: true
+  includeDefaultExtraAnnotations: false
   extraAnnotations: {}
   ingressClassName: ""
-  # Certain ingress controllers will require the pathType or path to be set to a different value.
   pathType: Prefix
   path: "/"
-  # Backend port number; should use either: 80, or 443.
-  # Must use 443 when `service.disableHTTP` is set to true.
   servicePort: 80
 
   # configurationSnippet - Add additional Nginx configuration. This example statically sets a header on the ingress.
@@ -78,8 +75,7 @@ ingress:
 
   tls:
     # options: rancher, letsEncrypt, secret
-    source: secret
-    secretName: tls-rancher-ingress
+    source: rancher
 
 ### service ###
 # Override to use NodePort or LoadBalancer service type - default is ClusterIP
@@ -90,21 +86,7 @@ service:
   # When set true, you must also set `ingress.servicePort` to 443 and the appropriate ingress annotation to use HTTPS
   disableHTTP: false
 
-### LetsEncrypt config ###
-# ProTip: The production environment only allows you to register a name 5 times a week.
-#         Use staging until you have your config right.
-#letsEncrypt:
-  # email: none@example.com
- # environment: production
- # ingress:
-    # options: traefik, nginx
- #   class: ""
-# If you are using certs signed by a private CA set to 'true' and set the 'tls-ca'
-# in the 'cattle-system' namespace. See the README.md for details
-privateCA: true
-
-# http[s] proxy server passed into rancher server.
-# proxy: http://<username>@<password>:<url>:<port>
+privateCA: false
 
 # comma separated list of domains or ip addresses that will not use the proxy
 noProxy: 127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local
