@@ -61,12 +61,12 @@ ingress:
   # If set to false, ingress will not be created
   # Defaults to true
   # options: true, false
-  enabled: true
+  enabled: false
   includeDefaultExtraAnnotations: true
   extraAnnotations: {}
-  ingressClassName: "haproxy"
+  ingressClassName: ""
   # Certain ingress controllers will require the pathType or path to be set to a different value.
-  pathType: ImplementationSpecific
+  pathType: Prefix
   path: "/"
   # Backend port number; should use either: 80, or 443.
   # Must use 443 when `service.disableHTTP` is set to true.
