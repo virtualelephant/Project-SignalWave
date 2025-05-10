@@ -16,14 +16,23 @@ auditLog:
   maxBackup: 1
   maxSize: 100
 
- resources:
-  requests:
-    cpu: "500m"
-    memory: "1Gi"
-  limits:
-    cpu: "2"
-    memory: "4Gi"
+  # Set pod resource requests/limits for Audit log sidecar (ONLY used if destination=sidecar).
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
 
+  persistence:
+    enabled: true
+    storageClass: standard-retain
+    accessMode: ReadWriteOnce
+    size: 8Gi
+    
+  # Image for collecting rancher audit logs.
+  # Important: update pkg/image/export/resolve.go when this default image is changed, so that it's reflected accordingly in rancher-images.txt generated for air-gapped setups.
   image:
     repository: "rancher/mirrored-bci-micro"
     tag: 15.6.24.2
