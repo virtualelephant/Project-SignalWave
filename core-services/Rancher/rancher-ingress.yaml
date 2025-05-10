@@ -5,6 +5,8 @@ metadata:
   namespace: cattle-system
   annotations:
     ingress.class: "haproxy"
+    haproxy.org/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   tls:
   - hosts:

@@ -3,8 +3,6 @@
 # See README.md for details.
 additionalTrustedCAs: false
 
-bootstrapPassword: admin
-
 antiAffinity: preferred
 topologyKey: kubernetes.io/hostname
 
@@ -60,7 +58,7 @@ ingress:
 ### service ###
 # Override to use NodePort or LoadBalancer service type - default is ClusterIP
 service:
-  type: ""
+  type: "ClusterIP"
   annotations: {}
   # An optional security setting to disables the HTTP port of the rancher service
   # When set true, you must also set `ingress.servicePort` to 443 and the appropriate ingress annotation to use HTTPS
@@ -124,7 +122,7 @@ postDelete:
   ignoreTimeoutError: false
 
 # Set a bootstrap password. If leave empty, a random password will be generated.
-bootstrapPassword: ""
+bootstrapPassword: "admin"
 
 startupProbe:
   ## should be ready within 2 minutes
