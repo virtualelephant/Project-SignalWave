@@ -7,3 +7,8 @@
 google.com
 virtualelephant.com
 comcast.com
+72.30.35.89
+208.113.130.146
+time-a-g.nist.gov
+time-b-g.nist.gov
+time-c-g.nist.gov
