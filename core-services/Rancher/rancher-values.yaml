@@ -8,29 +8,6 @@ bootstrapPassword: admin
 antiAffinity: preferred
 topologyKey: kubernetes.io/hostname
 
-auditLog:
-  destination: sidecar
-  hostPath: /var/log/rancher/audit/
-  level: 0
-  maxAge: 1
-  maxBackup: 1
-  maxSize: 100
-
-  persistence:
-    enabled: true
-    storageClass: standard-retain
-    accessMode: ReadWriteOnce
-    size: 8Gi
-
-  # Image for collecting rancher audit logs.
-  # Important: update pkg/image/export/resolve.go when this default image is changed, so that it's reflected accordingly in rancher-images.txt generated for air-gapped setups.
-  image:
-    repository: "rancher/mirrored-bci-micro"
-    tag: 15.6.24.2
-    # Override imagePullPolicy image
-    # options: Always, Never, IfNotPresent
-    pullPolicy: "IfNotPresent"
-
 # As of Rancher v2.5.0 this flag is deprecated and must be set to 'true' in order for Rancher to start
 addLocal: "true"
 
@@ -67,7 +44,10 @@ ingress:
   ingressClassName: ""
   pathType: Prefix
   path: "/"
-  servicePort: 80
+  servicePort: 443
+  annotations:
+    haproxy.org/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 
   # configurationSnippet - Add additional Nginx configuration. This example statically sets a header on the ingress.
   # configurationSnippet: |
@@ -128,22 +108,6 @@ useBundledSystemChart: false
 certmanager:
   version: ""
 
-# Rancher custom logos persistence
-customLogos:
-  enabled: false
-  volumeSubpaths:
-    emberUi: "ember"
-    vueUi: "vue"
-  ## Volume kind to use for persistence: persistentVolumeClaim, configMap
-  volumeKind: persistentVolumeClaim
-  ## Use an existing volume. Custom logos should be copied to the volume by the user
-  # volumeName: custom-logos
-  ## Just for volumeKind: persistentVolumeClaim
-  ## To disables dynamic provisioning, set storageClass: "" or storageClass: "-"
-  storageClass: "standard-retain"
-  accessMode: ReadWriteOnce
-  size: 1Gi
-
 # Rancher post-delete hook
 postDelete:
   enabled: true
@@ -195,3 +159,9 @@ resources:
   limits:
     cpu: 2
     memory: 4Gi
+
+persistence:
+  enabled: true
+  storageClass: standard-retain
+  accessMode: ReadWriteOnce
+  size: 8Gi
