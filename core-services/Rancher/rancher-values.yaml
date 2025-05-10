@@ -16,21 +16,12 @@ auditLog:
   maxBackup: 1
   maxSize: 100
 
-  # Set pod resource requests/limits for Audit log sidecar (ONLY used if destination=sidecar).
-  resources:
-    requests:
-      cpu: 500m
-      memory: 1Gi
-    limits:
-      cpu: 2
-      memory: 4Gi
-
   persistence:
     enabled: true
     storageClass: standard-retain
     accessMode: ReadWriteOnce
     size: 8Gi
-    
+
   # Image for collecting rancher audit logs.
   # Important: update pkg/image/export/resolve.go when this default image is changed, so that it's reflected accordingly in rancher-images.txt generated for air-gapped setups.
   image:
@@ -197,42 +188,10 @@ readinessProbe:
   periodSeconds: 30
   failureThreshold: 5
 
-# helm values to use when installing the rancher-webhook chart.
-# helm values set here will override all other global values used when installing the webhook such as priorityClassName and systemRegistry settings.
-webhook: ""
-
-# helm values to use when installing the fleet chart.
-# helm values set here will override all other global values used when installing the fleet chart.
-fleet: ""
-
-# Create a dynamic manifests via values:
-# Beware: There will be no validation on these resource manifests in `extraObjects` - they must be valid k8s resources.
-# If you encounter issues installing/upgrading rancher while using these, please investigate these first.
-extraObjects: []
-# - apiVersion: "networking.k8s.io/v1"
-#   kind: NetworkPolicy
-#   metadata:
-#     name: allow-https-444-to-rancher
-#     namespace: your-namespace  # Change to the appropriate namespace
-#   spec:
-#     podSelector:
-#       matchLabels:
-#         app: rancher  # Selects pods labeled with "app: rancher"
-#     policyTypes:
-#       - Ingress  # Controls inbound traffic to the selected pods
-#     ingress:
-#       - ports:
-#           - protocol: TCP
-#             port: 444  # Allows only TCP traffic on port 444 (custom HTTPS port)
-#     # Since no other ingress rules are defined, all other traffic is denied by default.
-# - apiVersion: "networking.k8s.io/v1"
-#   kind: NetworkPolicy
-#   metadata:
-#     name: rancher-deny-ingress
-#     namespace: cattle-system
-#   spec:
-#     podSelector:
-#       matchLabels:
-#         app: rancher
-#     policyTypes:
-#       - Ingress
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2
+    memory: 4Gi
