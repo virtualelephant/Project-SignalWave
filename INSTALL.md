@@ -39,7 +39,7 @@ helm install haproxy-kubernetes-ingress haproxytech/kubernetes-ingress --create-
 ### Expose Hubble-UI through Ingress
 
 ```bash
-kubectl apply yaml/Cilium/hubble-ingress.yaml
+kubectl apply -f core-services/Cilium/hubble-ingress.yaml
 ```
 
 ## Installing Prometheus and Grafana through Helm

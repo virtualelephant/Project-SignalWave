@@ -14,7 +14,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: standard-retain
+          storageClassName: longhorn-retain
           resources:
             requests:
               storage: 10Gi
@@ -84,7 +84,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: standard-retain
+          storageClassName: longhorn-retain
           resources:
             requests:
               storage: 2Gi
@@ -92,7 +92,7 @@ alertmanager:
 grafana:
   persistence:
     enabled: true
-    storageClassName: standard-retain
+    storageClassName: longhorn-retain
     size: 10Gi
   adminPassword: ChangeMe123!
   serviceMonitor:
