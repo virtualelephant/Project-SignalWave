@@ -117,13 +117,13 @@ dex:
 controller:
   persistence:
     enabled: true
-    storageClass: standard-retain
+    storageClass: longhorn-retain
     accessMode: ReadWriteOnce
     size: 8Gi
 
 repoServer:
   persistence:
     enabled: true
-    storageClass: standard-retain
+    storageClass: longhorn-retain
     accessMode: ReadWriteOnce
     size: 8Gi
