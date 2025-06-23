@@ -12,7 +12,7 @@ elasticsearch:
 
 persistence:
   enabled: true
-  storageClass: standard-retain
+  storageClass: lonhorn-retain
   accessModes:
     - ReadWriteOnce
   size: 5Gi

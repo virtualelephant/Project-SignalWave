@@ -10,7 +10,7 @@ clustering:
 
 persistence:
   enabled: true
-  storageClass: standard-retain
+  storageClass: longhorn-retain
 
 metrics:
   enabled: true

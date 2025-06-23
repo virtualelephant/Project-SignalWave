@@ -2,7 +2,7 @@ replicas: 3
 
 volumeClaimTemplate:
   accessModes: ["ReadWriteOnce"]
-  storageClassName: standard-retain
+  storageClassName: longhorn-retain
   resources:
     requests:
       storage: 30Gi

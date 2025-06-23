@@ -87,8 +87,8 @@ kubectl apply -f kibana-ingress.yaml
 Get the default username & password that Elastic generated:
 
 ```bash
-kubectl get secret elasticsearch-master-credentials -n monitoring -o go-template='{{.data.username | base64decode}}'
-kubectl get secret elasticsearch-master-credentials -n monitoring -o go-template='{{.data.password | base64decode}}'
+kubectl get secret elasticsearch-master-credentials -n services -o go-template='{{.data.username | base64decode}}'
+kubectl get secret elasticsearch-master-credentials -n services -o go-template='{{.data.password | base64decode}}'
 ```
 
 Go to the Web Console - http://kibana.YOUR.DOMAIN.NAME
