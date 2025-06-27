@@ -1,0 +1,34 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - nfs-common
+  - cri-tools
+  - wget
+  - net-tools
+  - curl
+  - dnsutils
+  - traceroute
+  - tar
+  - sha256sum
+  - linux-headers-$(uname -r)
+  - bpfcc-tools
+  - clang
+  - llvm
+  - iproute2
+users:
+  - name: rancher
+    shell: /bin/bash
+    groups: wheel
+    sudo: ['ALL=(ALL) NOPASSWD: ALL']
+    ssh-authorized-keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOtAAuoC09As4PgD9Vet1+KKQT7GHCilDIFdzLbGTFO virtual elephant ssh-key jun2025
+no_ssh_fingerprints: true
+write_files:
+  - path: /etc/containerd/config.toml
+    content: |
+      version = 2
+      [plugins."io.containerd.grpc.v1.cri".registry]
+        config_path = "/etc/containerd/certs.d"
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors."harbor.home.virtualelephant.com"]
+        endpoint = ["https://harbor.home.virtualelephant.com"]
