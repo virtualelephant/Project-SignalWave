@@ -32,3 +32,105 @@ write_files:
         config_path = "/etc/containerd/certs.d"
       [plugins."io.containerd.grpc.v1.cri".registry.mirrors."harbor.home.virtualelephant.com"]
         endpoint = ["https://harbor.home.virtualelephant.com"]
+  - path: /etc/sysctl.d/99-ebpf.conf
+    content: |
+    	  net.core.bpf_jit_enable = 1
+        net.core.bpf_jit_harden = 0
+        kernel.unprivileged_bpf_disabled = 1
+        net.core.bpf_jit_kallsyms = 1
+    owner: root
+    permississions: '0644'
+  
+  # Create directory for Harbor's certs
+  - path: /etc/containerd/certs.d/harbor.home.virtualelephant.com/hosts.toml
+    content: |
+      server = "https://harbor.home.virtualelephant.com"
+      [host."https://harbor.home.virtualelephant.com"]
+        capabilities = ["pull", "resolve"]
+        skip_verify = false
+        ca = "/etc/containerd/certs.d/harbor.home.virtualelephant.com/harbor.crt"
+  - path: /usr/local/share/ca-certificates/harbor.home.virtualelephant.com/harbor.crt
+    content: |
+      -----BEGIN CERTIFICATE-----
+      MIIGWzCCBEOgAwIBAgIUBLDQuXm+2zPPbB77H1kPt3WU/+swDQYJKoZIhvcNAQEL
+      BQAwcjELMAkGA1UEBhMCVVMxETAPBgNVBAgMCENvbG9yYWRvMRkwFwYDVQQHDBBD
+      b2xvcmFkbyBTcHJpbmdzMSQwIgYDVQQKDBtWaXJ0dWFsIEVsZXBoYW50IENvbnN1
+      bHRpbmcxDzANBgNVBAsMBlJPT1RDQTAeFw0yNTA2MjAxNTE0NDJaFw0zNTA2MTgx
+      NTE0NDJaMIG9MQswCQYDVQQGEwJVUzERMA8GA1UECAwIQ29sb3JhZG8xGTAXBgNV
+      BAcMEENvbG9yYWRvIFNwcmluZ3MxJDAiBgNVBAoMG1ZpcnR1YWwgRWxlcGhhbnQg
+      Q29uc3VsdGluZzELMAkGA1UECwwCSVQxIzAhBgNVBAMMGiouaG9tZS52aXJ0dWFs
+      ZWxlcGhhbnQuY29tMSgwJgYJKoZIhvcNAQkBFhljaHJpc0B2aXJ0dWFsZWxlcGhh
+      bnQuY29tMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAxkRwoZGNXAQf
+      P/dq+QEO/vjkC+Pjne9iRVQwMiv+1ICoz4eBfPn/gkT/99mNHVHIg7E5/jEKTran
+      Qw5Se9GCMq0Pe/U/m2EWwKaXQ6qPKwSmUK6fgxdzTTI5FB6XLAwxdaWfp9QZA+44
+      bu3G1Li32DlfUTOiOhuBL1Wu4jSicEYYrSXS82O3Ws8LQhnmpoCkYZGKTwpYkbMz
+      WSh/xbjz439o46kh3+4VjqXEbfp11YI3lH+nIJw1MZpVvrBUgA3JQ8+9/PmfZ8GZ
+      V7W3SSKXxcciBp77yarHxj6MyA4YeavzM9p+H2DtkNqQBir/t2Xumd/VYioEFMPn
+      13lKGT2gEj7O8DDrpFmcNspStRegY8gEwmIghrF1fkwSwOxWGzGHubNt8qDRsBfX
+      zkSuNUyHEzIEDOLYOpVbp8eTu6XpbfPVq59m7L6Ho30gnrGjQugEDYwJCgNjGbrc
+      B0o1B8IsBkKCMJQA+SDkKsEJSoM4q/NRiS0kH+bKpb9k2Mh+1JH5daBLICDThmU1
+      3Ua4g1QNSP7RGwhqjV46uvcRytKxMFaYWAxB8Cnz7BSmnDLtgpfTQXFU76cnONnX
+      HRe9CL8njuBwNqn/9IrXDZa4+loxLDf/jHZhQ2OeqtanExPhpsSNeiqVbOhEL7DN
+      Ukl8pBhlenUbXWhK9iPWc5ke7qSfvX8CAwEAAaOBnDCBmTAfBgNVHSMEGDAWgBRv
+      v71PaGn3/fJaEu3nJgpkp1KCZjAJBgNVHRMEAjAAMAsGA1UdDwQEAwIE8DA/BgNV
+      HREEODA2ghoqLmhvbWUudmlydHVhbGVsZXBoYW50LmNvbYIYaG9tZS52aXJ0dWFs
+      ZWxlcGhhbnQuY29tMB0GA1UdDgQWBBQk+VbV04+6s2vFnp2j9BbmryLzwzANBgkq
+      hkiG9w0BAQsFAAOCAgEAC1ffUtfARIqQAhfl7QEpIAN77iVmxm6/Rcr6Rn2BEMRI
+      ptmqu9OAF8ZAZnMqQTFrBU2/51ruj8FU3gTCX7rTI9OUOGVD/Qe3b0TlthwE1GwO
+      V+vUxletUDbc1WyFN/io44qc205mJJTJYbdFtF5feRlDDk5hnCZRo33od4e14a3Q
+      PIDQpdr16Vqvbc5JRNfb/MOJElcqkHDClihPXPl5ix8IMhkD7ymFD+LpEaWNIdXh
+      EKsHkrH5+0ca5MZie6AnEVP+bAzadTtDjzztcDaLscIGoq1946P9psp+2SMoKa8i
+      cyxcRbBZpeamlizD1CL5LK+9jvBu2c4kBWxJj8lV4oaC0pwjGWD0uhTPk21cz9PZ
+      X1/rK7uEqY6UBKG7Awbi2HEC/m1OXwKxGeJ2a+CGhhXvBDT8PLYgxelnbqKcPWEq
+      cIQdklFzBmvZBHgrheKt0ch8EYHcCYdZKJ3SPF6l/YjThs2RltO3W5ZYIEPJDLNb
+      uB/8YNNqC3AjVqbMizhP7R3FHIhRIfSVka2yQvY2ba7KATg0n8CVu+PJy8y5w110
+      OsGALuzgfLJUrt8G1obb0Gn6C2JijXZOm/28yKmrpkHxhnqJlnR9S9uBA7Z0hVWR
+      0y1GRH43I5uKsY+TUPbYdCFbYqzgKk6gCZZG2DmTdbhLkFSykAvSc4ftBQ50VVM=
+      -----END CERTIFICATE-----
+    owner: root:root
+    permissions: '0644'
+runcmd:
+  # Enabling EBPF
+  - modprobe bpf
+  - modprobe bpfilter
+  - sysctl --system
+  - echo 'net.core.bpf_jit_enable = 1' >> /etc/sysctl.conf
+  - sysctl -p
+  - sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="[^"]*/& bpf_jit_enable=1 unprivileged_bpf_disabled=1/' /etc/default/grub
+  - update-grub
+  # Custom Harbor SSL Certificates
+  - mkdir -p /etc/containerd/certs.d/harbor.home.virtualelephant.com
+  - cp /usr/local/share/ca-certificates/harbor.home.virtualelephant.com/harbor.crt /etc/containerd/certs.d/harbor.home.virtualelephant.com/harbor.crt
+  - update-ca-certificates
+  - systemctl daemon-reload
+  - systemctl restart containerd
+  # Install nerdctl for easier container management
+  - curl -sL https://github.com/containerd/nerdctl/releases/latest/download/nerdctl-full-1.6.0-linux-amd64.tar.gz | tar -xz -C /usr/local/bin/
+  - chmod +x /usr/local/bin/nerdctl
+  # Install kubectl binary
+  - KUBECTL_VERSION="v1.32.2"
+  - KUBECTL_ARCH=amd64
+  - '[ "$(uname -m)" = "aarch64" ] && KUBECTL_ARCH=arm64'
+  - curl -L --fail -o /usr/local/bin/kubectl https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl
+  - chmod +x /usr/local/bin/kubectl
+  # Install Helm
+  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+  - chmod 700 get_helm.sh
+  - ./get_helm.sh
+  - rm -f get_helm.sh
+  # Install Cilium CLI
+  - CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+  - CLI_ARCH=amd64
+  - '[ "$(uname -m)" = "aarch64" ] && CLI_ARCH=arm64'
+  - curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+  - sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
+  - tar xzvf cilium-linux-${CLI_ARCH}.tar.gz -C /usr/local/bin
+  - rm -f cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+  # Install Hubble CLI
+  - HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)
+  - HUBBLE_ARCH=amd64
+  - '[ "$(uname -m)" = "aarch64" ] && HUBBLE_ARCH=arm64'
+  - curl -L --fail --remote-name-all https://github.com/cilium/hubble/releases/download/${HUBBLE_VERSION}/hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
+  - sha256sum --check hubble-linux-${HUBBLE_ARCH}.tar.gz.sha256sum
+  - tar xzvf hubble-linux-${HUBBLE_ARCH}.tar.gz -C /usr/local/bin
+  - rm -f hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
