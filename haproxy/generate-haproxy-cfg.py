@@ -68,21 +68,19 @@ def generate_haproxy_config():
         f.write("backend app_http_backends\n")
         f.write("    mode http\n")
         f.write("    balance roundrobin\n")
-        f.write("    option httpchk GET /\n")
         for idx, ip in enumerate(app_endpoints):
             f.write(f"    server app-http-{idx} {ip}:80 check\n")
         f.write("\n")
 
         # HTTPS Frontend + Backend (optional)
         f.write("frontend https_apps\n")
-        f.write(f"    bind {VIP_APPS}:443 ssl crt /etc/haproxy/certs/app_bundle.pem\n")
-        f.write("    mode http\n")
+        f.write(f"    bind {VIP_APPS}:443\n")
+        f.write("    mode tcp\n")
         f.write("    default_backend app_https_backends\n\n")
 
         f.write("backend app_https_backends\n")
-        f.write("    mode http\n")
+        f.write("    mode tcp\n")
         f.write("    balance roundrobin\n")
-        f.write("    option httpchk GET /\n")
         for idx, ip in enumerate(app_endpoints):
             f.write(f"    server app-https-{idx} {ip}:443 check ssl verify none\n")
 
