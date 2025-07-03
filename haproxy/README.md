@@ -28,3 +28,62 @@ Because Rancher can and will redeploy new VMs as part of the typical LCM, the IP
 cp generate-haproxy-cfg.sh /usr/local/bin/
 chmod +x /usr/local/bin/generate-haproxy-cfg.sh
 ```
+
+## Rancher Updates
+
+Edit the cluster YAML
+
+```yaml
+spec:
+  rkeConfig:
+    machineGlobalConfig:
+      cni: cilium
+      disable-kube-proxy: false
+      etcd-expose-metrics: false
+      tls-san:
+        - "10.5.1.13"
+```
+
+Test the update after Rancher has completed updating the controller nodes
+
+```bash
+echo | openssl s_client -connect 10.5.1.13:6443 -servername kubernetes | openssl x509 -noout -text | grep -A1 "Subject Alternative Name"
+```
+
+Create a HAProxy User for the new `kubeconfig` file to leverage
+
+```bash
+kubectl create serviceaccount haproxy-user -n kube-system
+kubectl create clusterrolebinding haproxy-user-binding \
+  --clusterrole=cluster-admin \
+  --serviceaccount=kube-system:haproxy-user
+kubectl -n kube-system create token haproxy-user
+```
+
+Copy the output similar to:
+
+```bash
+eyJhbGciOiJSUzI1NiIsImtpZCI6Ijl6YVNSRnZpaXNfdVBhTlc4cU5ldkp1b1RtNF9PV0IzdG5Cbm9TeTlNcjgifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiLCJya2UyIl0sImV4cCI6MTc1MTU2MDg5MSwiaWF0IjoxNzUxNTU3MjkxLCJpc3MiOiJodHRwczovL2t1YmVybmV0ZXMuZGVmYXVsdC5zdmMuY2x1c3Rlci5sb2NhbCIsImp0aSI6ImMzYWEwOThiLWJkZGMtNDJkYy1hYTg1LTc2MzlkYTYwMWE1NyIsImt1YmVybmV0ZXMuaW8iOnsibmFtZXNwYWNlIjoia3ViZS1zeXN0ZW0iLCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiaGFwcm94eS11c2VyIiwidWlkIjoiMTA0NTZkZDQtNjNkMi00ZjljLWIxZDUtYzU4MzYyODFhYWRiIn19LCJuYmYiOjE3NTE1NTcyOTEsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpoYXByb3h5LXVzZXIifQ.PJH4jLUGZl2MzJSsmsYQd2j0oEfeZnzkFq-xUjhYUm_ojyoOG3jBE7c_7Z9h5N1sVM78KY7-v-ww2yqqWZ61BtdtrNmBPs-MozxhKKWlgTGZLdtMCB_D5iU4cxtvck_Le8nh8eUftQcR-0P64RyAA2gVvXRbhGsUXEniPFw_dbVjjM1_k59v4txEU7OwMg9HvltSG_CaLAOVPz3cyrqkn1EvsLVG9pqEy9Ou8rcWkanK1UautX4IYiNR456BnaX8rBsA69UpmbcwWrKL1DoWs-EjF746vOCMJevg6E6NmYHE-89_niqVpES1ZVKnUc-RGrQ6G-g10iZMdRrzfGncpg
+```
+
+Edit the new `kubeconfig` file:
+
+```yaml
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /home/deploy/haproxy/cluster-ca.crt
+    server: https://10.5.1.13:6443
+  name: dev
+contexts:
+- context:
+    cluster: dev
+    user: haproxy-user
+  name: haproxy-context
+current-context: haproxy-context
+kind: Config
+users:
+- name: haproxy-user
+  user:
+    token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijl6YVNSRnZpaXNfdVBhTlc4cU5ldkp1b1RtNF9PV0IzdG5Cbm9TeTlNcjgifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiLCJya2UyIl0sImV4cCI6MTc1MTU2MDg5MSwiaWF0IjoxNzUxNTU3MjkxLCJpc3MiOiJodHRwczovL2t1YmVybmV0ZXMuZGVmYXVsdC5zdmMuY2x1c3Rlci5sb2NhbCIsImp0aSI6ImMzYWEwOThiLWJkZGMtNDJkYy1hYTg1LTc2MzlkYTYwMWE1NyIsImt1YmVybmV0ZXMuaW8iOnsibmFtZXNwYWNlIjoia3ViZS1zeXN0ZW0iLCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiaGFwcm94eS11c2VyIiwidWlkIjoiMTA0NTZkZDQtNjNkMi00ZjljLWIxZDUtYzU4MzYyODFhYWRiIn19LCJuYmYiOjE3NTE1NTcyOTEsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpoYXByb3h5LXVzZXIifQ.PJH4jLUGZl2MzJSsmsYQd2j0oEfeZnzkFq-xUjhYUm_ojyoOG3jBE7c_7Z9h5N1sVM78KY7-v-ww2yqqWZ61BtdtrNmBPs-MozxhKKWlgTGZLdtMCB_D5iU4cxtvck_Le8nh8eUftQcR-0P64RyAA2gVvXRbhGsUXEniPFw_dbVjjM1_k59v4txEU7OwMg9HvltSG_CaLAOVPz3cyrqkn1EvsLVG9pqEy9Ou8rcWkanK1UautX4IYiNR456BnaX8rBsA69UpmbcwWrKL1DoWs-EjF746vOCMJevg6E6NmYHE-89_niqVpES1ZVKnUc-RGrQ6G-g10iZMdRrzfGncpg
+```
