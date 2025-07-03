@@ -51,8 +51,10 @@ def generate_haproxy_config():
         f.write("    default_backend kube_api_backends\n\n")
 
         f.write("backend kube_api_backends\n")
-        f.write("    mode tcp\n")
-        f.write("    option ssl-hello-chk\n")
+        f.write("    mode tcp\n\n")
+        f.write("    option tcplog\n")
+        f.write("    option tcp-check\n")
+        f.write("    default server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions\n\n")
         for idx, ip in enumerate(kube_api_endpoints):
             f.write(f"    server k8s-{idx} {ip}:{KUBE_API_PORT} check\n")
         f.write("\n")
