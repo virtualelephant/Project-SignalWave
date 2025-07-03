@@ -50,6 +50,12 @@ Test the update after Rancher has completed updating the controller nodes
 echo | openssl s_client -connect 10.5.1.13:6443 -servername kubernetes | openssl x509 -noout -text | grep -A1 "Subject Alternative Name"
 ```
 
+Get the intermediate Root CA cert that Rancher created
+
+```bash
+openssl s_client -connect 10.5.1.13:6443 -showcerts </dev/null
+```
+
 Create a HAProxy User for the new `kubeconfig` file to leverage
 
 ```bash
