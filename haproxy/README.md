@@ -75,6 +75,10 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6Ijl6YVNSRnZpaXNfdVBhTlc4cU5ldkp1b1RtNF9PV0IzdG5Cbm9T
 Look for the `rke2-server-ca@` chain and you need to copy that certificate into a file that you will reference as the certificate authority in the `kubeconfig` file.
 
 ```bash
+openssl s_client -connect 10.5.1.13:6443 -showcerts </dev/null
+```
+
+```bash
  1 s:CN = rke2-server-ca@1751559400
    i:CN = rke2-server-ca@1751559400
    a:PKEY: id-ecPublicKey, 256 (bit); sigalg: ecdsa-with-SHA256
