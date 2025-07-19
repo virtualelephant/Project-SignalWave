@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: haproxy-user-token
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: haproxy-user
+type: kubernetes.io/service-account-token
