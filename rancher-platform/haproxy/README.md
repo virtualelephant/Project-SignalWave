@@ -31,7 +31,8 @@ chmod +x /usr/local/bin/generate-haproxy-cfg.sh
 
 ## Rancher Updates
 
-Edit the cluster YAML
+### YAML Options
+* If this is an existing cluster, edit the existing cluster YAML. If you are creating a new cluster, edit the YAML prior to deploying the cluster with the following code.
 
 ```yaml
 spec:
@@ -42,28 +43,24 @@ spec:
       etcd-expose-metrics: false
       tls-san:
         - "10.5.1.13"
+        - "api.dev.virtualelephant.com"
 ```
 
-Test the update after Rancher has completed updating the controller nodes
+### Test the update after Rancher has completed updating the controller nodes
 
 ```bash
 echo | openssl s_client -connect 10.5.1.13:6443 -servername kubernetes | openssl x509 -noout -text | grep -A1 "Subject Alternative Name"
 ```
 
-Get the intermediate Root CA cert that Rancher created
-
-```bash
-openssl s_client -connect 10.5.1.13:6443 -showcerts </dev/null
-```
-
-Create a HAProxy User for the new `kubeconfig` file to leverage
+### Create a HAProxy User for the new `kubeconfig` file to leverage
 
 ```bash
 kubectl create serviceaccount haproxy-user -n kube-system
 kubectl create clusterrolebinding haproxy-user-binding \
   --clusterrole=cluster-admin \
   --serviceaccount=kube-system:haproxy-user
-kubectl -n kube-system create token haproxy-user
+kubectl apply -f haproxy-user-token.yaml
+kubectl get secret haproxy-user-token -n kube-system -o jsonpath="{.data.token}" | base64 -d && echo
 ```
 
 Copy the output similar to:
@@ -72,13 +69,9 @@ Copy the output similar to:
 eyJhbGciOiJSUzI1NiIsImtpZCI6Ijl6YVNSRnZpaXNfdVBhTlc4cU5ldkp1b1RtNF9PV0IzdG5Cbm9TeTlNcjgifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiLCJya2UyIl0sImV4cCI6MTc1MTU2MDg5MSwiaWF0IjoxNzUxNTU3MjkxLCJpc3MiOiJodHRwczovL2t1YmVybmV0ZXMuZGVmYXVsdC5zdmMuY2x1c3Rlci5sb2NhbCIsImp0aSI6ImMzYWEwOThiLWJkZGMtNDJkYy1hYTg1LTc2MzlkYTYwMWE1NyIsImt1YmVybmV0ZXMuaW8iOnsibmFtZXNwYWNlIjoia3ViZS1zeXN0ZW0iLCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiaGFwcm94eS11c2VyIiwidWlkIjoiMTA0NTZkZDQtNjNkMi00ZjljLWIxZDUtYzU4MzYyODFhYWRiIn19LCJuYmYiOjE3NTE1NTcyOTEsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpoYXByb3h5LXVzZXIifQ.PJH4jLUGZl2MzJSsmsYQd2j0oEfeZnzkFq-xUjhYUm_ojyoOG3jBE7c_7Z9h5N1sVM78KY7-v-ww2yqqWZ61BtdtrNmBPs-MozxhKKWlgTGZLdtMCB_D5iU4cxtvck_Le8nh8eUftQcR-0P64RyAA2gVvXRbhGsUXEniPFw_dbVjjM1_k59v4txEU7OwMg9HvltSG_CaLAOVPz3cyrqkn1EvsLVG9pqEy9Ou8rcWkanK1UautX4IYiNR456BnaX8rBsA69UpmbcwWrKL1DoWs-EjF746vOCMJevg6E6NmYHE-89_niqVpES1ZVKnUc-RGrQ6G-g10iZMdRrzfGncpg
 ```
 
-This token is short-lived and will expire. If you want to create a token valid for 365 days skip this step and perform the next steps.
-```bash
-kubectl apply -f haproxy-user-token.yaml
-kubectl get secret haproxy-user-token -n kube-system -o jsonpath="{.data.token}" | base64 -d && echo
-```
+Use the token above to paste into the `kubeconfig` file you are creating for the cluster.
 
-
+### Get the Certificate Authority for the cluster
 Look for the `rke2-server-ca@` chain and you need to copy that certificate into a file that you will reference as the certificate authority in the `kubeconfig` file.
 
 ```bash
