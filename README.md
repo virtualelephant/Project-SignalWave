@@ -45,20 +45,6 @@ software components.
 - weatherapp: `WIP` Container for gathering weather information for a set of user-specified endpoints.
 
 ---
-# Grafana Dashboards
-Project SignalWave provides a set of dasbhoards that show off the core components of the Kubernetes cluster and the applications running within it. These may need to be modified
-based on the container repository you use, as well as panel names based on your physical hardware.
-
-## Main Dashboard
-![alt text](main-dashboard-grafana.jpeg)
-
-## Cisco Dashboard
-![alt text](cisco-dashboard-grafana.jpeg)
-
-## Linux Dashboard
-![alt text](linux-dashboard-grafana.jpeg)
-
----
 # Python
 
 ## Linux System Metrics Collector

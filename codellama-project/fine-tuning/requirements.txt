@@ -1,7 +1,0 @@
-torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
-transformers==4.44.2
-accelerate==0.33.0
-bitsandbytes==0.41.0
-datasets==2.20.0
-peft==0.11.1
-psycopg2-binary==2.9.9
