@@ -65,27 +65,36 @@ linux-system-metrics/
 
 ## Installation Instructions
 
-### 1. Create and Activate a Virtual Environment (Optional but Recommended)
+### 1. Create the directors for metrics-collector
 
-If running Ubuntu:
+
+
+```bash
+mkdir -p /opt/metrics-collector
+chown -R deploy:deploy /opt/metrics-collector
+```
+
+Copy the files from the repo in `/opt/metrics-collector`
+
+### 2. Create and Activate a Virtual Environment
+
+* Ubuntu Systems
 
 ```bash
 sudo apt install python3-venv pip
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv /opt/metrics-collector/venv
+source /opt/metrics-collector/venv/activate
+pip install -r /opt/metrics-collector/requirements.txt
 ```
 
-If running RHEL or CentOS Stream
+* RHEL or CentOS Stream
 
 ```bash
 sudo dnf update
 sudo dnf install python3 python3-devel gcc pip
-```
-
-### 2. Install Python Requirements
-
-```bash
-pip install -r requirements.txt
+python3 -m venv /opt/metrics-collector/venv
+source /opt/metrics-collector/venv/activate
+pip install -r /opt/metrics-collector/requirements.txt
 ```
 
 ### 3. Configure InfluxDB Connection

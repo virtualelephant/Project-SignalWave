@@ -4,10 +4,11 @@ After=network.target
 
 [Service]
 User=deploy
-WorkingDirectory=/opt/linux-system-metrics
-ExecStart=/usr/bin/python3 /opt/linux-system-metrics/metrics_collector.py
+WorkingDirectory=/opt/metrics-collector
+ExecStart=/opt/metrics-collector/python-wrapper.sh
 Restart=always
 RestartSec=5
+Environment="PATH=/opt/metrics-collector/venv/bin"
 
 [Install]
 WantedBy=multi-user.target
