@@ -34,7 +34,7 @@ write_files:
         endpoint = ["https://harbor.home.virtualelephant.com"]
   - path: /etc/sysctl.d/99-ebpf.conf
     content: |
-    	net.core.bpf_jit_enable = 1
+      net.core.bpf_jit_enable = 1
       net.core.bpf_jit_harden = 0
       kernel.unprivileged_bpf_disabled = 1
       net.core.bpf_jit_kallsyms = 1

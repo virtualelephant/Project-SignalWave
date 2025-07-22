@@ -8,7 +8,7 @@ metadata:
     ingress.class: "haproxy"
 spec:
   rules:
-  - host: influxdb.home.virtualelephant.com
+  - host: influxdb.dev.virtualelephant.com
     http:
       paths:
       - path: /
