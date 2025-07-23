@@ -83,7 +83,7 @@ Copy the files from the repo in `/opt/metrics-collector`
 ```bash
 sudo apt install -y python3-venv pip
 python3 -m venv /opt/metrics-collector/venv
-source /opt/metrics-collector/venv/activate
+source /opt/metrics-collector/venv/bin/activate
 pip install -r /opt/metrics-collector/requirements.txt
 deactivate
 ```
