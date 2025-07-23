@@ -70,8 +70,8 @@ linux-system-metrics/
 
 
 ```bash
-mkdir -p /opt/metrics-collector
-chown -R deploy:deploy /opt/metrics-collector
+sudo mkdir -p /opt/metrics-collector
+sudo chown -R deploy:deploy /opt/metrics-collector
 ```
 
 Copy the files from the repo in `/opt/metrics-collector`
@@ -81,10 +81,11 @@ Copy the files from the repo in `/opt/metrics-collector`
 * Ubuntu Systems
 
 ```bash
-sudo apt install python3-venv pip
+sudo apt install -y python3-venv pip
 python3 -m venv /opt/metrics-collector/venv
 source /opt/metrics-collector/venv/activate
 pip install -r /opt/metrics-collector/requirements.txt
+deactivate
 ```
 
 * RHEL or CentOS Stream
@@ -93,7 +94,7 @@ pip install -r /opt/metrics-collector/requirements.txt
 sudo dnf update
 sudo dnf install python3 python3-devel gcc pip
 python3 -m venv /opt/metrics-collector/venv
-source /opt/metrics-collector/venv/activate
+source /opt/metrics-collector/venv/bin/activate
 pip install -r /opt/metrics-collector/requirements.txt
 ```
 
@@ -114,6 +115,7 @@ poll_interval_minutes: 1  # Options: 1, 3, or 5
 ### 4. Setup systemd Service
 
 ```bash
+sudo chmod +x /opt/metrics-collector/python-wrapper.sh
 sudo cp systemd/metrics-collector.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable metrics-collector
