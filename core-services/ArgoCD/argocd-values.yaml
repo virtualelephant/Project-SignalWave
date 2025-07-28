@@ -25,6 +25,8 @@ repoServer:
     limits:
       cpu: 1
       memory: 1Gi
+  metrics:
+    enabled: true
 
 server:
   replicas: 2
@@ -49,6 +51,8 @@ server:
     secretName: wildcard-tls-secret
   extraArgs:
     - --insecure=true
+  metrics:
+    enabled: true
 
 applicationSet:
   resources:
@@ -58,6 +62,8 @@ applicationSet:
     limits:
       cpu: 500m
       memory: 512Mi
+  metrics:
+    enabled: true
 
 notifications:
   enabled: true
@@ -68,7 +74,9 @@ notifications:
     limits:
       cpu: 500m
       memory: 512Mi
-
+  metrics:
+    enabled: true
+    
 redis:
   resources:
     requests:
@@ -93,3 +101,12 @@ repoServer:
     storageClass: longhorn-retain
     accessMode: ReadWriteOnce
     size: 8Gi
+
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+    additionalLabels:
+      release: prometheus
