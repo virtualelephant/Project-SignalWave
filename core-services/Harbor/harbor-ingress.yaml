@@ -8,8 +8,8 @@ metadata:
     ingress.class: "haproxy"
 spec:
   rules:
-  - host: harbor.dev.virtualelephant.com
-    http:
+  - host: harbor.home.virtualelephant.com
+    https:
       paths:
       - path: /
         pathType: Prefix

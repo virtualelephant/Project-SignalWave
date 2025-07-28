@@ -8,7 +8,10 @@ expose:
     secret:
       secretName: harbor-tls
 
-harborAdminPassword: "ChangeMe123"
+nginx:
+  enabled: false
+
+harborAdminPassword: "ChangeMe123!!!"
 
 persistence:
   enabled: true
