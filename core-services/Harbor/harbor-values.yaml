@@ -1,7 +1,7 @@
 externalURL: https://harbor.home.virtualelephant.com
 
 expose:
-  type: tls
+  type: clusterIP
   tls:
     enabled: true
     certSource: secret
@@ -9,7 +9,7 @@ expose:
       secretName: harbor-tls
 
 nginx:
-  enabled: false
+  enabled: true
 
 harborAdminPassword: "ChangeMe123!!!"
 
