@@ -4,6 +4,16 @@ global:
   image:
     tag: v3.0.6
 
+
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+    additionalLabels:
+      release: prometheus
+
 controller:
   replicas: 2
   resources:
@@ -76,7 +86,7 @@ notifications:
       memory: 512Mi
   metrics:
     enabled: true
-    
+
 redis:
   resources:
     requests:
@@ -101,12 +111,3 @@ repoServer:
     storageClass: longhorn-retain
     accessMode: ReadWriteOnce
     size: 8Gi
-
-monitoring:
-  enabled: true
-  serviceMonitor:
-    enabled: true
-    interval: 30s
-    scrapeTimeout: 10s
-    additionalLabels:
-      release: prometheus
