@@ -1,18 +1,6 @@
-## File: argocd-values.yaml
-
 global:
   image:
     tag: v3.0.6
-
-
-monitoring:
-  enabled: true
-  serviceMonitor:
-    enabled: true
-    interval: 30s
-    scrapeTimeout: 10s
-    additionalLabels:
-      release: prometheus
 
 controller:
   replicas: 2
@@ -37,6 +25,11 @@ repoServer:
       memory: 1Gi
   metrics:
     enabled: true
+  persistence:
+    enabled: true
+    storageClass: longhorn-retain
+    accessMode: ReadWriteOnce
+    size: 8Gi
 
 server:
   replicas: 2
@@ -96,18 +89,19 @@ redis:
       cpu: 500m
       memory: 512Mi
 
-## Storage configuration for persistence
 configs:
-controller:
-  persistence:
-    enabled: true
-    storageClass: longhorn-retain
-    accessMode: ReadWriteOnce
-    size: 8Gi
+  controller:
+    persistence:
+      enabled: true
+      storageClass: longhorn-retain
+      accessMode: ReadWriteOnce
+      size: 8Gi
 
-repoServer:
-  persistence:
+monitoring:
+  enabled: true
+  serviceMonitor:
     enabled: true
-    storageClass: longhorn-retain
-    accessMode: ReadWriteOnce
-    size: 8Gi
+    interval: 30s
+    scrapeTimeout: 10s
+    additionalLabels:
+      release: prometheus
