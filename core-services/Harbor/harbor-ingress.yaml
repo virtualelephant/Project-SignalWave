@@ -9,7 +9,7 @@ metadata:
 spec:
   rules:
   - host: harbor.home.virtualelephant.com
-    https:
+    http:
       paths:
       - path: /
         pathType: Prefix
