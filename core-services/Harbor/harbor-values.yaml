@@ -1,0 +1,104 @@
+externalURL: https://harbor.home.virtualelephant.com
+
+expose:
+  type: tls
+  tls:
+    enabled: true
+    certSource: secret
+    secret:
+      secretName: harbor-tls
+
+harborAdminPassword: "ChangeMe123"
+
+persistence:
+  enabled: true
+  persistentVolumeClaim:
+    registry:
+      storageClass: longhorn-retain
+      accessMode: ReadWriteOnce
+      size: 5Gi
+    chartmuseum:
+      storageClass: longhorn-retain
+      accessMode: ReadWriteOnce
+      size: 2Gi
+    jobservice:
+      storageClass: longhorn-retain
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    database:
+      storageClass: longhorn-retain
+      accessMode: ReadWriteOnce
+      size: 2Gi
+    redis:
+      storageClass: longhorn-retain
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    trivy:
+      storageClass: longhorn-retain
+      accessMode: ReadWriteOnce
+      size: 5Gi
+
+resources:
+  core:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  jobservice:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  registry:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  chartmuseum:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  portal:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  database:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  redis:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  trivy:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
