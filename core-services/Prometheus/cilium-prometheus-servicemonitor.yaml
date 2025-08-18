@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: hubble-metrics
+  namespace: monitoring
+  labels:
+    release: prometheus   # must match your Prometheus release label
+spec:
+  selector:
+    matchLabels:
+      k8s-app: hubble
+  namespaceSelector:
+    matchNames:
+      - kube-system
+  endpoints:
+    - port: hubble-metrics   # must match the Service port name, not number
+      interval: 30s
+      honorLabels: true
