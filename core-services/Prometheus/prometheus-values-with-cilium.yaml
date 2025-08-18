@@ -11,15 +11,22 @@ prometheus:
     externalLabels:
       cluster: ve-promtheus-cluster
       replica: ${REPLICA}
-    storageSpec:
-      volumeClaimTemplate:
-        metadata:
-          name: prometheus-db
-        spec:
-          storageClassName: longhorn-retain
-          resources:
-            requests:
-              storage: 10Gi
+    # Disable auto-creation of PVCs and instead mount pre-created ones
+    storageSpec: {}
+    additionalVolumes:
+      - name: prometheus-data-0
+        persistentVolumeClaim:
+          claimName: prometheus-data-0
+      - name: prometheus-data-1
+        persistentVolumeClaim:
+          claimName: prometheus-data-1
+    additionalVolumeMounts:
+      - name: prometheus-data-0
+        mountPath: /prometheus
+        subPath: ""
+      - name: prometheus-data-1
+        mountPath: /prometheus
+        subPath: ""
     serviceMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector: {}
@@ -56,31 +63,23 @@ alertmanager:
   enabled: true
   alertmanagerSpec:
     storage:
-      volumeClaimTemplate:
-        metadata:
-          name: alertmanager-db
-        spec:
-          storageClassName: longhorn-retain
-          resources:
-            requests:
-              storage: 2Gi
+      existingClaim: alertmanager-data
 
 grafana:
   persistence:
     enabled: true
-    storageClassName: longhorn-retain
-    size: 10Gi
+    existingClaim: grafana-data
   adminPassword: ChangeMe123!
   serviceMonitor:
     enabled: true
   defaultDashboardsTimezone: UTC-6
   resources:
     requests:
-      cpu: 250m
-      memory: 750Mi
-    limits:
       cpu: 500m
       memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
   pod:
     livenessProbe:
       httpGet:
