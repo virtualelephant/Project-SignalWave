@@ -4,6 +4,7 @@ prometheusOperator:
     enabled: true
   tls:
     enabled: true
+
 prometheus:
   prometheusSpec:
     replicas: 2
@@ -61,20 +62,7 @@ prometheus:
         limits:
           cpu: 500m
           memory: 512Mi
-thanos:
-  query:
-    enabled: true
-    replicaLabel: replica
-    resources:
-      requests:
-        cpu: 200m
-        memory: 512Mi
-      limits:
-        cpu: 1
-        memory: 1Gi
-    service:
-      type: ClusterIP
-      port: 9090
+
 alertmanager:
   enabled: true
   alertmanagerSpec:
@@ -85,6 +73,7 @@ alertmanager:
           resources:
             requests:
               storage: 2Gi
+
 grafana:
   persistence:
     enabled: true
@@ -114,12 +103,16 @@ grafana:
         port: 3000
       initialDelaySeconds: 5
       periodSeconds: 5
+
 rbac:
   create: true
+
 kubeStateMetrics:
   enabled: true
+
 nodeExporter:
   enabled: true
+
 serverFiles:
   prometheus.yml:
     scrape_configs:
