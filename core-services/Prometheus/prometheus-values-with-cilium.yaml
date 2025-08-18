@@ -13,6 +13,8 @@ prometheus:
       replica: ${REPLICA}
     storageSpec:
       volumeClaimTemplate:
+        metadata:
+          name: prometheus-db
         spec:
           storageClassName: longhorn-retain
           resources:
@@ -36,7 +38,7 @@ prometheus:
         cpu: 500m
       limits:
         memory: 4Gi
-        cpu: '2'
+        cpu: "2"
     livenessProbe:
       httpGet:
         path: /-/healthy
@@ -49,25 +51,14 @@ prometheus:
         port: 9090
       initialDelaySeconds: 5
       periodSeconds: 5
-    thanos:
-      enabled: true
-      version: v0.36.0
-      objectStorageConfig:
-        key: thanos.yaml
-        name: thanos-objstore-config
-      resources:
-        requests:
-          cpu: 100m
-          memory: 256Mi
-        limits:
-          cpu: 500m
-          memory: 512Mi
 
 alertmanager:
   enabled: true
   alertmanagerSpec:
     storage:
       volumeClaimTemplate:
+        metadata:
+          name: alertmanager-db
         spec:
           storageClassName: longhorn-retain
           resources:
@@ -116,19 +107,19 @@ nodeExporter:
 serverFiles:
   prometheus.yml:
     scrape_configs:
-    - job_name: kubernetes-endpoints
-      scrape_interval: 30s
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels:
-        - __meta_kubernetes_service_annotation_prometheus_io_scrape
-        action: keep
-        regex: 'true'
-      - source_labels:
-        - __address__
-        - __meta_kubernetes_service_annotation_prometheus_io_port
-        action: replace
-        target_label: __address__
-        regex: (.+)(?::\d+);(\d+)
-        replacement: $1:$2
+      - job_name: kubernetes-endpoints
+        scrape_interval: 30s
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_service_annotation_prometheus_io_scrape
+            action: keep
+            regex: "true"
+          - source_labels:
+              - __address__
+              - __meta_kubernetes_service_annotation_prometheus_io_port
+            action: replace
+            target_label: __address__
+            regex: (.+)(?::\d+);(\d+)
+            replacement: $1:$2
