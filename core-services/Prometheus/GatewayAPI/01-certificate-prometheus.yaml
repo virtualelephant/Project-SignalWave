@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prometheus-cert
+  namespace: monitoring
+spec:
+  secretName: prometheus-tls
+  commonName: prometheus.prod.cilium.virtualelephant.com
+  dnsNames:
+    - prometheus.prod.cilium.virtualelephant.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: internal-ca

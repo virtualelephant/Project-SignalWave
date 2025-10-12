@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-cert
+  namespace: monitoring
+spec:
+  secretName: grafana-tls
+  commonName: grafana.prod.cilium.virtualelephant.com
+  dnsNames:
+    - grafana.prod.cilium.virtualelephant.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: internal-ca

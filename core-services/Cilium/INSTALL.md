@@ -15,7 +15,7 @@ rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 ## Installing Cilium using the Helm Repo
 ```
 helm repo add cilium https://helm.cilium.io
-helm install cilium cilium/cilium --version 1.17.2 \
+helm install cilium cilium/cilium --version 1.18.2 \
     --namespace kube-system \
     --set hubble.enabled=true \
     --set hubble.metrics.enableOpenMetrics=true \

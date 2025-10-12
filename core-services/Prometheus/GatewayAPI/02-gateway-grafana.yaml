@@ -1,0 +1,29 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: prod-gw-grafana
+  namespace: monitoring
+spec:
+  gatewayClassName: cilium
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: grafana.prod.cilium.virtualelephant.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: grafana-tls      # created by Certificate above (same namespace as Gateway)
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: grafana.prod.cilium.virtualelephant.com
+      allowedRoutes:
+        namespaces:
+          from: Same
+  infrastructure:
+    # Cilium will create a LoadBalancer service for this Gateway and
+    # use this label to pick a VIP from your "dc1" pool.
+    labels:
+      lb.cilium.io/pool: "dc1"
