@@ -1,13 +1,13 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: grafana-cert
-  namespace: monitoring
+  name: influxdb-cert
+  namespace: services
 spec:
-  secretName: grafana-tls
-  commonName: grafana.prod.cilium.virtualelephant.com
+  secretName: influxdb-tls
+  commonName: influxdb.prod.cilium.virtualelephant.com
   dnsNames:
-    - grafana.prod.cilium.virtualelephant.com
+    - influxdb.prod.cilium.virtualelephant.com
   issuerRef:
     kind: ClusterIssuer
     name: internal-ca

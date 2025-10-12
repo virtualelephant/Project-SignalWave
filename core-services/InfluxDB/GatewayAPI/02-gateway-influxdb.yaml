@@ -1,24 +1,24 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: prod-gw-grafana
-  namespace: monitoring
+  name: prod-gw-influxdb
+  namespace: services
 spec:
   gatewayClassName: cilium
   listeners:
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: grafana.prod.cilium.virtualelephant.com
+      hostname: influxdb.prod.cilium.virtualelephant.com
       tls:
         mode: Terminate
         certificateRefs:
           - kind: Secret
-            name: grafana-tls      # created by Certificate above (same namespace as Gateway)
+            name: influxdb-tls      # created by Certificate above (same namespace as Gateway)
     - name: http
       protocol: HTTP
       port: 80
-      hostname: grafana.prod.cilium.virtualelephant.com
+      hostname: influxdb.prod.cilium.virtualelephant.com
       allowedRoutes:
         namespaces:
           from: Same
