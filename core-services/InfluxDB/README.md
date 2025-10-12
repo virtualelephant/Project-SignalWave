@@ -34,3 +34,9 @@ or
 ```bash
 kubectl apply -f influxdb-ingress-nginx.yaml
 ```
+
+# Tokens
+## Prod Token for virtualelephant organization, prod bucket
+```bash
+3zwSlNd5_QD-yxSGss4kmhFB4VE-kWOh0W5J0Tx980P1rtxq1VQd0wCP4ZA5aHOofQZ2zR-dEn78Tp6q0Z0O7g==
+```
