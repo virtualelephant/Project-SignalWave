@@ -1,13 +1,13 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: argocd-cert
-  namespace: services
+  name: grafana-cert
+  namespace: monitoring
 spec:
-  secretName: argocd-tls
-  commonName: argocd.prod.cilium.virtualelephant.com
+  secretName: grafana-tls
+  commonName: grafana.prod.cilium.virtualelephant.com
   dnsNames:
-    - argocd.prod.cilium.virtualelephant.com
+    - grafana.prod.cilium.virtualelephant.com
   issuerRef:
     kind: ClusterIssuer
     name: internal-ca
