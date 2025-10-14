@@ -16,8 +16,7 @@ Deploy the ELK Stack
 ```
 helm install elasticsearch elastic/elasticsearch -n services -f elasticsearch-values.yaml
 helm install kibana elastic/kibana -n services -f kibana-values.yaml
-helm install fluentd bitnami/fluentd -n services -f fluentd-values.yaml
-kubectl apply -f kibana-ingress.yaml
+helm upgrade --install fluentd fluent/fluentd --namespace services -f fluentd-values.yaml
 ```
 
 Get the default username & password that Elastic generated
