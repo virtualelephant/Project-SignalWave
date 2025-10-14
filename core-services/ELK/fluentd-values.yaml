@@ -17,17 +17,16 @@ serviceAccount:
   create: true
   name: fluentd
 
-# Run as root so we can read node logs; we can harden later if you want
 containerSecurityContext:
   enabled: true
   runAsUser: 0
   runAsNonRoot: false
 
-# Mount host logs using chart flags (avoids duplicate volumes)
+# Mount host logs using chart flags
 mountVarLogDirectory: true                 # mounts /var/log
 mountDockerContainersDirectory: true       # mounts /var/lib/docker/containers (if present)
 
-# -------- Buffer volume (emptyDir for now to get you running) --------
+# Buffer + plugins dirs
 persistence:
   enabled: false
 
@@ -43,8 +42,7 @@ extraVolumeMounts:
   - name: fluentd-plugins
     mountPath: /fluentd/plugins
 
-# Install required plugins in an initContainer into /fluentd/plugins,
-# then add that path to Ruby's load path via FLUENTD_OPT.
+# Install plugins into /fluentd/plugins (shared volume)
 extraInitContainers:
   - name: install-plugins
     image: docker.io/fluent/fluentd:v1.16-debian-1
@@ -62,13 +60,18 @@ extraInitContainers:
       - name: fluentd-plugins
         mountPath: /fluentd/plugins
 
-extraEnvVars:
-  - name: FLUENTD_CONF
-    value: fluent.conf
+# IMPORTANT: use 'env:' (the chart honors this) to add the plugin path
+env:
   - name: FLUENTD_OPT
     value: "-I /fluentd/plugins"
+  - name: elasticsearch_host
+    value: "elasticsearch-master"
+  - name: elasticsearch_port
+    value: "9200"
+  - name: elasticsearch_scheme
+    value: "https"
 
-# Expose metrics service & ServiceMonitor; probes will work once Fluentd starts
+# Metrics & ServiceMonitor
 metrics:
   serviceMonitor:
     enabled: true
@@ -89,19 +92,14 @@ resources:
     cpu: 250m
     memory: 256Mi
 
-# Keep your ES connection values; the config below reads them via env
+# Kept for clarity (the config reads env vars above)
 elasticsearch:
   enabled: true
   host: elasticsearch-master
   port: 9200
   scheme: https
-  # If you need auth/CA later, we can add user/password and mount a CA secret.
 
-# Fluentd config:
-#  - tail /var/log/containers
-#  - kubernetes metadata
-#  - prometheus metrics on :24231/metrics
-#  - elasticsearch output with PVC-backed (here emptyDir) file buffer
+# Fluentd config
 configFile: |-
   <source>
     @type tail
@@ -149,11 +147,6 @@ configFile: |-
     reconnect_on_error true
     reload_connections true
     request_timeout 60s
-    # ssl_verify true
-    # ca_file ${elasticsearch_ca_file}
-    # user ${elasticsearch_user}
-    # password ${elasticsearch_password}
-
     <buffer>
       @type file
       path /fluentd/buffer/es
@@ -163,12 +156,3 @@ configFile: |-
       flush_thread_count 2
     </buffer>
   </match>
-
-# Wire ES settings into env for the config to consume
-extraEnvVars:
-  - name: elasticsearch_host
-    value: "{{ .Values.elasticsearch.host }}"
-  - name: elasticsearch_port
-    value: "{{ .Values.elasticsearch.port | toString }}"
-  - name: elasticsearch_scheme
-    value: "{{ .Values.elasticsearch.scheme }}"
