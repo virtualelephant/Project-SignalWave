@@ -1,25 +1,97 @@
+# === names / placement ===
 fullnameOverride: fluentd
 namespaceOverride: services
 
+# Deploy as a DaemonSet on every node
 daemonset:
   enabled: true
 
-elasticsearch:
-  enabled: true
-  host: elasticsearch-master
-  port: 9200
-  scheme: https
-
-persistence:
-  enabled: true
-  storageClass: lonhorn-retain
-  accessModes:
-    - ReadWriteOnce
-  size: 5Gi
+# === image ===
+image:
+  registry: docker.io
+  repository: fluent/fluentd
+  tag: v1.16-debian-1
+  pullPolicy: IfNotPresent
 
 rbac:
   create: true
 
+serviceAccount:
+  create: true
+  name: fluentd
+
+# === security context ===
+# Upstream fluent/fluentd runs as root by default; this keeps things simple
+# for accessing /var/log/containers. We can harden to non-root later if desired.
+containerSecurityContext:
+  enabled: true
+  runAsUser: 0
+  runAsNonRoot: false
+
+# === volumes for log tailing & plugin install cache ===
+volumes:
+  - name: varlog
+    hostPath:
+      path: /var/log/containers
+      type: Directory
+  - name: gem-cache
+    emptyDir: {}
+
+volumeMounts:
+  - name: varlog
+    mountPath: /var/log/containers
+    readOnly: true
+  - name: gem-cache
+    mountPath: /opt/fluentd/plugins
+
+# Install required plugins (ES output, Prometheus metrics, K8s metadata) at startup.
+# We install them into /opt/fluentd/plugins (shared emptyDir), and add that directory
+# to Ruby's load path via FLUENTD_OPT below.
+extraInitContainers:
+  - name: install-fluentd-plugins
+    image: docker.io/fluent/fluentd:v1.16-debian-1
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/sh","-c"]
+    args:
+      - >
+        gem install --no-document
+        fluent-plugin-elasticsearch
+        fluent-plugin-prometheus
+        fluent-plugin-kubernetes_metadata_filter
+        --install-dir /opt/fluentd/plugins;
+        echo "Installed plugins to /opt/fluentd/plugins";
+    volumeMounts:
+      - name: gem-cache
+        mountPath: /opt/fluentd/plugins
+
+# Ensure fluentd loads plugins from /opt/fluentd/plugins
+extraEnvVars:
+  - name: FLUENTD_CONF
+    value: fluent.conf
+  - name: FLUENTD_OPT
+    value: "-I /opt/fluentd/plugins"
+
+# === persistence for buffers ===
+# Uses a PVC per pod for buffering (recommended)
+persistence:
+  enabled: true
+  # corrected typo "longhorn-retain"
+  storageClass: longhorn-retain
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+  # Where to mount the buffer volume inside the container
+  mountPath: /fluentd/buffer
+
+# === service & metrics ===
+service:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 24231
+      targetPort: 24231
+
+# Prometheus Operator ServiceMonitor (uses your settings)
 serviceMonitor:
   enabled: true
   namespace: services
@@ -31,6 +103,7 @@ serviceMonitor:
       interval: 15s
       scrapeTimeout: 10s
 
+# === resources ===
 resources:
   limits:
     cpu: 500m
@@ -38,3 +111,121 @@ resources:
   requests:
     cpu: 250m
     memory: 256Mi
+
+# === Elasticsearch connection (used by config below) ===
+# (Kept your structure for clarity—even though the upstream chart doesn't
+# auto-wire this, we reference these values in the configFile.)
+elasticsearch:
+  enabled: true
+  host: elasticsearch-master
+  port: 9200
+  scheme: https
+  # If you need basic auth or a custom CA, mount a secret and add:
+  # user: elastic
+  # password: "changeme"
+  # caFile: /fluentd/etc/es-ca.crt
+
+# === Fluentd configuration ===
+# - Tails Kubernetes container logs
+# - Adds Kubernetes metadata
+# - Exposes Prometheus metrics at :24231/metrics
+# - Outputs to Elasticsearch with logstash-style index naming
+configFile: |-
+  # --- Inputs: tail Kubernetes container logs ---
+  <source>
+    @type tail
+    @id in_kube_logs
+    path /var/log/containers/*.log
+    pos_file /fluentd/log/k8s-containers.pos
+    tag kube.*
+    <parse>
+      @type regexp
+      expression /^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<message>.*)$/
+      time_format %Y-%m-%dT%H:%M:%S.%N%:z
+    </parse>
+    read_from_head true
+    refresh_interval 5
+    rotate_wait 5
+    multiline_flush_interval 5
+  </source>
+
+  # --- Kubernetes metadata enrichment ---
+  <filter kube.**>
+    @type kubernetes_metadata
+    @id filter_kube_metadata
+    skip_labels false
+    skip_container_metadata false
+    skip_namespace_metadata false
+    skip_master_url true
+  </filter>
+
+  # --- Prometheus metrics endpoint (:24231/metrics) ---
+  <source>
+    @type prometheus
+    bind 0.0.0.0
+    port 24231
+  </source>
+  <source>
+    @type prometheus_monitor
+  </source>
+
+  # --- Elasticsearch output ---
+  <match kube.**>
+    @type elasticsearch
+    @id out_es
+    host ${elasticsearch_host}
+    port ${elasticsearch_port}
+    scheme ${elasticsearch_scheme}
+    logstash_format true
+    include_tag_key true
+    reconnect_on_error true
+    reload_connections true
+    request_timeout 60s
+    # If you mount a CA cert:
+    # ssl_verify true
+    # ca_file ${elasticsearch_ca_file}
+    # If you use basic auth:
+    # user ${elasticsearch_user}
+    # password ${elasticsearch_password}
+
+    # Buffer to the PVC
+    <buffer>
+      @type file
+      path /fluentd/buffer/es
+      flush_interval 5s
+      retry_max_interval 30
+      chunk_limit_size 8m
+      flush_thread_count 2
+    </buffer>
+  </match>
+
+# Wire config to values via env (so you can tweak host/port/scheme without editing the config block)
+extraEnvVarsCM: ""
+extraEnvVarsSecret: ""
+extraEnvVars:
+  - name: elasticsearch_host
+    value: "{{ .Values.elasticsearch.host }}"
+  - name: elasticsearch_port
+    value: "{{ .Values.elasticsearch.port | toString }}"
+  - name: elasticsearch_scheme
+    value: "{{ .Values.elasticsearch.scheme }}"
+  # Uncomment if you add these to .Values.elasticsearch and mount their files/secrets
+  # - name: elasticsearch_user
+  #   value: "{{ .Values.elasticsearch.user }}"
+  # - name: elasticsearch_password
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: es-basic-auth
+  #       key: password
+  # - name: elasticsearch_ca_file
+  #   value: "{{ .Values.elasticsearch.caFile }}"
+
+# If you need to mount a CA for Elasticsearch TLS, provide a secret and uncomment:
+# extraVolumes:
+#   - name: es-ca
+#     secret:
+#       secretName: es-ca-secret
+# extraVolumeMounts:
+#   - name: es-ca
+#     mountPath: /fluentd/etc
+#     readOnly: true

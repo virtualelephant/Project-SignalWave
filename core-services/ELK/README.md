@@ -1,8 +1,8 @@
 # Deploying ELK through Helm
 
-Add Bitnami Helm Repo (includes Fluentd)
+Add (new) Fluentd Helm Repo (includes Fluentd)
 ```
-helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add fluent https://fluent.github.io/helm-charts
 helm repo update
 ```
 
