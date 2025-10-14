@@ -1,11 +1,9 @@
-# --- Names / placement ---
 fullnameOverride: fluentd
 namespaceOverride: services
 
 daemonset:
   enabled: true
 
-# --- Image ---
 image:
   registry: docker.io
   repository: fluent/fluentd
@@ -19,31 +17,34 @@ serviceAccount:
   create: true
   name: fluentd
 
-# --- Security context ---
 containerSecurityContext:
   enabled: true
   runAsUser: 0
   runAsNonRoot: false
 
-# --- Host log mounts (chart-managed flags to avoid duplicate volumes) ---
-mountVarLogDirectory: true            # mounts /var/log
-mountDockerContainersDirectory: true  # mounts /var/lib/docker/containers if present
+# Mount host logs via chart flags (avoids duplicate volumes)
+mountVarLogDirectory: true
+mountDockerContainersDirectory: true
 
-# --- Install needed plugins on startup (chart supports this) ---
+# Install needed plugins at startup (chart-supported)
 plugins:
   - fluent-plugin-elasticsearch
   - fluent-plugin-prometheus
   - fluent-plugin-kubernetes_metadata_filter
 
-# --- Persistence for buffers (PVC per DaemonSet pod) ---
+# --- Buffer volume (quick fix): use emptyDir named *fluentd-buffer* ---
 persistence:
-  enabled: true
-  storageClass: longhorn-retain
-  accessModes:
-    - ReadWriteOnce
-  size: 5Gi
+  enabled: false
 
-# --- Metrics service & ServiceMonitor (chart creates a Service on :24231) ---
+extraVolumes:
+  - name: fluentd-buffer
+    emptyDir: {}
+
+extraVolumeMounts:
+  - name: fluentd-buffer
+    mountPath: /fluentd/buffer
+
+# Metrics + ServiceMonitor
 metrics:
   serviceMonitor:
     enabled: true
@@ -56,7 +57,6 @@ metrics:
         interval: 15s
         scrapeTimeout: 10s
 
-# --- Resources ---
 resources:
   limits:
     cpu: 500m
@@ -65,21 +65,13 @@ resources:
     cpu: 250m
     memory: 256Mi
 
-# --- Elasticsearch connection (referenced by config below) ---
 elasticsearch:
   enabled: true
   host: elasticsearch-master
   port: 9200
   scheme: https
-  # If you need auth/CA later, add keys here (user/password/caFile) and mount secrets.
 
-# --- Fluentd configuration ---
-# - Tails Kubernetes container logs from node
-# - Adds Kubernetes metadata
-# - Exposes Prometheus metrics at :24231/metrics
-# - Outputs to Elasticsearch with logstash-style indices
 configFile: |-
-  # Inputs: tail Kubernetes container logs
   <source>
     @type tail
     @id in_kube_logs
@@ -97,7 +89,6 @@ configFile: |-
     multiline_flush_interval 5
   </source>
 
-  # Kubernetes metadata enrichment
   <filter kube.**>
     @type kubernetes_metadata
     @id filter_kube_metadata
@@ -107,7 +98,6 @@ configFile: |-
     skip_master_url true
   </filter>
 
-  # Prometheus metrics endpoint (:24231/metrics)
   <source>
     @type prometheus
     bind 0.0.0.0
@@ -117,7 +107,6 @@ configFile: |-
     @type prometheus_monitor
   </source>
 
-  # Elasticsearch output
   <match kube.**>
     @type elasticsearch
     @id out_es
@@ -129,8 +118,6 @@ configFile: |-
     reconnect_on_error true
     reload_connections true
     request_timeout 60s
-
-    # Buffer to PVC-backed storage (chart mounts persistence automatically)
     <buffer>
       @type file
       path /fluentd/buffer/es
@@ -141,7 +128,6 @@ configFile: |-
     </buffer>
   </match>
 
-# Wire config to values via env so you can tweak host/port/scheme without editing the config block
 extraEnvVars:
   - name: elasticsearch_host
     value: "{{ .Values.elasticsearch.host }}"
