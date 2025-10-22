@@ -1,15 +1,15 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: argocd-redirect
-  namespace: services
+  name: longhorn-redirect
+  namespace: longhorn-system
 spec:
   parentRefs:
     - kind: Gateway
-      name: prod-gw-argocd
+      name: prod-gw-longhorn
       sectionName: http
   hostnames:
-    - argocd.prod.cilium.virtualelephant.com
+    - longhorn.prod.cilium.virtualelephant.com
   rules:
     - matches:
         - path:
@@ -21,3 +21,4 @@ spec:
             scheme: https
             port: 443
             statusCode: 302
+

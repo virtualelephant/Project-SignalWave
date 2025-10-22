@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: longhorn-cert
+  namespace: longhorn-system
+spec:
+  secretName: longhorn-tls
+  commonName: longhorn.prod.cilium.virtualelephant.com
+  dnsNames:
+    - longhorn.prod.cilium.virtualelephant.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: internal-ca
+
