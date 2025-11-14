@@ -1,0 +1,18 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: advertise-lb-dc1
+  labels:
+    advertise: "bgp"   # referenced by PeerConfig below
+spec:
+  advertisements:
+    - advertisementType: Service
+      service:
+        addresses:
+          - LoadBalancerIP     # advertise LB VIPs as /32s
+      selector:
+        matchExpressions:
+          - key: lb.cilium.io/pool
+            operator: In
+            values: ["dc1"]

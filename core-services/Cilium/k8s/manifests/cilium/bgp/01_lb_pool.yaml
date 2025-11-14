@@ -1,0 +1,15 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lb-pool-dc1
+spec:
+  allowFirstLastIPs: "No"
+  blocks:
+    - cidr: 10.10.55.0/24
+  # Only allocate to Services labeled into this pool
+  serviceSelector:
+    matchExpressions:
+      - key: lb.cilium.io/pool
+        operator: In
+        values: ["dc1"]

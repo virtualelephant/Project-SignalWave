@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  namespace: services
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: echo }
+  template:
+    metadata:
+      labels: { app: echo }
+    spec:
+      containers:
+        - name: echo
+          image: ealen/echo-server:latest
+          ports: [{ containerPort: 80 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo
+  namespace: services
+  labels:
+    lb.cilium.io/pool: dc1           # matches the pool selector
+  # optional: request a specific IP from the pool
+  # annotations:
+  #   lbipam.cilium.io/ips: "10.10.50.10"
+spec:
+  type: LoadBalancer
+  # optional but safe if multiple providers exist:
+  # loadBalancerClass: io.cilium/bgp-control-plane
+  selector: { app: echo }
+  ports:
+    - port: 80
+      targetPort: 80
