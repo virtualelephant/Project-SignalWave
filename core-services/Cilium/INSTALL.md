@@ -28,7 +28,9 @@ helm install cilium cilium/cilium --version 1.18.2 \
     --set bgpControlPlane.enabled=true \
     --set installCRDs=true \
     --set gatewayAPI.enabled=true \
-    --set gatewayAPI.gatewayClass.create="true"
+    --set-string gatewayAPI.gatewayClass.create="true" \
+    --set l2announcements.enabled=true \
+    --set kubeProxyReplacement=true
 ```
 
 ## Configuring BGP
@@ -37,6 +39,11 @@ kubectl apply -f k8s/manifests/cilium/bgp/01_lb_pool.yaml
 kubectl apply -f k8s/manifests/cilium/bgp/02_bgp_advertisements.yaml
 kubectl apply -f k8s/manifests/cilium/bgp/03_bgp_peer_config.yaml
 kubectl apply -f k8s/manifests/cilium/bgp/04_bgp_cluster_config.yaml
+```
+
+A small set of worker nodes (2-8) need to be tagged in order for them to establish BGP sessions:
+```bash
+kubectl label node d1-node-5.dev.virtualelephant.com role=bgp-node
 ```
 
 There is a smoke-test to validate the BGP and IP Pool settings are properly setup and being advertised across the network
