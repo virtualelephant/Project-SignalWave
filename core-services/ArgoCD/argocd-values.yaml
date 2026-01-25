@@ -1,6 +1,6 @@
 global:
   image:
-    tag: v3.0.6
+    tag: v3.2.5
 
 controller:
   replicas: 2
@@ -90,6 +90,14 @@ redis:
       memory: 512Mi
 
 configs:
+  cm:
+    helm.enabled: "true"
+  repositories:
+    openchoreo-helm:
+      url: ghcr.io/openchoreo/helm-charts
+      name: openchoreo-helm
+      type: helm
+      enableOCI: "true"
   controller:
     persistence:
       enabled: true

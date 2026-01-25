@@ -30,6 +30,11 @@ helm install cilium cilium/cilium --version 1.18.2 \
     --set gatewayAPI.enabled=true \
     --set-string gatewayAPI.gatewayClass.create="true" \
     --set l2announcements.enabled=true \
+    --set prometheus.serviceMonitor.enabled=true \
+    --set hubble.metrics.serviceMonitor.enabled=true \
+    --set operator.prometheus.enabled=true \
+    --set operator.prometheus.serviceMonitor.enabled=true \
+    --set prometheus.serviceMonitor.trustCRDsExist=true \
     --set kubeProxyReplacement=true
 ```
 
