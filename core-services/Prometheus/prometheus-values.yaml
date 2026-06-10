@@ -95,6 +95,27 @@ grafana:
   deploymentStrategy:
     type: Recreate
   adminPassword: ChangeMe123!
+  # Provisioning sidecars: the runtime POST to /api/admin/provisioning/.../reload
+  # requires Grafana admin auth, and the persisted DB admin password no longer
+  # matches this chart secret (it was changed post-install), so the reload 401s.
+  # Make provisioning auth-independent instead of chasing the password:
+  #  - datasources: load via an init container BEFORE Grafana starts (no reload
+  #    needed at boot); skip the failing runtime reload. Runtime datasource edits
+  #    then take effect on the next Grafana restart (clean, via Recreate above).
+  #  - dashboards: Grafana's file provider already polls every 30s
+  #    (updateIntervalSeconds), so they stay live without the reload API.
+  sidecar:
+    datasources:
+      initDatasources: true
+      # initDatasources replaces the runtime datasource sidecar with an init
+      # container that uses sidecar.datasources.watchMethod for METHOD. The
+      # default WATCH never exits, so the init container would block the pod
+      # forever — it MUST be one-shot LIST so it loads datasources and exits,
+      # then Grafana boots with them provisioned.
+      watchMethod: LIST
+      skipReload: true
+    dashboards:
+      skipReload: true
   serviceMonitor:
     enabled: true
   defaultDashboardsTimezone: UTC-6
