@@ -1,0 +1,23 @@
+---
+# ClusterIP for the Thanos Querier. Grafana points its (non-default) "Thanos"
+# datasource at http://thanos-query.monitoring.svc.cluster.local:9090, and the
+# Cilium HTTPRoute exposes the UI at thanos.prod.virtualelephant.com.
+apiVersion: v1
+kind: Service
+metadata:
+  name: thanos-query
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: thanos-query
+    app.kubernetes.io/part-of: kube-prometheus-stack
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: thanos-query
+  ports:
+    - name: http
+      port: 9090
+      targetPort: http
+    - name: grpc
+      port: 10901
+      targetPort: grpc

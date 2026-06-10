@@ -1,0 +1,35 @@
+---
+# Cilium Gateway for the Thanos Querier UI. The `lb.cilium.io/pool: dc1` label
+# makes LBIPAM assign a VIP from pool lb-pool-dc1 (10.10.50.0/24); the
+# k8s-gateway-gitops controller detects the VIP + hostname and creates the
+# NetBox IP record (dns_name), which dns-gitops publishes to Pi-hole.
+#
+# TLS terminates with the shared *.prod.virtualelephant.com wildcard
+# (prod-wildcard-tls), sealed into the monitoring namespace via SealedSecret.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: prod-gw-thanos
+  namespace: monitoring
+spec:
+  gatewayClassName: cilium
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: thanos.prod.virtualelephant.com
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: prod-wildcard-tls
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: thanos.prod.virtualelephant.com
+      allowedRoutes:
+        namespaces:
+          from: Same
+  infrastructure:
+    labels:
+      lb.cilium.io/pool: "dc1"

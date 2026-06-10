@@ -1,0 +1,45 @@
+---
+# Serve the Thanos Querier UI over HTTPS and redirect plain HTTP to HTTPS.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: thanos-ui
+  namespace: monitoring
+spec:
+  parentRefs:
+    - kind: Gateway
+      name: prod-gw-thanos
+      sectionName: https
+  hostnames:
+    - thanos.prod.virtualelephant.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: thanos-query
+          port: 9090
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: thanos-redirect
+  namespace: monitoring
+spec:
+  parentRefs:
+    - kind: Gateway
+      name: prod-gw-thanos
+      sectionName: http
+  hostnames:
+    - thanos.prod.virtualelephant.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            port: 443

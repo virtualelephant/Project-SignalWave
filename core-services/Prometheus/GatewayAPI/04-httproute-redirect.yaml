@@ -8,7 +8,7 @@ spec:
     - kind: Gateway
       name: prod-gw-prometheus
   hostnames:
-    - prometheus.prod.cilium.virtualelephant.com
+    - prometheus.prod.virtualelephant.com
   rules:
     - matches:
         - path:

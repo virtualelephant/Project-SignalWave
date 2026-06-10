@@ -8,7 +8,7 @@ spec:
     - kind: Gateway
       name: prod-gw-grafana
   hostnames:
-    - grafana.prod.cilium.virtualelephant.com
+    - grafana.prod.virtualelephant.com
   rules:
     - matches:
         - path:

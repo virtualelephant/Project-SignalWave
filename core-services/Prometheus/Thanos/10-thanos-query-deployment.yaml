@@ -1,0 +1,89 @@
+---
+# Thanos Querier — fans out to BOTH Prometheus HA replicas' sidecar StoreAPIs
+# and deduplicates on the `prometheus_replica` external label so a single
+# replica's ingestion gap (e.g. one replica stranded during a node/k8s upgrade)
+# no longer shows up as missing data. The kube-prometheus-stack chart ships the
+# Thanos *sidecar* but NOT a Querier, so this is a standalone Deployment.
+#
+# Dedup label MUST be `prometheus_replica` (operator sets it to the pod name,
+# distinct per replica). The `replica` external label is empty on both replicas
+# and is useless for dedup.
+#
+# Endpoint discovery uses the headless `prometheus-operated` service, whose
+# gRPC (10901) endpoints resolve to every Prometheus pod's sidecar.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-query
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: thanos-query
+    app.kubernetes.io/part-of: kube-prometheus-stack
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: thanos-query
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: thanos-query
+        app.kubernetes.io/part-of: kube-prometheus-stack
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      # Spread the two queriers across nodes so a single node loss can't take
+      # the whole query path down.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: thanos-query
+      containers:
+        - name: thanos-query
+          image: quay.io/thanos/thanos:v0.41.0   # pinned to match the running sidecar
+          imagePullPolicy: IfNotPresent
+          args:
+            - query
+            - --log.level=info
+            - --http-address=0.0.0.0:9090
+            - --grpc-address=0.0.0.0:10901
+            - --query.replica-label=prometheus_replica
+            - --query.auto-downsampling
+            - --endpoint=dnssrv+_grpc._tcp.prometheus-operated.monitoring.svc.cluster.local
+          ports:
+            - name: http
+              containerPort: 9090
+            - name: grpc
+              containerPort: 10901
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]

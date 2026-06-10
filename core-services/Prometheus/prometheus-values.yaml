@@ -10,7 +10,11 @@ prometheus:
     replicas: 2
     externalLabels:
       cluster: "ve-promtheus-cluster"
-      replica: "${REPLICA}"
+      # NOTE: do NOT set a `replica` external label here. The "${REPLICA}"
+      # template was never expanded (it landed literally as replica=""), which
+      # is useless for HA dedup. The operator already injects a distinct
+      # `prometheus_replica` external label per pod — that is what the Thanos
+      # Querier deduplicates on (see core-services/Prometheus/Thanos/).
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -51,10 +55,11 @@ prometheus:
       periodSeconds: 5
     thanos:
       enabled: true
-      version: v0.36.0
-      objectStorageConfig:
-        key: thanos.yaml
-        name: thanos-objstore-config
+      version: v0.41.0   # pinned to match the standalone Thanos Querier
+      # No objectStorageConfig: the `thanos-objstore-config` secret does not
+      # exist, so the sidecar runs StoreAPI over each replica's LOCAL 7d TSDB
+      # (enough for HA dedup). Long-term object storage is a separate effort —
+      # re-add objectStorageConfig + a Store Gateway when that's wanted.
       resources:
         requests:
           cpu: 100m
@@ -63,20 +68,9 @@ prometheus:
           cpu: 500m
           memory: 512Mi
 
-thanos:
-  query:
-    enabled: true
-    replicaLabel: "replica"
-    resources:
-      requests:
-        cpu: 200m
-        memory: 512Mi
-      limits:
-        cpu: 1
-        memory: 1Gi
-    service:
-      type: ClusterIP
-      port: 9090
+# NOTE: kube-prometheus-stack has NO top-level `thanos.query` value — the old
+# block here was silently ignored, which is why no Querier ever existed. The
+# Querier is now a standalone Deployment in core-services/Prometheus/Thanos/.
 
 alertmanager:
   enabled: true
@@ -94,10 +88,27 @@ grafana:
     enabled: true
     storageClassName: longhorn-retain
     size: 10Gi
+  # Grafana uses a single RWO (longhorn) PVC. The default RollingUpdate strategy
+  # deadlocks on upgrades — the new pod can't attach the volume until the old one
+  # terminates, but the old one won't terminate until the new one is Ready.
+  # Recreate terminates the old pod first, so the volume hands off cleanly.
+  deploymentStrategy:
+    type: Recreate
   adminPassword: ChangeMe123!
   serviceMonitor:
     enabled: true
   defaultDashboardsTimezone: UTC-6
+  # Deduplicating query path across the HA Prometheus pair. Added as a
+  # NON-default datasource: point long-range dashboards (e.g. the etcd
+  # backup/defrag dashboard) at "Thanos" to avoid single-replica gaps.
+  additionalDataSources:
+    - name: Thanos
+      type: prometheus
+      access: proxy
+      url: http://thanos-query.monitoring.svc.cluster.local:9090
+      isDefault: false
+      jsonData:
+        timeInterval: 30s
   resources:
     requests:
       cpu: 250m
